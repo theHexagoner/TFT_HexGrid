@@ -9,4 +9,4 @@ I've enjoyed working with Blazor so far, but I'm not sure I entirely understand 
 
 This is also the first time I've worked with Scalable Vector Graphics. Compared to messing around with GDI+ and HTML5 canvasses and other appoaches I've used for drawing stuff on a screen, SVG is about as simple as it gets, at least for something like a hexagonal grid. And since it's an XML format, it's incredibly easy to manipulate distinct elements on the screen and still have them render cleanly at any resolution you want. Wrapping the SVG in Blazor components makes all the on-screen rendering "just work.""
 
-Finally, I owe credit to Amit Patel. His excellent [Red Blob Games](https://www.redblobgames.com/) site contains many examples, explanations and suggestions that I relied upon in writing and organizing the code this app uses to generate the grids.
+Finally, I owe acknowledgement to Amit Patel. His excellent [Red Blob Games](https://www.redblobgames.com/) site contains many examples, explanations and suggestions that I relied upon in writing and organizing the code this app uses to generate the grids.
