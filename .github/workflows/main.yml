@@ -25,10 +25,6 @@ jobs:
     # publishes Blazor project to the release-folder
     - name: Publish Project
       run: dotnet publish -c Release 
- 
-    # add .nojekyll file to tell GitHub pages to not treat this as a Jekyll project. (Allow files and folders starting with an underscore)
-    - name: Add .nojekyll file
-      run: touch  ${{ env.PUBLISH_DIR }}/.nojekyll
       
     - name: GitHub Pages
       if: success()
