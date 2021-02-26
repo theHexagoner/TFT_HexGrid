@@ -1,0 +1,250 @@
+﻿@page "/svginteractivehg"
+
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@using TFT_HexGrid.Grids;
+@using TFT_HexGrid.Maps;
+
+@inject IJSRuntime jsRuntime
+
+<h1>SVG Hex Grid</h1>
+
+<div class="form-group row ml-0">
+    <div class="col-xs-2 w-10 mr-3">
+        <label for="rowCount" class="mb-sm-0">Rows</label>
+        <input class="form-control form-control-sm" id="rowCount" type="text" @bind="_rowCount">
+    </div>
+    <div class="col-xs-2 w-10 mr-3">
+        <label for="colCount" class="mb-sm-0">Columns</label>
+        <input class="form-control form-control-sm" id="colCount" type="text" @bind="_colCount">
+    </div>
+    <div class="col-xs-2 w-10 mr-3">
+        <label for="sideLength" class="mb-sm-0">Side Length</label>
+        <input class="form-control form-control-sm" id="sideLength" type="text" @bind="_sideLen">
+    </div>
+</div>
+
+<div class="form-group row ml-2">
+    <div class="col-xs-2 w-10 mr-3 form-row align-items-center">
+        @foreach (var scheme in new[] { OffsetScheme.Even_Q, OffsetScheme.Odd_Q, OffsetScheme.Even_R, OffsetScheme.Odd_R })
+        {
+            <label class="mr-3" style='margin-bottom:0rem !important;' >
+                <input name="offsetScheme" type="radio" value="@scheme" checked="@(_offsetScheme == scheme)" @onchange="@(() => { _offsetScheme = scheme; })" />
+                @scheme.ToString()
+            </label>
+        }
+    </div>
+    <div class="col-xs-2 w-10 mr-3">
+        <button class="btn btn-outline-primary btn-sm" @onclick="GenerateTheGrid">Generate The Grid</button>
+    </div>
+    <div class="col-xs-2 w-10 mr-3">
+        <button class="btn btn-outline-primary btn-sm" @onclick="SaveMe" disabled="@_saveDisabled">Save To File</button>
+    </div>
+</div>
+
+<div class="form-group row ml-0">
+    <div class="col-xs-2 w-10 mr-3">
+        <label for="hexStrokeWidth" class="mb-sm-0">Hex Line Thickness</label>
+        <input class="form-control form-control-sm" id="hexStrokeWidth" type="text" @bind="_hexStrokeWidth">
+    </div>
+    <div class="col-xs-2 w-10 mr-3">
+        <label for="hexStroke" class="mb-sm-0">Hex Line Color</label>
+        <input class="form-control form-control-sm" id="hexStroke" type="text" @bind="_hexStroke">
+    </div>
+</div>
+
+<div class="form-group row ml-0">
+    <div class="col-xs-2 w-10 mr-3">
+        <label for="megaStrokeWidth" class="mb-sm-0">Megahex Line Thickness</label>
+        <input class="form-control form-control-sm" id="megaStrokeWidth" type="text" @bind="_megaStrokeWidth">
+    </div>
+    <div class="col-xs-2 w-10 mr-3">
+        <label for="megaStroke" class="mb-sm-0">Megahex Line Color</label>
+        <input class="form-control form-control-sm" id="megaStroke" type="text" @bind="_megaStroke">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="mb-sm-0">Clicked Row, Col: @_hexLabel</label>&nbsp;&nbsp;&nbsp;&nbsp;<label class="mb-sm-0">Clicked X, Y: @_mouseLabel</label>&nbsp;&nbsp;&nbsp;&nbsp;<label class="mb-sm-0">Translated X, Y: @_translateLabel</label>
+    <div id="svgDiv" @ref="_divRef" @onclick="SvgOnClick" @oncontextmenu="SvgOnClick" @oncontextmenu:preventDefault="true">
+        <BSvg @ref="_svgRef" HeightInches="8.5in" WidthInches="11in" ViewBox="0 0 1056 816" Translation="@_translation"
+              HexStroke="@_hexStroke" HexStrokeWidth="@_hexStrokeWidth"
+              MegaStroke="@_megaStroke" MegaStrokeWidth="@_megaStrokeWidth" />
+    </div>
+</div>
+
+@code {
+
+    #region private fields
+
+    private int _rowCount = 17;
+    private int _colCount = 27;
+    private double _sideLen = 24d;
+    private OffsetScheme _offsetScheme = OffsetScheme.Even_Q;
+
+    private float _hexStrokeWidth = 1f;
+    private string _hexStroke = "#000000";
+
+    private float _megaStrokeWidth = 3f;
+    private string _megaStroke = "#000000";
+
+    private string _hexLabel = string.Empty;
+    private string _mouseLabel = string.Empty;
+    private string _translateLabel = string.Empty;
+
+    private double _offsetLeft;
+    private double _offsetTop;
+    private static Action<double, double> scrollAction;
+
+    private const string _translation = "translate(528 408)";
+    private const double TRANSLATE_W = 528d; // half width in pixels @ 96ppi
+    private const double TRANSLATE_H = 408d; // half height in pixels @ 96ppi
+
+    private ElementReference _divRef;
+    private BSvg _svgRef;
+
+    private Grid _grid;
+    private Map _map;
+
+    private bool _saveDisabled = true;
+
+    #endregion
+
+    #region Component overrides
+
+    protected override void OnInitialized()
+    {
+        scrollAction = UpdateOffsets;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await SetInitialOffsets();
+        }
+    }
+
+    #endregion
+
+    #region Handle Scrolling
+
+    /// <summary>
+    /// capture and set offsets for the div that holds the SVG
+    /// so that we can get the correct mouse-click coords
+    /// </summary>
+    private async Task SetInitialOffsets()
+    {
+        string data = await jsRuntime.InvokeAsync<string>("getDivOffsets", new object[] { _divRef });
+        JObject offsets = (JObject)JsonConvert.DeserializeObject(data);
+
+        // get the actual coordinates of the mouse click within the div:
+        _offsetLeft = offsets.Value<double>("offsetLeft");
+        _offsetTop = offsets.Value<double>("offsetTop");
+    }
+
+    /// <summary>
+    /// when the window has scrolled, we need to re-set the offsets
+    /// </summary>
+    /// <param name="left">the new left offset</param>
+    /// <param name="top">the new top offset</param>
+    private void UpdateOffsets(double left, double top)
+    {
+        _offsetLeft = left;
+        _offsetTop = top;
+    }
+
+    /// <summary>
+    /// listen for the OnScroll event from JS
+    /// </summary>
+    /// <param name="data">JSON formatted string containing new offset information</param>
+    [JSInvokable]
+    public static void OnBodyScrolled(string data)
+    {
+        JObject offsets = (JObject)JsonConvert.DeserializeObject(data);
+        scrollAction.Invoke(offsets.Value<double>("offsetLeft"), offsets.Value<double>("offsetTop"));
+    }
+
+    #endregion
+
+    /// <summary>
+    /// instantiate the grid and it's content, then pass its geometry into the SVG
+    /// </summary>
+    private void GenerateTheGrid()
+    {
+        try
+        {
+            var size = new GridPoint(_sideLen, _sideLen);
+            var origin = new GridPoint(0.5d, .5d);
+
+            _grid = new Grid(_rowCount, _colCount, size, origin, _offsetScheme);
+            _map = _grid.InitMap();
+
+            _svgRef.SetGeometry(_grid.SvgHexagons, _grid.SvgMegagons);
+            _saveDisabled = false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// respond to mouse clicks to select/deselect hexagons
+    /// </summary>
+    /// <param name="eventArgs">mouse event arguments for the click</param>
+    /// <returns>Task result</returns>
+    private async Task SvgOnClick(MouseEventArgs eventArgs)
+    {
+        // get the actual coordinates of the mouse click within the canvas:
+        double mouseX = eventArgs.ClientX - _offsetLeft;
+        double mouseY = eventArgs.ClientY - _offsetTop;
+
+        var translatedX = mouseX - TRANSLATE_W;
+        var translatedY = mouseY - TRANSLATE_H;
+
+        _mouseLabel = string.Format(" {0}, {1}", mouseX, mouseY);
+        _translateLabel = string.Format(" {0}, {1}", translatedX, translatedY);
+
+        // get the hex the user clicked on, if any:
+        var hex = _grid.GetHexAt(new GridPoint(translatedX, translatedY));
+        _hexLabel = hex != null ? string.Format(" {0}, {1}", hex.OffsetLocation.Row, hex.OffsetLocation.Col) : "none";
+
+        // left-click to add the hex to the map if not already present
+        if (hex != null && eventArgs.Button == 0 && _map.Hexagons.ContainsKey(hex.ID) == false)
+        {
+            _map.Hexagons.Add(hex.ID, hex);
+            await _svgRef.UpdateHex(hex.ID, "#FFFFFF");
+        }
+
+        // right-click to remove the hex from the map if it is present
+        if (hex != null && eventArgs.Button == 2 && _map.Hexagons.ContainsKey(hex.ID))
+        {
+            _map.Hexagons.Remove(hex.ID);
+            await _svgRef.UpdateHex(hex.ID, "#E0E0E0");
+        }
+
+    }
+
+    /// <summary>
+    /// save the grid as an SVG document
+    /// </summary>
+    /// <returns>Task result</returns>
+    private async Task SaveMe()
+    {
+        if (!_saveDisabled)
+        {
+            var filename = string.Format("{0}r_{1}c_{2}_hexgrid.svg", _rowCount, _colCount, _sideLen);
+            var paramz = new object[] { _svgRef.Svg, filename };
+            try
+            {
+                await jsRuntime.InvokeVoidAsync("saveSvg", paramz);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+    }
+}

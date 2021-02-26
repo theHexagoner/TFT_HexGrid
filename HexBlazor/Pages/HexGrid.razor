@@ -1,0 +1,304 @@
+﻿@page "/hexgrid"
+
+@using Blazor.Extensions.Canvas
+@using Blazor.Extensions;
+@using Blazor.Extensions.Canvas.Canvas2D;
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@using TFT_HexGrid.Grids;
+@using TFT_HexGrid.Maps;
+
+@inject IJSRuntime jsRuntime
+
+<h1>HexGrid</h1>
+
+<p><label>Rows:</label> <input @bind="_rowCount" /></p>
+<p><label>Columns: </label> <input @bind="_colCount" /></p>
+<p><label>Side Length: </label> <input @bind="_sideLen" /></p>
+<button class="btn btn-primary" @onclick="GenerateTheGrid">Generate</button>
+<button class="btn btn-primary" @onclick="SaveMe">Save To File</button>
+<p />
+<p>
+    <label>Clicked Row, Col: @_hexLabel</label>&nbsp;&nbsp;&nbsp;&nbsp;<label>Clicked X, Y: @_mouseLabel</label>&nbsp;&nbsp;&nbsp;&nbsp;<label>Translated X, Y: @_translateLabel</label>
+</p>
+<p />
+
+<div @ref="_divCanvas" @onclick="CanvasOnClick" @oncontextmenu="CanvasOnClick" @oncontextmenu:preventDefault="true">
+    <BECanvas Height="@_canvasHeight" Width="@_canvasWidth" @ref="_canvasReference"></BECanvas>
+</div>
+
+@code {
+    private int _rowCount = 17;
+    private int _colCount = 29;
+    private double _sideLen = 25d;
+
+    private string _hexLabel = string.Empty;
+    private string _mouseLabel = string.Empty;
+    private string _translateLabel = string.Empty;
+
+    private Grid _grid;
+    private Map _map;
+
+    private Canvas2DContext _context;
+    protected BECanvasComponent _canvasReference;
+    private ElementReference _divCanvas;
+
+    private double _offsetLeft;
+    private double _offsetTop;
+
+    private double _scale;
+    private int _canvasHeight;
+    private int _canvasWidth;
+
+    private const double WIDTH = 1600d;
+    private const double HEIGHT = 900d;
+
+    private const double TRANSLATE_W = 800d;
+    private const double TRANSLATE_H = 450d;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _scale = await jsRuntime.InvokeAsync<double>("getDevicePixelRatio");
+
+        _canvasHeight = (int)(HEIGHT * _scale);
+        _canvasWidth = (int)(WIDTH * _scale);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            string data = await jsRuntime.InvokeAsync<string>("getDivOffsets", new object[] { _divCanvas });
+            JObject offsets = (JObject)JsonConvert.DeserializeObject(data);
+
+            // get the actual coordinates of the mouse click within the canvas:
+            _offsetLeft = offsets.Value<double>("offsetLeft");
+            _offsetTop = offsets.Value<double>("offsetTop");
+
+            // scale the context
+            _context = await _canvasReference.CreateCanvas2DAsync();
+            await _context.ScaleAsync(_scale, _scale);
+
+        }
+    }
+
+    private async void GenerateTheGrid()
+    {
+        var size = new GridPoint(_sideLen, _sideLen);
+        var origin = new GridPoint(0.5d, .5d);
+
+        _grid = new Grid(_rowCount, _colCount, size, origin);
+        _map = _grid.InitMap();
+
+        // clear existing canvas
+        await _context.ClearRectAsync(0, 0, WIDTH, HEIGHT);
+
+        // paint the background light grey
+        await _context.SetFillStyleAsync("#E0E0E0");
+        await _context.FillRectAsync(0, 0, WIDTH, HEIGHT);
+
+        // translate the grid so it paints the grid in the right spot
+        await _context.TranslateAsync(TRANSLATE_W, TRANSLATE_H);
+
+        // fill the grid white
+        await _context.SetFillStyleAsync("#FFFFFF");
+
+        // stroke the grid black
+        await _context.SetLineWidthAsync(1f);
+        await _context.SetStrokeStyleAsync("#000000");
+
+        foreach (Hexagon h in _grid.Hexagons.Values)
+        {
+            await FillHex(h);
+            await StrokeHex(h);
+        }
+
+        // change the thickness of the stroke:
+        await _context.SetLineWidthAsync(3f);
+
+        foreach (Megagon m in _grid.Megagons.Values)
+        {
+            await StrokeMega(m);
+        }
+
+        // reset the thickness of the stroke:
+        await _context.SetLineWidthAsync(1f);
+
+        // undo the translation
+        await _context.TranslateAsync(-TRANSLATE_W, -TRANSLATE_H);
+
+    }
+
+    private void CanvasOnClick(MouseEventArgs eventArgs)
+    {
+        // get the actual coordinates of the mouse click within the canvas:
+        double mouseX = eventArgs.ClientX - _offsetLeft;
+        double mouseY = eventArgs.ClientY - _offsetTop;
+
+        var translatedX = mouseX - TRANSLATE_W;
+        var translatedY = mouseY - TRANSLATE_H;
+
+        _mouseLabel = string.Format(" {0}, {1}", mouseX, mouseY);
+        _translateLabel = string.Format(" {0}, {1}", translatedX, translatedY);
+
+        // get the hex the user clicked on, if any:
+        var hex = _grid.GetHexAt(new GridPoint(translatedX, translatedY));
+        _hexLabel = hex != null ? string.Format(" {0}, {1}", hex.OffsetLocation.Row, hex.OffsetLocation.Col) : "none";
+
+        // left-click to add the hex to the map if not already present
+        if (hex != null && eventArgs.Button == 0)
+        {
+            AddToMap(hex);
+        }
+
+        // right-click to remove the hex from the map if it is present
+        if (hex != null && eventArgs.Button == 2)
+        {
+            RemoveFromMap(hex);
+        }
+
+    }
+
+    private async Task StrokeHex(Hexagon h)
+    {
+        await _context.BeginPathAsync();
+        await _context.MoveToAsync(h.EdgePoints[0].X, h.EdgePoints[0].Y);
+        await _context.LineToAsync(h.EdgePoints[1].X, h.EdgePoints[1].Y);
+        await _context.LineToAsync(h.EdgePoints[2].X, h.EdgePoints[2].Y);
+        await _context.LineToAsync(h.EdgePoints[3].X, h.EdgePoints[3].Y);
+        await _context.LineToAsync(h.EdgePoints[4].X, h.EdgePoints[4].Y);
+        await _context.LineToAsync(h.EdgePoints[5].X, h.EdgePoints[5].Y);
+        await _context.ClosePathAsync();
+        await _context.StrokeAsync();
+    }
+
+    private async Task FillHex(Hexagon h)
+    {
+        await _context.BeginPathAsync();
+        await _context.MoveToAsync(h.FillPoints[0].X, h.FillPoints[0].Y);
+        await _context.LineToAsync(h.FillPoints[1].X, h.FillPoints[1].Y);
+        await _context.LineToAsync(h.FillPoints[2].X, h.FillPoints[2].Y);
+        await _context.LineToAsync(h.FillPoints[3].X, h.FillPoints[3].Y);
+        await _context.LineToAsync(h.FillPoints[4].X, h.FillPoints[4].Y);
+        await _context.LineToAsync(h.FillPoints[5].X, h.FillPoints[5].Y);
+        await _context.FillAsync();
+    }
+
+    private async Task StrokeMega(Megagon m)
+    {
+
+        //try
+        //{
+
+        //}
+        //catch (Exception ex)
+        //{
+        //    Console.WriteLine(ex.Message);
+        //}
+
+        await _context.BeginPathAsync();
+        await _context.MoveToAsync(m.Outline[0].X, m.Outline[0].Y);
+
+        for (int i = 1; i < m.Outline.Length; i++)
+        {
+            // get the distance from previous point
+            var distance = Math.Round(m.Outline[i].GetDistanceTo(m.Outline[i - 1]));
+
+            if (distance > _grid.HexLayout.Size.X)
+            {
+                await _context.MoveToAsync(m.Outline[i].X, m.Outline[i].Y);
+            }
+            else
+            {
+                await _context.LineToAsync(m.Outline[i].X, m.Outline[i].Y);
+            }
+        }
+
+        var distanceForLast = Math.Round(m.Outline[m.Outline.Length - 1].GetDistanceTo(m.Outline[0]));
+        if (distanceForLast <= _grid.HexLayout.Size.X)
+            await _context.LineToAsync(m.Outline[0].X, m.Outline[0].Y);
+
+        await _context.StrokeAsync();
+
+
+    }
+
+    private async void AddToMap(Hexagon h)
+    {
+        if (_map.Hexagons.ContainsKey(h.GetHashCode()) == false)
+        {
+            _map.Hexagons.Add(h.GetHashCode(), h);
+
+            // translate the grid so it paints the grid in the right spot
+            await _context.TranslateAsync(TRANSLATE_W, TRANSLATE_H);
+
+            // fill the hex white
+            await _context.SetFillStyleAsync("#FFFFFF");
+            await FillHex(h);
+
+            // stroke the hex black
+            await _context.SetStrokeStyleAsync("#000000");
+            await StrokeHex(h);
+
+            if (h.Mega != null)
+            {
+                // stroke the megahex
+                await _context.SetLineWidthAsync(3f);
+                await StrokeMega(h.Mega);
+                await _context.SetLineWidthAsync(1f);
+            }
+
+            // translate the grid so it paints the grid in the right spot
+            await _context.TranslateAsync(-TRANSLATE_W, -TRANSLATE_H);
+
+        }
+    }
+
+    private async void RemoveFromMap(Hexagon h)
+    {
+        if (_map.Hexagons.ContainsKey(h.GetHashCode()))
+        {
+            _map.Hexagons.Remove(h.GetHashCode());
+
+            // translate the grid so it paints the grid in the right spot
+            await _context.TranslateAsync(800, 450);
+
+            // fill the hex light grey
+            await _context.SetFillStyleAsync("#E0E0E0");
+            await FillHex(h);
+
+            // stroke the hex black
+            await _context.SetStrokeStyleAsync("#000000");
+            await StrokeHex(h);
+
+            // stroke the megahex
+            if (h.Mega != null)
+            {
+                await _context.SetLineWidthAsync(3f);
+                await StrokeMega(h.Mega);
+                await _context.SetLineWidthAsync(1f);
+            }
+
+            // translate the grid so it paints the grid in the right spot
+            await _context.TranslateAsync(-800, -450);
+
+        }
+    }
+
+    public async Task SaveMe()
+    {
+        var filename = string.Format("{0}r_{1}c_{2}_hexgrid.png", _rowCount, _colCount, _sideLen);
+        var paramz = new object[] { _canvasReference.CanvasReference, filename };
+
+        try
+        {
+            await jsRuntime.InvokeVoidAsync("saveCanvasToPng", paramz);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+    }
+
+}

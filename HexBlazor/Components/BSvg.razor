@@ -1,0 +1,115 @@
+﻿@using TFT_HexGrid.SvgHelpers
+
+<CascadingValue Value="this">
+    <svg @ref="Svg" xmlns="http://www.w3.org/2000/svg" width="@WidthInches" height="@HeightInches" viewBox="@ViewBox">
+        <rect width="@WidthInches" height="@HeightInches" style="fill:#E0E0E0; stroke:#000000; stroke-width:1" />
+        <g id="Grid" transform="@Translation">
+            <g id="Hexagons" stroke="@HexStroke" stroke-width="@HexStrokeWidth" >
+                @foreach (SvgHexagon h in Hexagons.Values)
+                {
+                    <BPolygon @key="h" Id="@h.Id" Points="@h.Points" Fill="#FFFFFF" />
+                }
+            </g>
+            <g id="Megahexes" stroke="@MegaStroke" stroke-width="@MegaStrokeWidth">
+                @foreach (SvgMegagon m in Megagons.Values)
+                {
+                    <BPath @key="m" Id="@m.Id" D="@m.D" />
+                }
+            </g>
+        </g>
+    </svg>
+</CascadingValue>
+
+@code {
+    public ElementReference Svg;
+
+    [Parameter]
+    public string WidthInches { get; set; }
+
+    [Parameter]
+    public string HeightInches { get; set; }
+
+    [Parameter]
+    public string ViewBox { get; set; }
+
+    [Parameter]
+    public string Translation { get; set; }
+
+    public void SetGeometry(Dictionary<int, SvgHexagon> hexagons, Dictionary<int, SvgMegagon> megagons)
+    {
+        // compare incoming to existing
+
+        // what's gone? - do I need to take these out of _bPolys?
+        var removedHexagons = Hexagons.Where(kvp => hexagons.ContainsKey(kvp.Key) == false).Select(kvp => kvp.Key).ToArray();
+        var removedMegagons = Megagons.Where(kvp => megagons.ContainsKey(kvp.Key) == false).Select(kvp => kvp.Key).ToArray();
+
+        foreach (int id in removedHexagons) { _bPolys.Remove(id); }
+        foreach (int id in removedMegagons) { _bPaths.Remove(id); }
+
+        Hexagons = hexagons;
+        Megagons = megagons;
+
+        StateHasChanged();
+    }
+
+    #region Hexagons
+
+    [Parameter]
+    public Dictionary<int, SvgHexagon> Hexagons { get; set; } = new Dictionary<int, SvgHexagon>();
+
+    private Dictionary<int, BPolygon> _bPolys { get; set; } = new Dictionary<int, BPolygon>();
+
+    /// <summary>
+    /// this gets called from the init for the BPolygon
+    /// </summary>
+    /// <param name="hex">the BPolygon to add to the local collection</param>
+    internal void AddBPolygon(BPolygon hex)
+    {
+        if(_bPolys.ContainsKey(hex.Id) == false)
+            _bPolys.Add(hex.Id, hex);
+    }
+
+    [Parameter]
+    public string HexStroke { get; set; }
+
+    [Parameter]
+    public float HexStrokeWidth { get; set; }
+
+    public async Task UpdateHex(int id, string fill)
+    {
+        await _bPolys[id].SetFill(fill);
+    }
+
+    #endregion
+
+    #region Megagons
+
+    [Parameter]
+    public Dictionary<int, SvgMegagon> Megagons { get; set; } = new Dictionary<int, SvgMegagon>();
+
+    private Dictionary<int, BPath> _bPaths { get; set; } = new Dictionary<int, BPath>();
+
+    /// <summary>
+    /// this gets called from the init for the BPath
+    /// </summary>
+    /// <param name="mega">the BPath to add to the local collection</param>
+    internal void AddBPath(BPath mega)
+    {
+        if (_bPaths.ContainsKey(mega.Id) == false)
+            _bPaths.Add(mega.Id, mega);
+    }
+
+    [Parameter]
+    public string MegaStroke { get; set; }
+
+    [Parameter]
+    public float MegaStrokeWidth { get; set; }
+
+    //public async Task UpdateMegagon(int id, string d)
+    //{
+    //    await _bPaths[id].SetD(d);
+    //}
+
+    #endregion
+
+}

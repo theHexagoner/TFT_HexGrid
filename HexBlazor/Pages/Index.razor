@@ -1,0 +1,63 @@
+﻿@page "/"
+
+<h1>TFT Hex Grids</h1>
+
+<p>
+    Use this app to generate arbitrary hexagonal grids and maps with "mega-hexes" for The Fantasy Trip system from Steve Jackson Games.
+</p>
+
+<h3>How To Use</h3>
+
+<p>
+    Click the "SVG Hex Grid" item in the navigation menu to get to the app. I've tried to give as much fine-grain control over the generated grids as makes sense for this minimal version.
+    Hopefully the various parameters you are able to supply are self-explanatory with some experimentation. Eventually I want to build out support for any other parameters that you might want to specify.
+</p>
+
+<p>
+    After you enter the parameters you want for size, etc., click the "Generate Grid" button and after a few moments, the grid will appear.
+</p>
+
+<h3>Grids vs. Maps</h3>
+
+<p>
+    This action will generate a grid with all the hexagons "selected" (painted white.) If you right-click a hexagon, it will be de-selected (painted grey). If you want to re-select a hexagon, just click on it again.
+</p>
+
+<p>
+    Under the covers, this selection and de-selection is manipulating the contents of a hexagonal map. In this fashion you can create maps of any arbitrary shape you want.
+</p>
+
+<h3>Export to SVG</h3>
+
+<p>
+    The grids and maps you generate can be exported as SVG files for using however you like. If you want to save a file copy with all grid-lines present, click the "Save Grid SVG" button.
+    If you want to save a file copy which shows the map with only lines for the hexes you selected, click the "Save Map SVG" button. You can click the "View Map/Grid" button to toggle between the two views.
+</p>
+
+<h3>Future Plans</h3>
+
+<p>
+    Right now, the options you can supply for generating the grid are rather limited. I'll probably add an option to start with a blank grid instead of one that has all the hexes selected in 
+    order to facilitate drawing "labyrinth" maps from scratch. Currently there is a lot of clicking involved to draw anything, so I will probably add some way to "draw" the hex selection and deselection.
+    I might add the notion of "labyrinth levels" as described in the game rules, where different levels of the dungeon are shown in different colors. If I get into that level of detail I probably also 
+    need to add some way to store "work in progress" for complex maps, which also begs for the feature of loading previously created maps from file.
+</p>
+
+<p>
+    The maps used by the TFT game system scale in and out using a scheme where a hexagon on a larger-scale map corresponds to a mega-hex on the next smaller-scale map.
+    My ultimate goal is to be able to automatically generate these smaller-scale maps from a larger-scale map you create in the app. I think that could be a real time-saver for folks when 
+    drawing up labyrinth maps.
+</p>
+
+<p>
+    I might add some way to label hexes so that you can correlate them to information in your adventure modules. I might also add some way to drop basic terrain features such as doors, etc.
+    It's easy enough, though, to open up the SVG as a layer in something like GIMP in order to accomplish these things.
+</p>
+
+<p>
+    I have a vague notion of being able to dynamically size and scale the grid as you add parts to the map that go beyond the initially specified grid extents.
+</p>
+
+<p>
+    Let me know if you have any specific feature requests!
+</p>
