@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-
-namespace TFT_HexGrid.Grids
+﻿namespace TFT_HexGrid.Grids
 {
     public class Hexagon
     {

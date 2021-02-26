@@ -1,5 +1,5 @@
-﻿using TFT_HexGrid.Grids;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using TFT_HexGrid.Grids;
 
 namespace TFT_HexGrid.Maps
 {
