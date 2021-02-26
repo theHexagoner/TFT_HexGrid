@@ -8,8 +8,27 @@
     <base href="/" />
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="css/app.css" rel="stylesheet" />
+    <link href="HexBlazor.styles.css" rel="stylesheet" />
 
+    <style type="text/css">
+        canvas {
+            border: 1px solid black;
+            height: 900px;
+            width: 1600px;
+        }
+    </style>
+    
     <script>
+        window.saveCanvasToPng = (canvas, filename) => {
+            let dataURL = canvas.toDataURL('image/png');
+            let url = dataURL.replace(/^data:image\/png/, 'data:application/octet-stream');
+
+            let downloadLink = document.createElement('a');
+            downloadLink.setAttribute('download', filename);
+            downloadLink.setAttribute('href', url);
+            downloadLink.click();
+        };
+
         window.saveSvg = (svg, filename) => {
             const base64doc = btoa(unescape(encodeURIComponent(svg.outerHTML)));
             const a = document.createElement('a');
@@ -18,19 +37,18 @@
             a.href = 'data:image/svg+xml;base64,' + base64doc;
             a.dispatchEvent(e);
         };
-    </script>
 
+    </script>
 </head>
 
 <body onscroll="onBodyScrolled()">
-    <app>Loading...</app>
+    <div id="app">Loading...</div>
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
-
     <script>
         function getDivOffsets(element) {
             var obj = {};
@@ -38,6 +56,10 @@
             obj.offsetLeft = domRect.left;
             obj.offsetTop = domRect.top;
             return JSON.stringify(obj);
+        };
+
+        function getDevicePixelRatio() {
+            return window.devicePixelRatio || 1;
         };
 
         function onBodyScrolled() {
@@ -49,8 +71,9 @@
         }
 
     </script>
-
     <script src="_framework/blazor.webassembly.js"></script>
+    <script src="_content/Blazor.Extensions.Canvas/blazor.extensions.canvas.js"></script>
+
 </body>
 
 </html>

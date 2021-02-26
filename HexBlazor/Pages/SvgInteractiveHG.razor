@@ -28,7 +28,7 @@
     <div class="col-xs-2 w-10 mr-3 form-row align-items-center">
         @foreach (var scheme in new[] { OffsetScheme.Even_Q, OffsetScheme.Odd_Q, OffsetScheme.Even_R, OffsetScheme.Odd_R })
         {
-            <label class="mr-3" style='margin-bottom:0rem !important;'>
+            <label class="mr-3" style='margin-bottom:0rem !important;' >
                 <input name="offsetScheme" type="radio" value="@scheme" checked="@(_offsetScheme == scheme)" @onchange="@(() => { _offsetScheme = scheme; })" />
                 @scheme.ToString()
             </label>

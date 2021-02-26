@@ -1,25 +1,28 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.31019.35
+VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexBlazor", "HexBlazor\HexBlazor.csproj", "{3D74FD6E-A9E3-463F-A374-540960BEFA93}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HexBlazor", "HexBlazor\HexBlazor.csproj", "{3473EA0B-533B-4DA4-9A34-199D13ECD5B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Development|Any CPU = Development|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3D74FD6E-A9E3-463F-A374-540960BEFA93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3D74FD6E-A9E3-463F-A374-540960BEFA93}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3D74FD6E-A9E3-463F-A374-540960BEFA93}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3D74FD6E-A9E3-463F-A374-540960BEFA93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3473EA0B-533B-4DA4-9A34-199D13ECD5B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3473EA0B-533B-4DA4-9A34-199D13ECD5B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3473EA0B-533B-4DA4-9A34-199D13ECD5B5}.Development|Any CPU.ActiveCfg = Debug|Any CPU
+		{3473EA0B-533B-4DA4-9A34-199D13ECD5B5}.Development|Any CPU.Build.0 = Debug|Any CPU
+		{3473EA0B-533B-4DA4-9A34-199D13ECD5B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3473EA0B-533B-4DA4-9A34-199D13ECD5B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {394A6179-1D26-4B49-AB4A-5C0BB9024887}
+		SolutionGuid = {986849EC-5D7B-4BE9-8EC5-98A1FEFE9C55}
 	EndGlobalSection
 EndGlobal
