@@ -16,4 +16,12 @@
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if $(ConfigurationName) == Release Powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -Command &quot;$(ProjectDir)\postBuild.ps1&quot; -pathToIndexHtml &quot;$(ProjectDir)\wwwroot\index.html&quot;" />
+  </Target>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="if $(ConfigurationName) == Release Powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -Command &quot;$(ProjectDir)\preBuild.ps1&quot; -pathToIndexHtml &quot;$(ProjectDir)\wwwroot\index.html&quot;" />
+  </Target>
+
 </Project>
