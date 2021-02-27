@@ -25,7 +25,7 @@
     <div id="blazor-error-ui">
         An unhandled error has occurred.
         <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
+        <a class="dismiss">&times;</a>
     </div>
     <script>
         function getDivOffsets(element) {
@@ -35,11 +35,6 @@
             obj.offsetTop = domRect.top;
             return JSON.stringify(obj);
         };
-
-        function getDevicePixelRatio() {
-            return window.devicePixelRatio || 1;
-        };
-
         function onBodyScrolled() {
             var div = document.getElementById("svgDiv");
             if (div != null) {
@@ -47,7 +42,6 @@
                 DotNet.invokeMethodAsync('HexBlazor', 'OnBodyScrolled', offsets);
             }
         }
-
     </script>
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
