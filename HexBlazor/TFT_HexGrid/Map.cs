@@ -1,5 +1,8 @@
 ﻿using TFT_HexGrid.Grids;
 using System.Collections.Generic;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Collections;
 
 namespace TFT_HexGrid.Maps
 {
@@ -10,24 +13,141 @@ namespace TFT_HexGrid.Maps
 
         internal Map(Grid grid)
         {
-            Hexagons = new Dictionary<int, Hexagon>(grid.Hexagons);
+            Hexagons = new MapHexDictionary<int, Hexagon>(grid.Hexagons);
+            Hexagons.OnDictionaryAddItem += AddingHexagon;
+            Hexagons.OnDictionaryRemoveItem += RemovingHexagon;
+            Hexagons.OnDictionaryClear += ClearingHexagons;
         }
 
-        // maybe create this as an immutable dictionary to support undo/redo?
-        public Dictionary<int, Hexagon> Hexagons { get; private set; }
+        public MapHexDictionary<int, Hexagon> Hexagons { get; private set; }
+
+        private void AddingHexagon(object sender, DictionaryChangingEventArgs<int, Hexagon> e)
+        {
+            // do something interesting when adding a hexagon
+        }
+
+        private void RemovingHexagon(object sender, DictionaryChangingEventArgs<int, Hexagon> e)
+        {
+            // do something interesting when removing a hexagon
+        }
+
+        private void ClearingHexagons(object sender, DictionaryChangingEventArgs<int, Hexagon> e)
+        {
+            // do something interesting when clearing the collection
+        }
 
 
-        // maybe all the megagons are actually stored in here?
+    }
 
-        // what needs to happen when hexes are added and removed from the map?
+    public class DictionaryChangingEventArgs<K, V> : EventArgs
+    {
+        public K Key
+        {
+            get;
+            set;
+        }
 
-        // what do we need to do to store/export these as SVG?
+        public V Value
+        {
+            get;
+            set;
+        }
+    }
 
-        // what do we need to load one from SVG?
+    // maybe implement this as Immutable Dictionary to support undo/redo?
+    // how to cancel these events?
 
-        // how to create a grid to overlay an arbitrary map?
+    public class MapHexDictionary<K, V> : IDictionary<K, V>
+    {
+        public delegate void DictionaryAddItem(object sender, DictionaryChangingEventArgs<K, V> e);
+        public event DictionaryAddItem OnDictionaryAddItem;
 
+        public delegate void DictionaryRemoveItem(object sender, DictionaryChangingEventArgs<K, V> e);
+        public event DictionaryRemoveItem OnDictionaryRemoveItem;
 
+        public delegate void DictionaryClear(object sender, DictionaryChangingEventArgs<K, V> e);
+        public event DictionaryClear OnDictionaryClear;
+
+        private readonly IDictionary<K, V> innerDict;
+
+        public MapHexDictionary(Dictionary<K, V> gridHexDictionary)
+        {
+            innerDict = gridHexDictionary;
+        }
+
+        public void Add(K key, V value)
+        {
+            OnDictionaryAddItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = key, Value = value });
+            innerDict.Add(key, value);
+        }
+
+        public void Add(KeyValuePair<K, V> item)
+        {
+            OnDictionaryAddItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = item.Key, Value = item.Value });
+            innerDict.Add(item);
+        }
+
+        public void Clear()
+        {
+            OnDictionaryClear?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = default, Value = default });
+            innerDict.Clear();
+        }
+
+        public bool Remove(K key)
+        {
+            OnDictionaryRemoveItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = key, Value = default });
+            return innerDict.Remove(key);
+        }
+
+        public bool Remove(KeyValuePair<K, V> item)
+        {
+            OnDictionaryRemoveItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = item.Key, Value = item.Value });
+            return innerDict.Remove(item);
+        }
+
+        #region Other IDictionary overrides
+
+        public ICollection<K> Keys => innerDict.Keys;
+
+        public ICollection<V> Values => innerDict.Values;
+
+        public int Count => innerDict.Count;
+
+        public bool IsReadOnly => innerDict.IsReadOnly;
+
+        public V this[K key] { get => innerDict[key]; set => innerDict[key] = value; }
+
+        public bool ContainsKey(K key)
+        {
+            return innerDict.ContainsKey(key);
+        }
+
+        public bool TryGetValue(K key, [MaybeNullWhen(false)] out V value)
+        {
+            return innerDict.TryGetValue(key, out value);
+        }
+
+        public bool Contains(KeyValuePair<K, V> item)
+        {
+            return innerDict.Contains(item);
+        }
+
+        public void CopyTo(KeyValuePair<K, V>[] array, int arrayIndex)
+        {
+            innerDict.CopyTo(array, arrayIndex);
+        }
+
+        public IEnumerator<KeyValuePair<K, V>> GetEnumerator()
+        {
+            return innerDict.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return innerDict.GetEnumerator();
+        }
+
+        #endregion
 
     }
 }

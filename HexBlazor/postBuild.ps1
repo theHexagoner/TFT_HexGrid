@@ -1,7 +1,7 @@
 param(
     [string] $pathToIndexHtml,
-    [string] $toReplace = '<base href="/TFT_HexGrid/" />',
-    [string] $replaceWith = '<base href="/" />'
+    [string] $toReplace = '<base href="/" />',
+    [string] $replaceWith = '<base href="/TFT_HexGrid/" />'
 )
 
 $fileContent = Get-Content -Path $pathToIndexHtml

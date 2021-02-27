@@ -19,7 +19,7 @@
         <input class="form-control form-control-sm" id="colCount" type="text" @bind="_colCount">
     </div>
     <div class="col-xs-2 w-10 mr-3">
-        <label for="sideLength" class="mb-sm-0">Side Length</label>
+        <label for="sideLength" class="mb-sm-0">Side Length (pixels)</label>
         <input class="form-control form-control-sm" id="sideLength" type="text" @bind="_sideLen">
     </div>
 </div>
@@ -196,34 +196,36 @@
     /// <returns>Task result</returns>
     private async Task SvgOnClick(MouseEventArgs eventArgs)
     {
-        // get the actual coordinates of the mouse click within the canvas:
-        double mouseX = eventArgs.ClientX - _offsetLeft;
-        double mouseY = eventArgs.ClientY - _offsetTop;
-
-        var translatedX = mouseX - TRANSLATE_W;
-        var translatedY = mouseY - TRANSLATE_H;
-
-        _mouseLabel = string.Format(" {0}, {1}", mouseX, mouseY);
-        _translateLabel = string.Format(" {0}, {1}", translatedX, translatedY);
-
-        // get the hex the user clicked on, if any:
-        var hex = _grid.GetHexAt(new GridPoint(translatedX, translatedY));
-        _hexLabel = hex != null ? string.Format(" {0}, {1}", hex.OffsetLocation.Row, hex.OffsetLocation.Col) : "none";
-
-        // left-click to add the hex to the map if not already present
-        if (hex != null && eventArgs.Button == 0 && _map.Hexagons.ContainsKey(hex.ID) == false)
+        if (_grid != null && _map != null)
         {
-            _map.Hexagons.Add(hex.ID, hex);
-            await _svgRef.UpdateHex(hex.ID, "#FFFFFF");
-        }
+            // get the actual coordinates of the mouse click within the canvas:
+            double mouseX = eventArgs.ClientX - _offsetLeft;
+            double mouseY = eventArgs.ClientY - _offsetTop;
 
-        // right-click to remove the hex from the map if it is present
-        if (hex != null && eventArgs.Button == 2 && _map.Hexagons.ContainsKey(hex.ID))
-        {
-            _map.Hexagons.Remove(hex.ID);
-            await _svgRef.UpdateHex(hex.ID, "#E0E0E0");
-        }
+            var translatedX = mouseX - TRANSLATE_W;
+            var translatedY = mouseY - TRANSLATE_H;
 
+            _mouseLabel = string.Format(" {0}, {1}", mouseX, mouseY);
+            _translateLabel = string.Format(" {0}, {1}", translatedX, translatedY);
+
+            // get the hex the user clicked on, if any:
+            var hex = _grid.GetHexAt(new GridPoint(translatedX, translatedY));
+            _hexLabel = hex != null ? string.Format(" {0}, {1}", hex.OffsetLocation.Row, hex.OffsetLocation.Col) : "none";
+
+            // left-click to add the hex to the map if not already present
+            if (hex != null && eventArgs.Button == 0 && _map.Hexagons.ContainsKey(hex.ID) == false)
+            {
+                _map.Hexagons.Add(hex.ID, hex);
+                await _svgRef.UpdateHex(hex.ID, "#FFFFFF");
+            }
+
+            // right-click to remove the hex from the map if it is present
+            if (hex != null && eventArgs.Button == 2 && _map.Hexagons.ContainsKey(hex.ID))
+            {
+                _map.Hexagons.Remove(hex.ID);
+                await _svgRef.UpdateHex(hex.ID, "#E0E0E0");
+            }
+        }
     }
 
     /// <summary>
