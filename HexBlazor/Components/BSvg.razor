@@ -7,7 +7,7 @@
             <g id="Hexagons" stroke="@HexStroke" stroke-width="@HexStrokeWidth" >
                 @foreach (SvgHexagon h in Hexagons.Values)
                 {
-                    <BPolygon @key="h" Id="@h.Id" Points="@h.Points" Fill="#FFFFFF" />
+                    <BPolygon @key="h" Id="@h.Id" Points="@h.Points" IsSelected="h.IsSelected" />
                 }
             </g>
             <g id="Megahexes" stroke="@MegaStroke" stroke-width="@MegaStrokeWidth">
@@ -75,9 +75,14 @@
     [Parameter]
     public float HexStrokeWidth { get; set; }
 
-    public async Task UpdateHex(int id, string fill)
+    //public async Task UpdateHex(int id, string fill)
+    //{
+    //    await _bPolys[id].SetFill(fill);
+    //}
+
+    public async Task UpdateHexIsSelected(int id, bool isSelected)
     {
-        await _bPolys[id].SetFill(fill);
+        await _bPolys[id].SetIsSelected(isSelected);
     }
 
     #endregion
@@ -104,11 +109,6 @@
 
     [Parameter]
     public float MegaStrokeWidth { get; set; }
-
-    //public async Task UpdateMegagon(int id, string d)
-    //{
-    //    await _bPaths[id].SetD(d);
-    //}
 
     #endregion
 

@@ -11,8 +11,13 @@ namespace HexBlazor.Components
         [Parameter]
         public string Points { get; set; }
 
+        private string GetFill()
+        {
+            return IsSelected ? "#FFFFFF" : "none";
+        }
+
         [Parameter]
-        public string Fill { get; set; } = "#FFFFFF";
+        public bool IsSelected { get; set; }
 
         [CascadingParameter]
         public BSvg Container { get; set; }
@@ -22,11 +27,12 @@ namespace HexBlazor.Components
             Container.AddBPolygon(this);
         }
 
-        public async Task SetFill(string fill)
+        public async Task SetIsSelected(bool isSelected)
         {
-            Fill = fill;
+            IsSelected = isSelected;
             StateHasChanged();
         }
+
     }
 
 }

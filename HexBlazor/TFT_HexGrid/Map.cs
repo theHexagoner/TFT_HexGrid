@@ -3,39 +3,65 @@ using System.Collections.Generic;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Collections;
+using System.Text;
+using TFT_HexGrid.SvgHelpers;
+using System.Linq;
 
 namespace TFT_HexGrid.Maps
 {
     public class Map
     {
-
         private Map() { }
 
-        internal Map(Grid grid)
+        internal Map(Grid grid, SvgMegagonsFactory megaFactory)
         {
             Hexagons = new MapHexDictionary<int, Hexagon>(grid.Hexagons);
             Hexagons.OnDictionaryAddItem += AddingHexagon;
             Hexagons.OnDictionaryRemoveItem += RemovingHexagon;
             Hexagons.OnDictionaryClear += ClearingHexagons;
+
+            SvgHexagons = new Dictionary<int, SvgHexagon>();
+
+            foreach (Hexagon h in Hexagons.Values)
+            {
+                SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.Points));
+            }
+
+            MegaFactory = megaFactory;
+            SvgMegagons = MegaFactory.GetMegagons();
+
         }
 
+        #region Hexagons
+
         public MapHexDictionary<int, Hexagon> Hexagons { get; private set; }
+        public Dictionary<int, SvgHexagon> SvgHexagons { get; }
 
         private void AddingHexagon(object sender, DictionaryChangingEventArgs<int, Hexagon> e)
         {
-            // do something interesting when adding a hexagon
+            var hex = e.Value;
+            SvgHexagons.Add(hex.ID, new SvgHexagon(hex.ID, hex.Points, true));
         }
 
         private void RemovingHexagon(object sender, DictionaryChangingEventArgs<int, Hexagon> e)
         {
-            // do something interesting when removing a hexagon
+            SvgHexagons.Remove(e.Key);
         }
 
         private void ClearingHexagons(object sender, DictionaryChangingEventArgs<int, Hexagon> e)
         {
-            // do something interesting when clearing the collection
+            SvgHexagons.Clear();
         }
 
+        #endregion
+
+        #region Megagons
+
+        private SvgMegagonsFactory MegaFactory { get; }
+
+        public Dictionary<int, SvgMegagon> SvgMegagons { get; }
+
+        #endregion
 
     }
 
@@ -72,7 +98,7 @@ namespace TFT_HexGrid.Maps
 
         public MapHexDictionary(Dictionary<K, V> gridHexDictionary)
         {
-            innerDict = gridHexDictionary;
+            innerDict = new Dictionary<K, V>(gridHexDictionary);
         }
 
         public void Add(K key, V value)

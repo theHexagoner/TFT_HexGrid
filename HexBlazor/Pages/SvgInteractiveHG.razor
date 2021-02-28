@@ -71,6 +71,7 @@
               HexStroke="@_hexStroke" HexStrokeWidth="@_hexStrokeWidth"
               MegaStroke="@_megaStroke" MegaStrokeWidth="@_megaStrokeWidth" />
     </div>
+    <button class="btn btn-outline-primary btn-sm" @onclick="Swap" disabled="@_saveDisabled">Swap View</button>
 </div>
 
 @code {
@@ -107,6 +108,7 @@
     private Map _map;
 
     private bool _saveDisabled = true;
+    private bool _isShowingMap = false;
 
     #endregion
 
@@ -196,7 +198,7 @@
     /// <returns>Task result</returns>
     private async Task SvgOnClick(MouseEventArgs eventArgs)
     {
-        if (_grid != null && _map != null)
+        if (_grid != null && _map != null && _isShowingMap == false)
         {
             // get the actual coordinates of the mouse click within the canvas:
             double mouseX = eventArgs.ClientX - _offsetLeft;
@@ -215,17 +217,36 @@
             // left-click to add the hex to the map if not already present
             if (hex != null && eventArgs.Button == 0 && _map.Hexagons.ContainsKey(hex.ID) == false)
             {
+                _grid.SvgHexagons[hex.ID] = new TFT_HexGrid.SvgHelpers.SvgHexagon(hex.ID, hex.Points, true);
                 _map.Hexagons.Add(hex.ID, hex);
-                await _svgRef.UpdateHex(hex.ID, "#FFFFFF");
+                await _svgRef.UpdateHexIsSelected(hex.ID, true);
             }
 
             // right-click to remove the hex from the map if it is present
             if (hex != null && eventArgs.Button == 2 && _map.Hexagons.ContainsKey(hex.ID))
             {
+                _grid.SvgHexagons[hex.ID] = new TFT_HexGrid.SvgHelpers.SvgHexagon(hex.ID, hex.Points, false);
                 _map.Hexagons.Remove(hex.ID);
-                await _svgRef.UpdateHex(hex.ID, "#E0E0E0");
+                await _svgRef.UpdateHexIsSelected(hex.ID, false);
             }
         }
+    }
+
+    /// <summary>
+    /// swap between showing the grid or the map
+    /// </summary>
+    private void Swap()
+    {
+        if (!_isShowingMap)
+        {
+            _svgRef.SetGeometry(_map.SvgHexagons, _map.SvgMegagons);
+        }
+        else
+        {
+            _svgRef.SetGeometry(_grid.SvgHexagons, _grid.SvgMegagons);
+        }
+
+        _isShowingMap = !_isShowingMap;
     }
 
     /// <summary>

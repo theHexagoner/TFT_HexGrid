@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using TFT_HexGrid.SvgHelpers;
 
 namespace TFT_HexGrid.Grids
 {
@@ -48,6 +47,16 @@ namespace TFT_HexGrid.Grids
         /// the points that define the six corners of the hexagon
         /// </summary>
         public GridPoint[] Points { get; private set; }
+
+        /// <summary>
+        /// location of hex within its associated megagon
+        /// </summary>
+        public MegaLocation MegaLocation { get; set; }
+
+        /// <summary>
+        /// the SVG path data to draw this hexagon on the map or grid
+        /// </summary>
+        public string PathD { get; set; }
 
     }
 
