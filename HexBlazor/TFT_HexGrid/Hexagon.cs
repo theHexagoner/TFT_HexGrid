@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using TFT_HexGrid.SvgHelpers;
 
 namespace TFT_HexGrid.Grids
@@ -60,7 +61,7 @@ namespace TFT_HexGrid.Grids
         #region Megagon
 
         // hold a reference to the list of all hexagons in the grid
-        private HexDictionary<int, Hexagon> _gridHexagons;
+        private readonly HexDictionary<int, Hexagon> _gridHexagons;
 
         /// <summary>
         /// location of hex within its associated megagon
@@ -77,10 +78,15 @@ namespace TFT_HexGrid.Grids
             MegaLocation = locationInMegagon;
         }
 
-
         public List<Hexagon> Neighbors { get; private set; }
 
+        public void UpdateNeighbors()
+        {
+            // get this hexagon's neighbors 
+            Neighbors = _gridHexagons.Values.Where(h => Cube.GetAdjacents(CubicLocation).Contains(h.CubicLocation)).OrderBy(h => h.MegaLocation).ToList();
+        }
 
+        public string PathD { get; set; }
 
         #endregion
 

@@ -217,7 +217,7 @@
             // left-click to add the hex to the map if not already present
             if (hex != null && eventArgs.Button == 0 && _map.Hexagons.ContainsKey(hex.ID) == false)
             {
-                _grid.SvgHexagons[hex.ID] = new TFT_HexGrid.SvgHelpers.SvgHexagon(hex.ID, hex.Points, true);
+                _grid.SvgHexagons[hex.ID] = new TFT_HexGrid.SvgHelpers.SvgHexagon(hex.ID, hex.Points, hex.PathD, true);
                 _map.Hexagons.Add(hex.ID, hex);
                 await _svgRef.UpdateHexIsSelected(hex.ID, true);
             }
@@ -225,7 +225,7 @@
             // right-click to remove the hex from the map if it is present
             if (hex != null && eventArgs.Button == 2 && _map.Hexagons.ContainsKey(hex.ID))
             {
-                _grid.SvgHexagons[hex.ID] = new TFT_HexGrid.SvgHelpers.SvgHexagon(hex.ID, hex.Points, false);
+                _grid.SvgHexagons[hex.ID] = new TFT_HexGrid.SvgHelpers.SvgHexagon(hex.ID, hex.Points, hex.PathD, false);
                 _map.Hexagons.Remove(hex.ID);
                 await _svgRef.UpdateHexIsSelected(hex.ID, false);
             }

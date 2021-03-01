@@ -95,7 +95,8 @@ namespace TFT_HexGrid.Grids
             // get the SVG data for each hexagon
             foreach (Hexagon h in Hexagons.Values)
             {
-                SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.Points));
+                h.PathD = SvgMegagonsFactory.GetPathD(h);
+                SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.Points, h.PathD));
             }
 
             // this is going away

@@ -24,7 +24,8 @@ namespace TFT_HexGrid.Maps
 
             foreach (Hexagon h in Hexagons.Values)
             {
-                SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.Points));
+                h.PathD = SvgMegagonsFactory.GetPathD(h);
+                SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.Points, h.PathD));
             }
 
             // this is going away
@@ -41,7 +42,8 @@ namespace TFT_HexGrid.Maps
         private void AddingHexagon(object sender, DictionaryChangingEventArgs<int, Hexagon> e)
         {
             var hex = e.Value;
-            SvgHexagons.Add(hex.ID, new SvgHexagon(hex.ID, hex.Points, true));
+            hex.PathD = SvgMegagonsFactory.GetPathD(hex);
+            SvgHexagons.Add(hex.ID, new SvgHexagon(hex.ID, hex.Points, hex.PathD, true));
         }
 
         private void RemovingHexagon(object sender, DictionaryChangingEventArgs<int, Hexagon> e)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TFT_HexGrid.Grids;
@@ -14,14 +13,14 @@ namespace TFT_HexGrid.SvgHelpers
         public readonly bool IsSelected;
         public readonly string PathD;
 
-        public SvgHexagon(int id, GridPoint[] points) : this(id, points, true) { }
+        public SvgHexagon(int id, GridPoint[] points, string pathD) : this(id, points, pathD, true) { }
 
-        public SvgHexagon(int id, GridPoint[] points, bool isSelected)
+        public SvgHexagon(int id, GridPoint[] points, string pathD, bool isSelected)
         {
             Id = id;
             Points = string.Join(" ", points.Select(p => string.Format("{0},{1}", p.X, p.Y)));
             IsSelected = isSelected;
-            PathD = SvgMegagonsFactory.GetPathD();
+            PathD = pathD;
         }
     }
 
@@ -292,84 +291,148 @@ namespace TFT_HexGrid.SvgHelpers
             }
         }
 
-        //private SvgMegagon GetSvgMegagon(Hexagon center)
-        //{
-        //    try
-        //    {
-        //        int id = center.ID;
-
-        //        GridPoint[] centerPoints = center.Points;
-        //        Cube[] adjs = Cube.GetAdjacents(center.CubicLocation);
-
-        //        var somePoints = new List<GridPoint>();
-
-        //        // loop over the adjacent cubes and add the hex corner points for each
-        //        foreach (Cube c in adjs)
-        //        {
-        //            // figure out if the cube is part of the grid
-        //            Hexagon hex = Hexagons.SingleOrDefault(h => h.CubicLocation.Equals(c) && Overscan.Contains(h.ID) == false);
-
-        //            if (hex != null) // get the points
-        //            {
-        //                somePoints.AddRange(hex.Points);
-        //            }
-        //        }
-
-        //        // get rid of duplicates and then any points that belong to the center hex
-        //        // put them in clockwise order around the reference point of the center hex
-        //        GridPoint[] outline = somePoints.Distinct().Except(centerPoints)
-        //            .OrderBy(x => Math.Atan2(x.X - centerPoints[0].X, x.Y - centerPoints[0].Y)).ToArray();
-
-        //        if (outline.Length > 0)
-        //        {
-        //            // use a string builder to build up the D for the path
-        //            var sb = new StringBuilder();
-        //            sb.Append(string.Format("M{0},{1} ", outline[0].X, outline[0].Y));
-
-        //            for (int i = 1; i < outline.Length; i++)
-        //            {
-        //                // get the distance from previous point
-        //                var distance = Math.Round(outline[i].GetDistanceTo(outline[i - 1]));
-
-        //                if (distance > Radius)
-        //                {
-        //                    sb.Append(string.Format("M{0},{1} ", outline[i].X, outline[i].Y));
-        //                }
-        //                else
-        //                {
-        //                    sb.Append(string.Format("L{0},{1} ", outline[i].X, outline[i].Y));
-        //                }
-        //            }
-
-        //            var distanceForLast = Math.Round(outline[^1].GetDistanceTo(outline[0]));
-
-        //            if (distanceForLast <= Radius)
-        //                sb.Append(string.Format("L{0},{1} ", outline[0].X, outline[0].Y));
-
-        //            string d = sb.ToString();
-        //            return new SvgMegagon(id, d);
-        //        }
-
-        //        return new SvgMegagon(0, "");
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex.Message);
-        //        return new SvgMegagon(0, "");
-        //    }
-
-        //}
-
-        public static string GetPathD()
+        /// <summary>
+        /// return the path D for megagon lines of given hex
+        /// </summary>
+        /// <returns>System.String containing the D for the SVG path</returns>
+        public static string GetPathD(Hexagon hex)
         {
+            string pathD = string.Empty;
 
+            // path D will vary based on location in megagon
+            MegaLocation locationInMegagon = hex.MegaLocation;
 
-            return string.Empty;
+            // and by presence/absence of neighbors?
 
+            switch(locationInMegagon)
+            {
+                case MegaLocation.A:
+                    break;
+
+                case MegaLocation.B:
+                    break;
+
+                case MegaLocation.C:
+                    break;
+
+                case MegaLocation.D:
+                    break;
+
+                case MegaLocation.E:
+                    break;
+
+                case MegaLocation.F:
+                    break;
+                default:
+                    break; // for X and N there is no path drawn
+            }
+
+            // for now lets just figure out where points A and B are?
+            var p = new[] { hex.Points[0], hex.Points[1] };
+            GetPathD(p);
+
+            return pathD;
         }
 
+        private static string GetPathD(GridPoint[] points)
+        {
+            // use a string builder to build up the D for the path
+            var sb = new StringBuilder();
+            
+            if(points.Length > 1)
+            {
+                var radius = GridPoint.GetDistance(points[0], points[1]);
+
+                sb.Append(string.Format("M{0},{1} ", points[0].X, points[0].Y));
+
+                for (int i = 1; i < points.Length; i++)
+                {
+                    // get the distance from previous point
+                    var distance = Math.Round(points[i].GetDistanceTo(points[i - 1]));
+
+                    if (distance > radius)
+                    {
+                        sb.Append(string.Format("M{0},{1} ", points[i].X, points[i].Y));
+                    }
+                    else
+                    {
+                        sb.Append(string.Format("L{0},{1} ", points[i].X, points[i].Y));
+                    }
+                }
+            }
+     
+            return sb.ToString();
+        }
 
     }
 
 }
+
+//private SvgMegagon GetSvgMegagon(Hexagon center)
+//{
+//    try
+//    {
+//        int id = center.ID;
+
+//        GridPoint[] centerPoints = center.Points;
+//        Cube[] adjs = Cube.GetAdjacents(center.CubicLocation);
+
+//        var somePoints = new List<GridPoint>();
+
+//        // loop over the adjacent cubes and add the hex corner points for each
+//        foreach (Cube c in adjs)
+//        {
+//            // figure out if the cube is part of the grid
+//            Hexagon hex = Hexagons.SingleOrDefault(h => h.CubicLocation.Equals(c) && Overscan.Contains(h.ID) == false);
+
+//            if (hex != null) // get the points
+//            {
+//                somePoints.AddRange(hex.Points);
+//            }
+//        }
+
+//        // get rid of duplicates and then any points that belong to the center hex
+//        // put them in clockwise order around the reference point of the center hex
+//        GridPoint[] outline = somePoints.Distinct().Except(centerPoints)
+//            .OrderBy(x => Math.Atan2(x.X - centerPoints[0].X, x.Y - centerPoints[0].Y)).ToArray();
+
+//        if (outline.Length > 0)
+//        {
+//            // use a string builder to build up the D for the path
+//            var sb = new StringBuilder();
+//            sb.Append(string.Format("M{0},{1} ", outline[0].X, outline[0].Y));
+
+//            for (int i = 1; i < outline.Length; i++)
+//            {
+//                // get the distance from previous point
+//                var distance = Math.Round(outline[i].GetDistanceTo(outline[i - 1]));
+
+//                if (distance > Radius)
+//                {
+//                    sb.Append(string.Format("M{0},{1} ", outline[i].X, outline[i].Y));
+//                }
+//                else
+//                {
+//                    sb.Append(string.Format("L{0},{1} ", outline[i].X, outline[i].Y));
+//                }
+//            }
+
+//            var distanceForLast = Math.Round(outline[^1].GetDistanceTo(outline[0]));
+
+//            if (distanceForLast <= Radius)
+//                sb.Append(string.Format("L{0},{1} ", outline[0].X, outline[0].Y));
+
+//            string d = sb.ToString();
+//            return new SvgMegagon(id, d);
+//        }
+
+//        return new SvgMegagon(0, "");
+
+//    }
+//    catch (Exception ex)
+//    {
+//        Console.WriteLine(ex.Message);
+//        return new SvgMegagon(0, "");
+//    }
+
+//}
