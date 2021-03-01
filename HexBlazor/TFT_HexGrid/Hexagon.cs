@@ -27,6 +27,8 @@ namespace TFT_HexGrid.Grids
             CubicLocation = cubeCoords;
             ID = grid.GetHashcodeForCube(cubeCoords);
             Points = grid.GetHexCornerPoints(cubeCoords);
+            MegaLocation = MegaLocation.N;
+            PathD = string.Empty;
         }
 
         public int ID { get; private set; }

@@ -13,7 +13,7 @@ namespace TFT_HexGrid.Maps
     {
         private Map() { }
 
-        internal Map(Grid grid, SvgMegagonsFactory megaFactory)
+        internal Map(Grid grid)
         {
             Hexagons = new MapHexDictionary<int, Hexagon>(grid.Hexagons);
             Hexagons.OnDictionaryAddItem += AddingHexagon;
@@ -27,8 +27,8 @@ namespace TFT_HexGrid.Maps
                 SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.Points));
             }
 
-            MegaFactory = megaFactory;
-            SvgMegagons = MegaFactory.GetMegagons();
+            // this is going away
+            SvgMegagons = new Dictionary<int, SvgMegagon>();
 
         }
 
@@ -56,8 +56,6 @@ namespace TFT_HexGrid.Maps
         #endregion
 
         #region Megagons
-
-        private SvgMegagonsFactory MegaFactory { get; }
 
         public Dictionary<int, SvgMegagon> SvgMegagons { get; }
 

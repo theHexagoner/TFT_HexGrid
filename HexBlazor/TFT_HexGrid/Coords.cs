@@ -145,12 +145,12 @@ namespace TFT_HexGrid.Grids
                    other.Z == Z;
         }
 
-        public static bool operator == (Cube left, Cube right)
+        public static bool operator ==(Cube left, Cube right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator != (Cube left, Cube right)
+        public static bool operator !=(Cube left, Cube right)
         {
             return !(left == right);
         }

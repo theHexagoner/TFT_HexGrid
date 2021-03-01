@@ -85,22 +85,28 @@ namespace TFT_HexGrid.Grids
                     var hex = new Hexagon(this, new Offset(r, c));
                     var hash = hex.ID;
                     Hexagons.Add(hash, hex);
-                    SvgHexagons.Add(hash, new SvgHexagon(hash, hex.Points));
 
                     if (GetIsOutOfBounds(Rows, Cols, hex.OffsetLocation))
                         Overscan.Add(hex.ID);
                 }
             }
 
-            // get the SvgMegagon helpers
-            MegaFactory = SvgMegagonsFactory.GetFactory(SideLen, OffsetScheme, Overscan, Hexagons);
-            SvgMegagons = MegaFactory.GetMegagons();
+            SvgMegagonsFactory.SetMegaLocations(OffsetScheme, Hexagons.Values.ToArray());
+
+            // this is going away
+            SvgMegagons = new Dictionary<int, SvgMegagon>(); 
 
             // TRIM hexagons outside the requested offset limits for the grid
             Overscan.ForEach(id => {
                 Hexagons.Remove(id);
-                SvgHexagons.Remove(id);
             });
+
+            // get the SVG path D for each hexagon
+            foreach (Hexagon h in Hexagons.Values)
+            {
+                SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.Points));
+            }
+
         }
 
         #region Layout
@@ -290,8 +296,6 @@ namespace TFT_HexGrid.Grids
 
         #region Megas
 
-        private SvgMegagonsFactory MegaFactory { get; }
-
         public Dictionary<int, SvgMegagon> SvgMegagons { get; }
 
         #endregion
@@ -300,7 +304,7 @@ namespace TFT_HexGrid.Grids
 
         public Map InitMap()
         {
-            var map = new Map(this, MegaFactory);
+            var map = new Map(this);
             return map;
         }
 
