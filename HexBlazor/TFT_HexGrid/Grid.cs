@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text;
 using TFT_HexGrid.Maps;
 using TFT_HexGrid.SvgHelpers;
 
@@ -66,7 +64,7 @@ namespace TFT_HexGrid.Grids
                 new HexGeometry(Math.Sqrt(3d), Math.Sqrt(3d) / 2d, 0d, 1.5d, Math.Sqrt(3d) / 3d, -1d / 3d, 0d, 2d / 3d, 0.5d); // pointy
 
             Layout = new HexLayout(geometry, size, origin);
-            Hexagons = new Dictionary<int, Hexagon>();
+            Hexagons = new HexDictionary<int, Hexagon>();
             SvgHexagons = new Dictionary<int, SvgHexagon>();
 
             var halfRows = (int)Math.Floor(rows / 2d);
@@ -91,7 +89,14 @@ namespace TFT_HexGrid.Grids
                 }
             }
 
+            // get the megagon location of each hexagon
             SvgMegagonsFactory.SetMegaLocations(OffsetScheme, Hexagons.Values.ToArray());
+
+            // get the SVG data for each hexagon
+            foreach (Hexagon h in Hexagons.Values)
+            {
+                SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.Points));
+            }
 
             // this is going away
             SvgMegagons = new Dictionary<int, SvgMegagon>(); 
@@ -99,13 +104,8 @@ namespace TFT_HexGrid.Grids
             // TRIM hexagons outside the requested offset limits for the grid
             Overscan.ForEach(id => {
                 Hexagons.Remove(id);
+                SvgHexagons.Remove(id);
             });
-
-            // get the SVG path D for each hexagon
-            foreach (Hexagon h in Hexagons.Values)
-            {
-                SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.Points));
-            }
 
         }
 
@@ -248,7 +248,7 @@ namespace TFT_HexGrid.Grids
 
         #region Hexes
 
-        public Dictionary<int, Hexagon> Hexagons { get; }
+        public HexDictionary<int, Hexagon> Hexagons { get; }
 
         public Dictionary<int, SvgHexagon> SvgHexagons { get; }
 

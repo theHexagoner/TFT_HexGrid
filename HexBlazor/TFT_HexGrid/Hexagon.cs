@@ -1,4 +1,8 @@
-﻿using TFT_HexGrid.SvgHelpers;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using TFT_HexGrid.SvgHelpers;
 
 namespace TFT_HexGrid.Grids
 {
@@ -27,8 +31,11 @@ namespace TFT_HexGrid.Grids
             CubicLocation = cubeCoords;
             ID = grid.GetHashcodeForCube(cubeCoords);
             Points = grid.GetHexCornerPoints(cubeCoords);
+            
             MegaLocation = MegaLocation.N;
-            PathD = string.Empty;
+
+            _gridHexagons = grid.Hexagons;
+
         }
 
         public int ID { get; private set; }
@@ -50,16 +57,154 @@ namespace TFT_HexGrid.Grids
         /// </summary>
         public GridPoint[] Points { get; private set; }
 
+        #region Megagon
+
+        // hold a reference to the list of all hexagons in the grid
+        private HexDictionary<int, Hexagon> _gridHexagons;
+
         /// <summary>
         /// location of hex within its associated megagon
         /// </summary>
-        public MegaLocation MegaLocation { get; set; }
+        public MegaLocation MegaLocation { get; private set; }
 
         /// <summary>
-        /// the SVG path data to draw this hexagon on the map or grid
+        /// sets the location in its megagon
         /// </summary>
-        public string PathD { get; set; }
+        /// <param name="locationInMegagon">the enumerated location within the megagon</param>
+        /// <param name="neighbors">the hexagons that lie adjacent to this one in the grid</param>
+        public void SetLocationInMegagon(MegaLocation locationInMegagon)
+        {
+            MegaLocation = locationInMegagon;
+        }
+
+
+        public List<Hexagon> Neighbors { get; private set; }
+
+
+
+        #endregion
 
     }
+
+
+    /// <summary>
+    /// custom dictionary to support events for adding and removing hexagons 
+    /// </summary>
+    /// <typeparam name="K"></typeparam>
+    /// <typeparam name="V"></typeparam>
+    public class HexDictionary<K, V> : IDictionary<K, V>
+    {
+        public delegate void DictionaryAddItem(object sender, DictionaryChangingEventArgs<K, V> e);
+        public event DictionaryAddItem OnDictionaryAddItem;
+
+        public delegate void DictionaryRemoveItem(object sender, DictionaryChangingEventArgs<K, V> e);
+        public event DictionaryRemoveItem OnDictionaryRemoveItem;
+
+        public delegate void DictionaryClear(object sender, DictionaryChangingEventArgs<K, V> e);
+        public event DictionaryClear OnDictionaryClear;
+
+        private readonly IDictionary<K, V> innerDict;
+
+        public HexDictionary()
+        {
+            innerDict = new Dictionary<K, V>();
+        }
+
+        public HexDictionary(HexDictionary<K, V> hexDictionary)
+        {
+            innerDict = new Dictionary<K, V>(hexDictionary);
+        }
+
+        public void Add(K key, V value)
+        {
+            OnDictionaryAddItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = key, Value = value });
+            innerDict.Add(key, value);
+        }
+
+        public void Add(KeyValuePair<K, V> item)
+        {
+            OnDictionaryAddItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = item.Key, Value = item.Value });
+            innerDict.Add(item);
+        }
+
+        public void Clear()
+        {
+            OnDictionaryClear?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = default, Value = default });
+            innerDict.Clear();
+        }
+
+        public bool Remove(K key)
+        {
+            OnDictionaryRemoveItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = key, Value = default });
+            return innerDict.Remove(key);
+        }
+
+        public bool Remove(KeyValuePair<K, V> item)
+        {
+            OnDictionaryRemoveItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = item.Key, Value = item.Value });
+            return innerDict.Remove(item);
+        }
+
+        #region Other IDictionary overrides
+
+        public ICollection<K> Keys => innerDict.Keys;
+
+        public ICollection<V> Values => innerDict.Values;
+
+        public int Count => innerDict.Count;
+
+        public bool IsReadOnly => innerDict.IsReadOnly;
+
+        public V this[K key] { get => innerDict[key]; set => innerDict[key] = value; }
+
+        public bool ContainsKey(K key)
+        {
+            return innerDict.ContainsKey(key);
+        }
+
+        public bool TryGetValue(K key, [MaybeNullWhen(false)] out V value)
+        {
+            return innerDict.TryGetValue(key, out value);
+        }
+
+        public bool Contains(KeyValuePair<K, V> item)
+        {
+            return innerDict.Contains(item);
+        }
+
+        public void CopyTo(KeyValuePair<K, V>[] array, int arrayIndex)
+        {
+            innerDict.CopyTo(array, arrayIndex);
+        }
+
+        public IEnumerator<KeyValuePair<K, V>> GetEnumerator()
+        {
+            return innerDict.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return innerDict.GetEnumerator();
+        }
+
+        #endregion
+
+    }
+
+    public class DictionaryChangingEventArgs<K, V> : EventArgs
+    {
+        public K Key
+        {
+            get;
+            set;
+        }
+
+        public V Value
+        {
+            get;
+            set;
+        }
+    }
+
 
 }

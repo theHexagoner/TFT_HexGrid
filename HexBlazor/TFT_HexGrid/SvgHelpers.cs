@@ -12,6 +12,7 @@ namespace TFT_HexGrid.SvgHelpers
         public readonly int Id;
         public readonly string Points;
         public readonly bool IsSelected;
+        public readonly string PathD;
 
         public SvgHexagon(int id, GridPoint[] points) : this(id, points, true) { }
 
@@ -20,8 +21,8 @@ namespace TFT_HexGrid.SvgHelpers
             Id = id;
             Points = string.Join(" ", points.Select(p => string.Format("{0},{1}", p.X, p.Y)));
             IsSelected = isSelected;
+            PathD = SvgMegagonsFactory.GetPathD();
         }
-
     }
 
     public enum MegaLocation
@@ -279,7 +280,7 @@ namespace TFT_HexGrid.SvgHelpers
 
         private static void SetMegaLocations(Hexagon h, Hexagon[] hexagons)
         {
-            h.MegaLocation = MegaLocation.X;
+            h.SetLocationInMegagon(MegaLocation.X);
 
             // get this hexagon's neighbors and also set their Mega location
             var adjs = Cube.GetAdjacents(h.CubicLocation);
@@ -287,7 +288,7 @@ namespace TFT_HexGrid.SvgHelpers
             for (int i = 0; i < adjs.Length; i++)
             {
                 Hexagon hex = hexagons.SingleOrDefault(h => h.CubicLocation.Equals(adjs[i]));
-                if (hex != null) hex.MegaLocation = (MegaLocation)(i+1);
+                if (hex != null) hex.SetLocationInMegagon((MegaLocation)(i+1));
             }
         }
 
@@ -359,6 +360,15 @@ namespace TFT_HexGrid.SvgHelpers
         //    }
 
         //}
+
+        public static string GetPathD()
+        {
+
+
+            return string.Empty;
+
+        }
+
 
     }
 
