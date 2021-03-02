@@ -106,33 +106,35 @@ namespace TFT_HexGrid.Grids
 
         public void Add(K key, V value)
         {
-            OnDictionaryAddItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = key, Value = value });
             innerDict.Add(key, value);
+            OnDictionaryAddItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = key, Value = value });
         }
 
         public void Add(KeyValuePair<K, V> item)
         {
-            OnDictionaryAddItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = item.Key, Value = item.Value });
             innerDict.Add(item);
+            OnDictionaryAddItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = item.Key, Value = item.Value });
         }
 
         public void Clear()
         {
-            OnDictionaryClear?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = default, Value = default });
             innerDict.Clear();
+            OnDictionaryClear?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = default, Value = default });
         }
 
         public bool Remove(K key)
         {
             var item = innerDict[key];
-            OnDictionaryRemoveItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = key, Value = item });
-            return innerDict.Remove(key);
+            var success = innerDict.Remove(key);
+            if (success) OnDictionaryRemoveItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = key, Value = item });
+            return success;
         }
 
         public bool Remove(KeyValuePair<K, V> item)
         {
-            OnDictionaryRemoveItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = item.Key, Value = item.Value });
-            return innerDict.Remove(item);
+            var success = innerDict.Remove(item);
+            if (success) OnDictionaryRemoveItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = item.Key, Value = item.Value });
+            return success;
         }
 
         #region Other IDictionary overrides
