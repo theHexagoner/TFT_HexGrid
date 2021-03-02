@@ -36,7 +36,6 @@ namespace TFT_HexGrid.Maps
                     SvgMegagons.Add(edge.ID, new SvgMegagon(edge.ID, SvgMegagonsFactory.GetPathD(edge)));
                 }
             }
-
         }
 
         public Dictionary<int, SvgHexagon> SvgHexagons { get; }
@@ -50,21 +49,29 @@ namespace TFT_HexGrid.Maps
         private void AddingHexagon(object sender, DictionaryChangingEventArgs<int, Hexagon> e)
         {
             var hex = e.Value;
-            string pathD = SvgMegagonsFactory.GetFlatPathD(Hexagons.Values, hex);
-            SvgHexagons.Add(hex.ID, new SvgHexagon(hex.ID, hex.Points, true));
-            SvgMegagons.Add(hex.ID, new SvgMegagon(hex.ID, pathD));
+            SvgHexagons.Add(e.Key, new SvgHexagon(e.Key, hex.Points, true));
 
-            Console.WriteLine(string.Format("Adding at Row: {0}  Col: {1} ", hex.OffsetLocation.Row.ToString(), hex.OffsetLocation.Col.ToString()));
+            // update the map's edges and revise the SvgMegagons as necessary
+            foreach (GridEdge edge in hex.Edges)
+            {
+                Edges[edge.ID].Hexagons.Add(e.Key, hex);
+                if (SvgMegagonsFactory.GetEdgeIsMegaLine(Edges[edge.ID]))
+                    SvgMegagons.Add(edge.ID, new SvgMegagon(edge.ID, SvgMegagonsFactory.GetPathD(edge)));
+            }
         }
 
         private void RemovingHexagon(object sender, DictionaryChangingEventArgs<int, Hexagon> e)
         {
-            Console.WriteLine(string.Format("Removing at Row: {0}  Col: {1} ", e.Value.OffsetLocation.Row.ToString(), e.Value.OffsetLocation.Col.ToString()));
-
+            var hex = e.Value;
             SvgHexagons.Remove(e.Key);
 
-            // recalculate the edges and resulting SvgMegagons
-
+            // update the map's edges and revise the SvgMegagons as necessary
+            foreach(GridEdge edge in hex.Edges)
+            {
+                Edges[edge.ID].Hexagons.Remove(e.Key);
+                if (SvgMegagonsFactory.GetEdgeIsMegaLine(Edges[edge.ID]) == false)
+                    SvgMegagons.Remove(edge.ID);
+            }    
         }
 
         private void ClearingHexagons(object sender, DictionaryChangingEventArgs<int, Hexagon> e)
