@@ -54,9 +54,15 @@ namespace TFT_HexGrid.Maps
             // update the map's edges and revise the SvgMegagons as necessary
             foreach (GridEdge edge in hex.Edges)
             {
-                Edges[edge.ID].Hexagons.Add(e.Key, hex);
-                if (SvgMegagonsFactory.GetEdgeIsMegaLine(Edges[edge.ID]))
-                    SvgMegagons.Add(edge.ID, new SvgMegagon(edge.ID, SvgMegagonsFactory.GetPathD(edge)));
+                if(Edges.ContainsKey(edge.ID))
+                {
+                    if(Edges[edge.ID].Hexagons.ContainsKey(e.Key) == false)
+                        Edges[edge.ID].Hexagons.Add(e.Key, hex);
+                
+                    if (SvgMegagonsFactory.GetEdgeIsMegaLine(Edges[edge.ID]) &&
+                        SvgMegagons.ContainsKey(edge.ID) == false)
+                        SvgMegagons.Add(edge.ID, new SvgMegagon(edge.ID, SvgMegagonsFactory.GetPathD(edge)));
+                }
             }
         }
 
@@ -68,9 +74,15 @@ namespace TFT_HexGrid.Maps
             // update the map's edges and revise the SvgMegagons as necessary
             foreach(GridEdge edge in hex.Edges)
             {
-                Edges[edge.ID].Hexagons.Remove(e.Key);
-                if (SvgMegagonsFactory.GetEdgeIsMegaLine(Edges[edge.ID]) == false)
-                    SvgMegagons.Remove(edge.ID);
+                if(Edges.ContainsKey(edge.ID))
+                {
+                    if(Edges[edge.ID].Hexagons.ContainsKey(e.Key))
+                        Edges[edge.ID].Hexagons.Remove(e.Key);
+                
+                    if (SvgMegagonsFactory.GetEdgeIsMegaLine(Edges[edge.ID]) == false
+                        && SvgMegagons.ContainsKey(edge.ID))
+                        SvgMegagons.Remove(edge.ID);
+                }
             }    
         }
 
