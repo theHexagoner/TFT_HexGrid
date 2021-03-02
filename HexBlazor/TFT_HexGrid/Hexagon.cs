@@ -110,9 +110,7 @@ namespace TFT_HexGrid.Grids
         public GridPoint PointB { get; }
 
     }
-
-
-
+    
     /// <summary>
     /// custom dictionary to support events for adding and removing hexagons 
     /// </summary>

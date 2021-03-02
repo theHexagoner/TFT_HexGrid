@@ -1,3 +1,5 @@
-﻿
-<polygon points="@Points" fill="@GetFill()" id="@Id" />
-
+﻿<polygon points="@Points" fill="@GetFill()" id="@Id" />
+@if (GetShowStars() && !string.IsNullOrEmpty(StarD))
+{
+    <path d="@StarD" fill="@GetStarFill()" />
+}

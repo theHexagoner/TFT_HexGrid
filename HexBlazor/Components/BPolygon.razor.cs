@@ -11,13 +11,27 @@ namespace HexBlazor.Components
         [Parameter]
         public string Points { get; set; }
 
+        [Parameter]
+        public bool IsSelected { get; set; }
+
+        [Parameter]
+        public string StarD { get; set; }
+
+        public bool GetShowStars()
+        {
+            return Container.ShowStars;
+        }
+
         private string GetFill()
         {
             return IsSelected ? "#FFFFFF" : "none";
         }
 
-        [Parameter]
-        public bool IsSelected { get; set; }
+        private string GetStarFill()
+        {
+            return IsSelected ? Container.HexStroke : "none";
+        }
+
 
         [CascadingParameter]
         public BSvg Container { get; set; }

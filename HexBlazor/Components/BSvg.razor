@@ -7,7 +7,7 @@
             <g id="Hexagons" stroke="@HexStroke" stroke-width="@HexStrokeWidth" >
                 @foreach (SvgHexagon h in Hexagons.Values)
                 {
-                    <BPolygon @key="h" Id="@h.Id" Points="@h.Points" IsSelected="h.IsSelected" />
+                    <BPolygon @key="h" Id="@h.Id" Points="@h.Points" IsSelected="@h.IsSelected" StarD="@h.StarD" />
                 }
             </g>
             <g id="Megahexes" stroke="@MegaStroke" stroke-width="@MegaStrokeWidth">
@@ -34,6 +34,9 @@
 
     [Parameter]
     public string Translation { get; set; }
+
+    [Parameter]
+    public bool ShowStars { get; set; }
 
     public void SetGeometry(Dictionary<int, SvgHexagon> hexagons, Dictionary<int, SvgMegagon> megagons)
     {
@@ -74,11 +77,6 @@
 
     [Parameter]
     public float HexStrokeWidth { get; set; }
-
-    //public async Task UpdateHex(int id, string fill)
-    //{
-    //    await _bPolys[id].SetFill(fill);
-    //}
 
     public async Task UpdateHexIsSelected(int id, bool isSelected)
     {

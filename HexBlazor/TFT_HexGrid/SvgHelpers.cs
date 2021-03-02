@@ -11,6 +11,7 @@ namespace TFT_HexGrid.SvgHelpers
         public readonly int Id;
         public readonly string Points;
         public readonly bool IsSelected;
+        public readonly string StarD;
 
         public SvgHexagon(int id, GridPoint[] points) : this(id, points, true) { }
 
@@ -19,6 +20,14 @@ namespace TFT_HexGrid.SvgHelpers
             Id = id;
             Points = string.Join(" ", points.Select(p => string.Format("{0},{1}", p.X, p.Y)));
             IsSelected = isSelected;
+
+            // figure out where and how big to draw the star:
+            GridPoint midPoint = new GridPoint((points[3].X + points[0].X) / 2, (points[3].Y + points[0].Y) / 2);
+
+            double outerRadius = points[0].GetDistanceTo(points[1]) / 64;
+            double innerRadius = outerRadius / 3;
+
+            StarD = SvgStar.GetPathD(midPoint, outerRadius, innerRadius);
         }
     }
 
@@ -385,4 +394,64 @@ namespace TFT_HexGrid.SvgHelpers
 
     }
 
+    public static class SvgStar
+    {
+
+        /// <summary>
+        /// Return an array of 10 points to be used to create an SVG path d
+        /// </summary>
+        /// <param name="center"> The origin is the middle of the star</param>
+        /// <param name="outerRadius">Radius of the surrounding circle</param>
+        /// <param name="innerRadius">Radius of the circle for the "inner" points</param>
+        /// <returns>Array of 10 GridPoint structures</returns>
+        public static string GetPathD(GridPoint center, double outerRadius, double innerRadius)
+        {
+            // conversions to radians
+            double Ang36 = Math.PI / 5.0;   // 36Â° x PI/180
+            double Ang72 = 2.0 * Ang36;     // 72Â° x PI/180
+            
+            // some sine and cosine values we need
+            double Sin36 = Math.Sin(Ang36);
+            double Sin72 = Math.Sin(Ang72);
+            double Cos36 = Math.Cos(Ang36);
+            double Cos72 = Math.Cos(Ang72);
+
+            // this star has 10 points
+            GridPoint[] points = new GridPoint[10];
+
+            // top off the star, or on a clock this is 0:00 hours
+            points[0] = new GridPoint(center.X, center.Y - outerRadius);
+            points[1] = new GridPoint(center.X + (innerRadius * Sin36), center.Y - (innerRadius * Cos36)); // 0:06 hours
+            points[2] = new GridPoint(center.X + (outerRadius * Sin72), center.Y - (outerRadius * Cos72)); // 0:12 hours
+            points[3] = new GridPoint(center.X + (innerRadius * Sin72), center.Y + (innerRadius * Cos72)); // 0:18
+            points[4] = new GridPoint(center.X + (outerRadius * Sin36), center.Y + (outerRadius * Cos36)); // 0:24 
+            points[5] = new GridPoint(center.X, center.Y + innerRadius);
+            points[6] = new GridPoint(center.X - (outerRadius * Sin36), center.Y + (outerRadius * Cos36)); // 0:36 
+            points[7] = new GridPoint(center.X - (innerRadius * Sin72), center.Y + (innerRadius * Cos72)); // 0:42
+            points[8] = new GridPoint(center.X - (outerRadius * Sin72), center.Y - (outerRadius * Cos72)); // 0:48 
+            points[9] = new GridPoint(center.X - (innerRadius * Sin36), center.Y - (innerRadius * Cos36)); // 0:54 hours
+
+            return GetPathD(points);
+        }
+
+        private static string GetPathD(GridPoint[] points)
+        {
+            // use a string builder to build up the D for the path
+            var sb = new StringBuilder();
+
+            // move to the first point
+            sb.Append(string.Format("M{0},{1} ", points[0].X, points[0].Y));
+
+            // draw lines to the rest
+            for (int i = 1; i < points.Length; i++)
+            {
+                sb.Append(string.Format("L{0},{1} ", points[i].X, points[i].Y));
+            }
+
+            sb.Append(" Z");
+
+            return sb.ToString();
+        }
+
+    }
 }
