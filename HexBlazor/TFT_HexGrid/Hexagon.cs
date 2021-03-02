@@ -2,11 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using TFT_HexGrid.SvgHelpers;
 
 namespace TFT_HexGrid.Grids
 {
+
     public class Hexagon
     {
         // no default constructor
@@ -24,7 +24,7 @@ namespace TFT_HexGrid.Grids
         /// </summary>
         /// <param name="grid">the parent grid that contains this hex</param>
         /// <param name="coords">the cubic coordinates of the hexagon</param>
-        public Hexagon(Grid grid, Cube coords) : this(grid, coords, Offset.GetOffset(grid.OffsetScheme, coords)) {}
+        public Hexagon(Grid grid, Cube coords) : this(grid, coords, Offset.GetOffset(grid.OffsetScheme, coords)) { }
 
         private Hexagon(Grid grid, Cube cubeCoords, Offset offsetCoords)
         {
@@ -32,6 +32,22 @@ namespace TFT_HexGrid.Grids
             CubicLocation = cubeCoords;
             ID = grid.GetHashcodeForCube(cubeCoords);
             Points = grid.GetHexCornerPoints(cubeCoords);
+            Edges = SvgMegagonsFactory.GetEdgesFromPoints(Points);
+
+            foreach (GridEdge e in Edges)
+            {
+                if (grid.Edges.ContainsKey(e.ID))
+                {
+                    var edge = grid.Edges[e.ID];
+                    edge.Hexagons.Add(ID, this);
+                }
+                else
+                {
+                    e.Hexagons.Add(ID, this);
+                    grid.Edges.Add(e.ID, e);
+                }
+            }
+
             MegaLocation = MegaLocation.N;
         }
 
@@ -54,7 +70,7 @@ namespace TFT_HexGrid.Grids
         /// </summary>
         public GridPoint[] Points { get; private set; }
 
-        #region Megagon
+        public GridEdge[] Edges { get; private set; }
 
         /// <summary>
         /// location of hex within its associated megagon
@@ -65,15 +81,36 @@ namespace TFT_HexGrid.Grids
         /// sets the location in its megagon
         /// </summary>
         /// <param name="locationInMegagon">the enumerated location within the megagon</param>
-        /// <param name="neighbors">the hexagons that lie adjacent to this one in the grid</param>
         public void SetLocationInMegagon(MegaLocation locationInMegagon)
         {
             MegaLocation = locationInMegagon;
         }
+    }
 
-        #endregion
+    public class GridEdge
+    {
+        private GridEdge() { }
+
+        public GridEdge(GridPoint gpa, GridPoint gpb)
+        {
+            // get the midpoint of gpa and gpb 
+            GridPoint midPoint = new GridPoint((gpa.X + gpb.X) / 2, (gpa.Y + gpb.Y) / 2);
+            ID = HashCode.Combine(midPoint.X, midPoint.Y);
+            Hexagons = new HexDictionary<int, Hexagon>() { };
+            PointA = gpa;
+            PointB = gpb;
+        }
+
+        public int ID { get; private set; }
+
+        public HexDictionary<int, Hexagon> Hexagons { get; }
+
+        public GridPoint PointA { get; }
+
+        public GridPoint PointB { get; }
 
     }
+
 
 
     /// <summary>

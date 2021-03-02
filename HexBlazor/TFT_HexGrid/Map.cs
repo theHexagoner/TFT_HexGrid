@@ -13,6 +13,7 @@ namespace TFT_HexGrid.Maps
         internal Map(Grid grid)
         {
             Hexagons = new HexDictionary<int, Hexagon>(grid.Hexagons);
+            Edges = new Dictionary<int, GridEdge>(grid.Edges);
             Hexagons.OnDictionaryAddItem += AddingHexagon;
             Hexagons.OnDictionaryRemoveItem += RemovingHexagon;
             Hexagons.OnDictionaryClear += ClearingHexagons;
@@ -20,16 +21,27 @@ namespace TFT_HexGrid.Maps
             SvgHexagons = new Dictionary<int, SvgHexagon>();
             SvgMegagons = new Dictionary<int, SvgMegagon>();
 
+            // get the SVG data for hexagons
             foreach (Hexagon h in Hexagons.Values)
             {
-                string pathD = SvgMegagonsFactory.GetPathD(Hexagons.Values, h) ;
                 SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.Points));
-                SvgMegagons.Add(h.ID, new SvgMegagon(h.ID, pathD));
             }
+
+            // build the SvgMegagons
+            foreach (GridEdge edge in Edges.Values)
+            {
+                if (SvgMegagonsFactory.GetEdgeIsMegaLine(edge))
+                {
+                    // add a new SvgMegagon
+                    SvgMegagons.Add(edge.ID, new SvgMegagon(edge.ID, SvgMegagonsFactory.GetPathD(edge)));
+                }
+            }
+
         }
 
         public Dictionary<int, SvgHexagon> SvgHexagons { get; }
         public Dictionary<int, SvgMegagon> SvgMegagons { get; }
+        public Dictionary<int, GridEdge> Edges { get; }
 
         #region Hexagons
 
@@ -38,7 +50,7 @@ namespace TFT_HexGrid.Maps
         private void AddingHexagon(object sender, DictionaryChangingEventArgs<int, Hexagon> e)
         {
             var hex = e.Value;
-            string pathD = SvgMegagonsFactory.GetPathD(Hexagons.Values, hex);
+            string pathD = SvgMegagonsFactory.GetFlatPathD(Hexagons.Values, hex);
             SvgHexagons.Add(hex.ID, new SvgHexagon(hex.ID, hex.Points, true));
             SvgMegagons.Add(hex.ID, new SvgMegagon(hex.ID, pathD));
 
@@ -50,24 +62,9 @@ namespace TFT_HexGrid.Maps
             Console.WriteLine(string.Format("Removing at Row: {0}  Col: {1} ", e.Value.OffsetLocation.Row.ToString(), e.Value.OffsetLocation.Col.ToString()));
 
             SvgHexagons.Remove(e.Key);
-            SvgMegagons.Remove(e.Key);
 
-            // for each neighbor, recalculate its corresponding SvgMegagon
-            Cube[] adjs = Cube.GetAdjacents(e.Value.CubicLocation);
-            Hexagon[] neighbors = new Hexagon[6];
+            // recalculate the edges and resulting SvgMegagons
 
-            for (int i = 0; i < 6; i++)
-            {
-                var hex = Hexagons.Values.SingleOrDefault(h => adjs[i] == h.CubicLocation);
-
-                if (hex != null)
-                {
-                    string pathD = SvgMegagonsFactory.GetPathD(Hexagons.Values, hex);
-                    SvgMegagons[hex.ID] = new SvgMegagon(hex.ID, pathD);
-
-                    Console.WriteLine(string.Format("Updating Mega at Row: {0}  Col: {1} ", hex.OffsetLocation.Row.ToString(), hex.OffsetLocation.Col.ToString()));
-                }
-            }
         }
 
         private void ClearingHexagons(object sender, DictionaryChangingEventArgs<int, Hexagon> e)

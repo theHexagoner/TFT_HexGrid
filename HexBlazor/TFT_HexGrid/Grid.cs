@@ -67,6 +67,7 @@ namespace TFT_HexGrid.Grids
             Hexagons = new HexDictionary<int, Hexagon>();
             SvgHexagons = new Dictionary<int, SvgHexagon>();
             SvgMegagons = new Dictionary<int, SvgMegagon>();
+            Edges = new Dictionary<int, GridEdge>();
 
             var halfRows = (int)Math.Floor(rows / 2d);
             var splitRows = halfRows - rows;
@@ -96,18 +97,35 @@ namespace TFT_HexGrid.Grids
             // get the SVG data for each hexagon
             foreach (Hexagon h in Hexagons.Values)
             {
-                string pathD = SvgMegagonsFactory.GetPathD(h);
                 SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.Points));
-                SvgMegagons.Add(h.ID, new SvgMegagon(h.ID, pathD));
             }
 
             // TRIM hexagons outside the requested offset limits for the grid
             Overscan.ForEach(id => {
+                foreach(GridEdge edge in Hexagons[id].Edges)
+                {
+                    if(edge.Hexagons.ContainsKey(id))
+                        edge.Hexagons.Remove(id);
+
+                    if (edge.Hexagons.Count == 0 && Edges.ContainsKey(edge.ID))
+                    {
+                        Edges.Remove(edge.ID);
+                    }
+                }
+                
                 Hexagons.Remove(id);
                 SvgHexagons.Remove(id);
-                SvgMegagons.Remove(id);
             });
 
+            // build the SvgMegagons
+            foreach (GridEdge edge in Edges.Values)
+            {
+                if (SvgMegagonsFactory.GetEdgeIsMegaLine(edge))
+                {
+                    // add a new SvgMegagon
+                    SvgMegagons.Add(edge.ID, new SvgMegagon(edge.ID, SvgMegagonsFactory.GetPathD(edge)));
+                }
+            }
         }
 
         #region Layout
@@ -298,6 +316,8 @@ namespace TFT_HexGrid.Grids
         #region Megas
 
         public Dictionary<int, SvgMegagon> SvgMegagons { get; }
+
+        public Dictionary<int, GridEdge> Edges { get; }
 
         #endregion
 

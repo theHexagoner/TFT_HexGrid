@@ -290,11 +290,11 @@ namespace TFT_HexGrid.SvgHelpers
             }
         }
 
-        /// <summary>
-        /// return the path D for megagon lines of given hex
-        /// </summary>
-        /// <returns>System.String containing the D for the SVG path</returns>
-        public static string GetPathD(Hexagon hex)
+        #region PathDs
+
+        #region PathDs for Grid
+
+        public static string GetFlatPathD(Hexagon hex)
         {
             string pathD = string.Empty;
 
@@ -342,114 +342,44 @@ namespace TFT_HexGrid.SvgHelpers
             return pathD;
         }
 
-        /// <summary>
-        /// return the SVG path d for megagon lines of given hex and its neighbors
-        /// </summary>
-        /// <param name="hexagons">the context from which to return neighbors</param>
-        /// <param name="hex">the hex for which to calculate path d</param>
-        /// <returns>System.String containing the path d</returns>
-        public static string GetPathD(ICollection<Hexagon> hexagons, Hexagon hex)
+        public static string GetPointyPathD(Hexagon hex)
         {
             string pathD = string.Empty;
 
             // path D will vary based on location in megagon
             MegaLocation locationInMegagon = hex.MegaLocation;
 
-            // and by presence/absence of neighbors?
-            Cube[] adjs = Cube.GetAdjacents(hex.CubicLocation);
-            Hexagon[] neighbors = new Hexagon[6];
-
-            for (int i = 0; i < 6; i++)
-            {
-                neighbors[i] = hexagons.SingleOrDefault(h => adjs[i] == h.CubicLocation);
-            }
-
             GridPoint[] p;
-            
-            GridPoint[] B = Array.Empty<GridPoint>();
-            GridPoint[] A = Array.Empty<GridPoint>();
-            GridPoint[] F = Array.Empty<GridPoint>();
-            GridPoint[] E = Array.Empty<GridPoint>();
-            GridPoint[] D = Array.Empty<GridPoint>();
-            GridPoint[] C = Array.Empty<GridPoint>();
 
             switch (locationInMegagon)
             {
                 case MegaLocation.A:
-                    if (neighbors[(int)MegaLocation.B - 1] != null) B = new[] { hex.Points[5], hex.Points[0] }; else B = Array.Empty<GridPoint>();
-                    if (neighbors[(int)MegaLocation.A - 1] != null) A = new[] { hex.Points[0], hex.Points[1] }; else A = Array.Empty<GridPoint>();
-                    if (neighbors[(int)MegaLocation.F - 1] != null) F = new[] { hex.Points[1], hex.Points[2] }; else F = Array.Empty<GridPoint>();
-
-                    p = new GridPoint[B.Length + A.Length + F.Length];
-                    B.CopyTo(p, 0);
-                    A.CopyTo(p, B.Length);
-                    F.CopyTo(p, B.Length + A.Length);
-
+                    p = new[] { hex.Points[0], hex.Points[1], hex.Points[2], hex.Points[3] };
                     pathD = GetPathD(p);
                     break;
 
                 case MegaLocation.B:
-                    if (neighbors[(int)MegaLocation.C - 1] != null) C = new[] { hex.Points[4], hex.Points[5] }; else C = Array.Empty<GridPoint>();
-                    if (neighbors[(int)MegaLocation.B - 1] != null) B = new[] { hex.Points[5], hex.Points[0] }; else B = Array.Empty<GridPoint>();
-                    if (neighbors[(int)MegaLocation.A - 1] != null) A = new[] { hex.Points[0], hex.Points[1] }; else A = Array.Empty<GridPoint>();
-
-                    p = new GridPoint[C.Length + B.Length + A.Length];
-                    C.CopyTo(p, 0);
-                    B.CopyTo(p, C.Length);
-                    A.CopyTo(p, C.Length + B.Length);
-
+                    p = new[] { hex.Points[5], hex.Points[0], hex.Points[1], hex.Points[2] };
                     pathD = GetPathD(p);
                     break;
 
                 case MegaLocation.C:
-                    if (neighbors[(int)MegaLocation.D - 1] != null) D = new[] { hex.Points[3], hex.Points[4] }; else D = Array.Empty<GridPoint>();
-                    if (neighbors[(int)MegaLocation.C - 1] != null) C = new[] { hex.Points[4], hex.Points[5] }; else C = Array.Empty<GridPoint>();
-                    if (neighbors[(int)MegaLocation.B - 1] != null) B = new[] { hex.Points[5], hex.Points[0] }; else B = Array.Empty<GridPoint>();
-
-                    p = new GridPoint[D.Length + C.Length + B.Length];
-                    D.CopyTo(p, 0);
-                    C.CopyTo(p, D.Length);
-                    B.CopyTo(p, D.Length + C.Length);
-
+                    p = new[] { hex.Points[4], hex.Points[5], hex.Points[0], hex.Points[1] };
                     pathD = GetPathD(p);
                     break;
 
                 case MegaLocation.D:
-                    if (neighbors[(int)MegaLocation.E - 1] != null) E = new[] { hex.Points[2], hex.Points[3] }; else E = Array.Empty<GridPoint>();
-                    if (neighbors[(int)MegaLocation.D - 1] != null) D = new[] { hex.Points[3], hex.Points[4] }; else D = Array.Empty<GridPoint>();
-                    if (neighbors[(int)MegaLocation.C - 1] != null) C = new[] { hex.Points[4], hex.Points[5] }; else C = Array.Empty<GridPoint>();
-
-                    p = new GridPoint[E.Length + D.Length + C.Length];
-                    E.CopyTo(p, 0);
-                    D.CopyTo(p, E.Length);
-                    C.CopyTo(p, E.Length + D.Length);
-
+                    p = new[] { hex.Points[3], hex.Points[4], hex.Points[5], hex.Points[0] };
                     pathD = GetPathD(p);
                     break;
 
                 case MegaLocation.E:
-                    if (neighbors[(int)MegaLocation.F - 1] != null) F = new[] { hex.Points[1], hex.Points[2] }; else F = Array.Empty<GridPoint>();
-                    if (neighbors[(int)MegaLocation.E - 1] != null) E = new[] { hex.Points[2], hex.Points[3] }; else E = Array.Empty<GridPoint>();
-                    if (neighbors[(int)MegaLocation.D - 1] != null) D = new[] { hex.Points[3], hex.Points[4] }; else D = Array.Empty<GridPoint>();
-
-                    p = new GridPoint[F.Length + E.Length + D.Length];
-                    F.CopyTo(p, 0);
-                    E.CopyTo(p, F.Length);
-                    D.CopyTo(p, F.Length + E.Length);
-
+                    p = new[] { hex.Points[2], hex.Points[3], hex.Points[4], hex.Points[5] };
                     pathD = GetPathD(p);
                     break;
 
                 case MegaLocation.F:
-                    if (neighbors[(int)MegaLocation.A - 1] != null) A = new[] { hex.Points[0], hex.Points[1] }; else A = Array.Empty<GridPoint>();
-                    if (neighbors[(int)MegaLocation.F - 1] != null) F = new[] { hex.Points[1], hex.Points[2] }; else F = Array.Empty<GridPoint>();
-                    if (neighbors[(int)MegaLocation.E - 1] != null) E = new[] { hex.Points[2], hex.Points[3] }; else E = Array.Empty<GridPoint>();
-
-                    p = new GridPoint[F.Length + E.Length + D.Length];
-                    F.CopyTo(p, 0);
-                    E.CopyTo(p, F.Length);
-                    D.CopyTo(p, F.Length + E.Length);
-
+                    p = new[] { hex.Points[1], hex.Points[2], hex.Points[3], hex.Points[4] };
                     pathD = GetPathD(p);
                     break;
 
@@ -465,7 +395,7 @@ namespace TFT_HexGrid.SvgHelpers
             // use a string builder to build up the D for the path
             var sb = new StringBuilder();
 
-            if(points.Length > 1)
+            if (points.Length > 1)
             {
                 var radius = Math.Round(GridPoint.GetDistance(points[0], points[1]));
 
@@ -490,7 +420,690 @@ namespace TFT_HexGrid.SvgHelpers
             return sb.ToString();
 
         }
-    
+
+        #endregion
+
+        #region PathDs for Maps
+
+        // remove megagon lines from hexes where the opposite neighbor is null
+
+        public static string GetFlatPathD(ICollection<Hexagon> hexagons, Hexagon hex)
+        {
+            try
+            {
+                string pathD = string.Empty;
+
+                // path D will vary based on location in megagon
+                MegaLocation locationInMegagon = hex.MegaLocation;
+
+                // and by presence/absence of neighbors?
+                Cube[] adjs = Cube.GetAdjacents(hex.CubicLocation);
+                Hexagon[] neighbors = new Hexagon[6];
+
+                for (int i = 0; i < 6; i++)
+                {
+                    neighbors[i] = hexagons.SingleOrDefault(h => adjs[i] == h.CubicLocation);
+                }
+
+                GridPoint[] B = Array.Empty<GridPoint>();
+                GridPoint[] A = Array.Empty<GridPoint>();
+                GridPoint[] F = Array.Empty<GridPoint>();
+                GridPoint[] E = Array.Empty<GridPoint>();
+                GridPoint[] D = Array.Empty<GridPoint>();
+                GridPoint[] C = Array.Empty<GridPoint>();
+
+                var radius = Math.Round(GridPoint.GetDistance(hex.Points[0], hex.Points[1]));
+                StringBuilder sb = new StringBuilder();
+
+                switch (locationInMegagon)
+                {
+                    case MegaLocation.A:
+                        if (neighbors[(int)MegaLocation.B - 1] != null)
+                        {
+                            B = new[] { hex.Points[5], hex.Points[0] };
+                            sb.Append(string.Format("M{0},{1} ", B[0].X, B[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", B[1].X, B[1].Y));
+
+                            if (neighbors[(int)MegaLocation.A - 1] != null)
+                            {
+                                A = new[] { hex.Points[0], hex.Points[1] };
+                                sb.Append(string.Format("L{0},{1} ", A[0].X, A[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", A[1].X, A[1].Y));
+
+                                if (neighbors[(int)MegaLocation.F - 1] != null)
+                                {
+                                    F = new[] { hex.Points[1], hex.Points[2] };
+                                    sb.Append(string.Format("L{0},{1} ", F[0].X, F[0].Y));
+                                    sb.Append(string.Format("L{0},{1} ", F[1].X, F[1].Y));
+                                }
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.A - 1] != null)
+                        {
+                            A = new[] { hex.Points[0], hex.Points[1] };
+                            sb.Append(string.Format("M{0},{1} ", A[0].X, A[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", A[1].X, A[1].Y));
+
+                            if (neighbors[(int)MegaLocation.F - 1] != null)
+                            {
+                                F = new[] { hex.Points[1], hex.Points[2] };
+                                sb.Append(string.Format("L{0},{1} ", F[0].X, F[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", F[1].X, F[1].Y));
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.F - 1] != null)
+                        {
+                            F = new[] { hex.Points[1], hex.Points[2] };
+                            sb.Append(string.Format("M{0},{1} ", F[0].X, F[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", F[1].X, F[1].Y));
+                        }
+
+                        pathD = sb.ToString();
+                        break;
+
+                    case MegaLocation.B:
+                        if (neighbors[(int)MegaLocation.C - 1] != null)
+                        {
+                            C = new[] { hex.Points[4], hex.Points[5] };
+                            sb.Append(string.Format("M{0},{1} ", C[0].X, C[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", C[1].X, C[1].Y));
+
+                            if (neighbors[(int)MegaLocation.B - 1] != null)
+                            {
+                                B = new[] { hex.Points[5], hex.Points[0] };
+                                sb.Append(string.Format("L{0},{1} ", B[0].X, B[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", B[1].X, B[1].Y));
+
+                                if (neighbors[(int)MegaLocation.A - 1] != null)
+                                {
+                                    A = new[] { hex.Points[0], hex.Points[1] };
+                                    sb.Append(string.Format("L{0},{1} ", A[0].X, A[0].Y));
+                                    sb.Append(string.Format("L{0},{1} ", A[1].X, A[1].Y));
+                                }
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.B - 1] != null)
+                        {
+                            B = new[] { hex.Points[5], hex.Points[0] };
+                            sb.Append(string.Format("M{0},{1} ", B[0].X, B[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", B[1].X, B[1].Y));
+
+                            if (neighbors[(int)MegaLocation.A - 1] != null)
+                            {
+                                A = new[] { hex.Points[0], hex.Points[1] };
+                                sb.Append(string.Format("L{0},{1} ", A[0].X, A[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", A[1].X, A[1].Y));
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.A - 1] != null)
+                        {
+                            A = new[] { hex.Points[0], hex.Points[1] };
+                            sb.Append(string.Format("M{0},{1} ", A[0].X, A[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", A[1].X, A[1].Y));
+                        }
+
+                        pathD = sb.ToString();
+                        break;
+
+                    case MegaLocation.C:
+                        if (neighbors[(int)MegaLocation.D - 1] != null)
+                        {
+                            D = new[] { hex.Points[3], hex.Points[4] };
+                            sb.Append(string.Format("M{0},{1} ", D[0].X, D[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", D[1].X, D[1].Y));
+
+                            if (neighbors[(int)MegaLocation.C - 1] != null)
+                            {
+                                C = new[] { hex.Points[4], hex.Points[5] };
+                                sb.Append(string.Format("L{0},{1} ", C[0].X, C[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", C[1].X, C[1].Y));
+
+                                if (neighbors[(int)MegaLocation.B - 1] != null)
+                                {
+                                    B = new[] { hex.Points[5], hex.Points[0] };
+                                    sb.Append(string.Format("L{0},{1} ", B[0].X, B[0].Y));
+                                    sb.Append(string.Format("L{0},{1} ", B[1].X, B[1].Y));
+                                }
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.C - 1] != null)
+                        {
+                            C = new[] { hex.Points[4], hex.Points[5] };
+                            sb.Append(string.Format("M{0},{1} ", C[0].X, C[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", C[1].X, C[1].Y));
+
+                            if (neighbors[(int)MegaLocation.B - 1] != null)
+                            {
+                                B = new[] { hex.Points[5], hex.Points[0] };
+                                sb.Append(string.Format("L{0},{1} ", B[0].X, B[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", B[1].X, B[1].Y));
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.B - 1] != null)
+                        {
+                            B = new[] { hex.Points[5], hex.Points[0] };
+                            sb.Append(string.Format("M{0},{1} ", B[0].X, B[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", B[1].X, B[1].Y));
+                        }
+
+                        pathD = sb.ToString();
+                        break;
+
+                    case MegaLocation.D:
+                        if (neighbors[(int)MegaLocation.E - 1] != null)
+                        {
+                            E = new[] { hex.Points[2], hex.Points[3] };
+                            sb.Append(string.Format("M{0},{1} ", E[0].X, E[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", E[1].X, E[1].Y));
+
+                            if (neighbors[(int)MegaLocation.D - 1] != null)
+                            {
+                                D = new[] { hex.Points[3], hex.Points[4] };
+                                sb.Append(string.Format("L{0},{1} ", D[0].X, D[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", D[1].X, D[1].Y));
+
+                                if (neighbors[(int)MegaLocation.C - 1] != null)
+                                {
+                                    C = new[] { hex.Points[4], hex.Points[5] };
+                                    sb.Append(string.Format("L{0},{1} ", C[0].X, C[0].Y));
+                                    sb.Append(string.Format("L{0},{1} ", C[1].X, C[1].Y));
+                                }
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.D - 1] != null)
+                        {
+                            D = new[] { hex.Points[3], hex.Points[4] };
+                            sb.Append(string.Format("M{0},{1} ", D[0].X, D[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", D[1].X, D[1].Y));
+
+                            if (neighbors[(int)MegaLocation.C - 1] != null)
+                            {
+                                C = new[] { hex.Points[4], hex.Points[5] };
+                                sb.Append(string.Format("L{0},{1} ", C[0].X, C[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", C[1].X, C[1].Y));
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.C - 1] != null)
+                        {
+                            C = new[] { hex.Points[4], hex.Points[5] };
+                            sb.Append(string.Format("M{0},{1} ", C[0].X, C[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", C[1].X, C[1].Y));
+                        }
+
+                        pathD = sb.ToString();
+                        break;
+
+                    case MegaLocation.E:
+                        if (neighbors[(int)MegaLocation.F - 1] != null)
+                        {
+                            F = new[] { hex.Points[1], hex.Points[2] };
+                            sb.Append(string.Format("M{0},{1} ", F[0].X, F[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", F[1].X, F[1].Y));
+
+                            if (neighbors[(int)MegaLocation.E - 1] != null)
+                            {
+                                E = new[] { hex.Points[2], hex.Points[3] };
+                                sb.Append(string.Format("L{0},{1} ", E[0].X, E[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", E[1].X, E[1].Y));
+
+                                if (neighbors[(int)MegaLocation.D - 1] != null)
+                                {
+                                    D = new[] { hex.Points[3], hex.Points[4] };
+                                    sb.Append(string.Format("L{0},{1} ", D[0].X, D[0].Y));
+                                    sb.Append(string.Format("L{0},{1} ", D[1].X, D[1].Y));
+                                }
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.E - 1] != null)
+                        {
+                            E = new[] { hex.Points[2], hex.Points[3] };
+                            sb.Append(string.Format("M{0},{1} ", E[0].X, E[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", E[1].X, E[1].Y));
+
+                            if (neighbors[(int)MegaLocation.D - 1] != null)
+                            {
+                                D = new[] { hex.Points[3], hex.Points[4] };
+                                sb.Append(string.Format("L{0},{1} ", D[0].X, D[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", D[1].X, D[1].Y));
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.D - 1] != null)
+                        {
+                            D = new[] { hex.Points[3], hex.Points[4] };
+                            sb.Append(string.Format("M{0},{1} ", D[0].X, D[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", D[1].X, D[1].Y));
+                        }
+
+                        pathD = sb.ToString();
+                        break;
+
+                    case MegaLocation.F:
+                        if (neighbors[(int)MegaLocation.A - 1] != null)
+                        {
+                            A = new[] { hex.Points[0], hex.Points[1] };
+                            sb.Append(string.Format("M{0},{1} ", A[0].X, A[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", A[1].X, A[1].Y));
+
+                            if (neighbors[(int)MegaLocation.F - 1] != null)
+                            {
+                                F = new[] { hex.Points[1], hex.Points[2] };
+                                sb.Append(string.Format("L{0},{1} ", F[0].X, F[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", F[1].X, F[1].Y));
+
+                                if (neighbors[(int)MegaLocation.E - 1] != null)
+                                {
+                                    E = new[] { hex.Points[2], hex.Points[3] };
+                                    sb.Append(string.Format("L{0},{1} ", E[0].X, E[0].Y));
+                                    sb.Append(string.Format("L{0},{1} ", E[1].X, E[1].Y));
+                                }
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.F - 1] != null)
+                        {
+                            F = new[] { hex.Points[1], hex.Points[2] };
+                            sb.Append(string.Format("M{0},{1} ", F[0].X, F[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", F[1].X, F[1].Y));
+
+                            if (neighbors[(int)MegaLocation.E - 1] != null)
+                            {
+                                E = new[] { hex.Points[2], hex.Points[3] };
+                                sb.Append(string.Format("L{0},{1} ", E[0].X, E[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", E[1].X, E[1].Y));
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.E - 1] != null)
+                        {
+                            E = new[] { hex.Points[2], hex.Points[3] };
+                            sb.Append(string.Format("M{0},{1} ", E[0].X, E[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", E[1].X, E[1].Y));
+                        }
+
+                        pathD = sb.ToString();
+                        break;
+
+                    default:
+                        break; // for X and N there is no path drawn
+                }
+
+                return pathD;
+            }
+            catch (Exception ex)
+            {                
+                Console.WriteLine(ex.Message);
+                return string.Empty;
+            }
+        }
+
+        public static string GetPointyPathD(ICollection<Hexagon> hexagons, Hexagon hex)
+        {
+            try
+            {
+                string pathD = string.Empty;
+
+                // path D will vary based on location in megagon
+                MegaLocation locationInMegagon = hex.MegaLocation;
+
+                // and by presence/absence of neighbors?
+                Cube[] adjs = Cube.GetAdjacents(hex.CubicLocation);
+                Hexagon[] neighbors = new Hexagon[6];
+
+                for (int i = 0; i < 6; i++)
+                {
+                    neighbors[i] = hexagons.SingleOrDefault(h => adjs[i] == h.CubicLocation);
+                }
+
+                GridPoint[] B = Array.Empty<GridPoint>();
+                GridPoint[] A = Array.Empty<GridPoint>();
+                GridPoint[] F = Array.Empty<GridPoint>();
+                GridPoint[] E = Array.Empty<GridPoint>();
+                GridPoint[] D = Array.Empty<GridPoint>();
+                GridPoint[] C = Array.Empty<GridPoint>();
+
+                var radius = Math.Round(GridPoint.GetDistance(hex.Points[0], hex.Points[1]));
+                StringBuilder sb = new StringBuilder();
+
+                switch (locationInMegagon)
+                {
+                    case MegaLocation.A:
+                        if (neighbors[(int)MegaLocation.B - 1] != null)
+                        {
+                            B = new[] { hex.Points[5], hex.Points[0] };
+                            sb.Append(string.Format("M{0},{1} ", B[0].X, B[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", B[1].X, B[1].Y));
+
+                            if (neighbors[(int)MegaLocation.A - 1] != null)
+                            {
+                                A = new[] { hex.Points[0], hex.Points[1] };
+                                sb.Append(string.Format("L{0},{1} ", A[0].X, A[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", A[1].X, A[1].Y));
+
+                                if (neighbors[(int)MegaLocation.F - 1] != null)
+                                {
+                                    F = new[] { hex.Points[1], hex.Points[2] };
+                                    sb.Append(string.Format("L{0},{1} ", F[0].X, F[0].Y));
+                                    sb.Append(string.Format("L{0},{1} ", F[1].X, F[1].Y));
+                                }
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.A - 1] != null)
+                        {
+                            A = new[] { hex.Points[0], hex.Points[1] };
+                            sb.Append(string.Format("M{0},{1} ", A[0].X, A[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", A[1].X, A[1].Y));
+
+                            if (neighbors[(int)MegaLocation.F - 1] != null)
+                            {
+                                F = new[] { hex.Points[1], hex.Points[2] };
+                                sb.Append(string.Format("L{0},{1} ", F[0].X, F[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", F[1].X, F[1].Y));
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.F - 1] != null)
+                        {
+                            F = new[] { hex.Points[1], hex.Points[2] };
+                            sb.Append(string.Format("M{0},{1} ", F[0].X, F[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", F[1].X, F[1].Y));
+                        }
+
+                        pathD = sb.ToString();
+                        break;
+
+                    case MegaLocation.B:
+                        if (neighbors[(int)MegaLocation.C - 1] != null)
+                        {
+                            C = new[] { hex.Points[4], hex.Points[5] };
+                            sb.Append(string.Format("M{0},{1} ", C[0].X, C[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", C[1].X, C[1].Y));
+
+                            if (neighbors[(int)MegaLocation.B - 1] != null)
+                            {
+                                B = new[] { hex.Points[5], hex.Points[0] };
+                                sb.Append(string.Format("L{0},{1} ", B[0].X, B[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", B[1].X, B[1].Y));
+
+                                if (neighbors[(int)MegaLocation.A - 1] != null)
+                                {
+                                    A = new[] { hex.Points[0], hex.Points[1] };
+                                    sb.Append(string.Format("L{0},{1} ", A[0].X, A[0].Y));
+                                    sb.Append(string.Format("L{0},{1} ", A[1].X, A[1].Y));
+                                }
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.B - 1] != null)
+                        {
+                            B = new[] { hex.Points[5], hex.Points[0] };
+                            sb.Append(string.Format("M{0},{1} ", B[0].X, B[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", B[1].X, B[1].Y));
+
+                            if (neighbors[(int)MegaLocation.A - 1] != null)
+                            {
+                                A = new[] { hex.Points[0], hex.Points[1] };
+                                sb.Append(string.Format("L{0},{1} ", A[0].X, A[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", A[1].X, A[1].Y));
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.A - 1] != null)
+                        {
+                            A = new[] { hex.Points[0], hex.Points[1] };
+                            sb.Append(string.Format("M{0},{1} ", A[0].X, A[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", A[1].X, A[1].Y));
+                        }
+
+                        pathD = sb.ToString();
+                        break;
+
+                    case MegaLocation.C:
+                        if (neighbors[(int)MegaLocation.D - 1] != null)
+                        {
+                            D = new[] { hex.Points[3], hex.Points[4] };
+                            sb.Append(string.Format("M{0},{1} ", D[0].X, D[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", D[1].X, D[1].Y));
+
+                            if (neighbors[(int)MegaLocation.C - 1] != null)
+                            {
+                                C = new[] { hex.Points[4], hex.Points[5] };
+                                sb.Append(string.Format("L{0},{1} ", C[0].X, C[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", C[1].X, C[1].Y));
+
+                                if (neighbors[(int)MegaLocation.B - 1] != null)
+                                {
+                                    B = new[] { hex.Points[5], hex.Points[0] };
+                                    sb.Append(string.Format("L{0},{1} ", B[0].X, B[0].Y));
+                                    sb.Append(string.Format("L{0},{1} ", B[1].X, B[1].Y));
+                                }
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.C - 1] != null)
+                        {
+                            C = new[] { hex.Points[4], hex.Points[5] };
+                            sb.Append(string.Format("M{0},{1} ", C[0].X, C[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", C[1].X, C[1].Y));
+
+                            if (neighbors[(int)MegaLocation.B - 1] != null)
+                            {
+                                B = new[] { hex.Points[5], hex.Points[0] };
+                                sb.Append(string.Format("L{0},{1} ", B[0].X, B[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", B[1].X, B[1].Y));
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.B - 1] != null)
+                        {
+                            B = new[] { hex.Points[5], hex.Points[0] };
+                            sb.Append(string.Format("M{0},{1} ", B[0].X, B[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", B[1].X, B[1].Y));
+                        }
+
+                        pathD = sb.ToString();
+                        break;
+
+                    case MegaLocation.D:
+                        if (neighbors[(int)MegaLocation.E - 1] != null)
+                        {
+                            E = new[] { hex.Points[2], hex.Points[3] };
+                            sb.Append(string.Format("M{0},{1} ", E[0].X, E[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", E[1].X, E[1].Y));
+
+                            if (neighbors[(int)MegaLocation.D - 1] != null)
+                            {
+                                D = new[] { hex.Points[3], hex.Points[4] };
+                                sb.Append(string.Format("L{0},{1} ", D[0].X, D[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", D[1].X, D[1].Y));
+
+                                if (neighbors[(int)MegaLocation.C - 1] != null)
+                                {
+                                    C = new[] { hex.Points[4], hex.Points[5] };
+                                    sb.Append(string.Format("L{0},{1} ", C[0].X, C[0].Y));
+                                    sb.Append(string.Format("L{0},{1} ", C[1].X, C[1].Y));
+                                }
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.D - 1] != null)
+                        {
+                            D = new[] { hex.Points[3], hex.Points[4] };
+                            sb.Append(string.Format("M{0},{1} ", D[0].X, D[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", D[1].X, D[1].Y));
+
+                            if (neighbors[(int)MegaLocation.C - 1] != null)
+                            {
+                                C = new[] { hex.Points[4], hex.Points[5] };
+                                sb.Append(string.Format("L{0},{1} ", C[0].X, C[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", C[1].X, C[1].Y));
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.C - 1] != null)
+                        {
+                            C = new[] { hex.Points[4], hex.Points[5] };
+                            sb.Append(string.Format("M{0},{1} ", C[0].X, C[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", C[1].X, C[1].Y));
+                        }
+
+                        pathD = sb.ToString();
+                        break;
+
+                    case MegaLocation.E:
+                        if (neighbors[(int)MegaLocation.F - 1] != null)
+                        {
+                            F = new[] { hex.Points[1], hex.Points[2] };
+                            sb.Append(string.Format("M{0},{1} ", F[0].X, F[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", F[1].X, F[1].Y));
+
+                            if (neighbors[(int)MegaLocation.E - 1] != null)
+                            {
+                                E = new[] { hex.Points[2], hex.Points[3] };
+                                sb.Append(string.Format("L{0},{1} ", E[0].X, E[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", E[1].X, E[1].Y));
+
+                                if (neighbors[(int)MegaLocation.D - 1] != null)
+                                {
+                                    D = new[] { hex.Points[3], hex.Points[4] };
+                                    sb.Append(string.Format("L{0},{1} ", D[0].X, D[0].Y));
+                                    sb.Append(string.Format("L{0},{1} ", D[1].X, D[1].Y));
+                                }
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.E - 1] != null)
+                        {
+                            E = new[] { hex.Points[2], hex.Points[3] };
+                            sb.Append(string.Format("M{0},{1} ", E[0].X, E[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", E[1].X, E[1].Y));
+
+                            if (neighbors[(int)MegaLocation.D - 1] != null)
+                            {
+                                D = new[] { hex.Points[3], hex.Points[4] };
+                                sb.Append(string.Format("L{0},{1} ", D[0].X, D[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", D[1].X, D[1].Y));
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.D - 1] != null)
+                        {
+                            D = new[] { hex.Points[3], hex.Points[4] };
+                            sb.Append(string.Format("M{0},{1} ", D[0].X, D[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", D[1].X, D[1].Y));
+                        }
+
+                        pathD = sb.ToString();
+                        break;
+
+                    case MegaLocation.F:
+                        if (neighbors[(int)MegaLocation.A - 1] != null)
+                        {
+                            A = new[] { hex.Points[0], hex.Points[1] };
+                            sb.Append(string.Format("M{0},{1} ", A[0].X, A[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", A[1].X, A[1].Y));
+
+                            if (neighbors[(int)MegaLocation.F - 1] != null)
+                            {
+                                F = new[] { hex.Points[1], hex.Points[2] };
+                                sb.Append(string.Format("L{0},{1} ", F[0].X, F[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", F[1].X, F[1].Y));
+
+                                if (neighbors[(int)MegaLocation.E - 1] != null)
+                                {
+                                    E = new[] { hex.Points[2], hex.Points[3] };
+                                    sb.Append(string.Format("L{0},{1} ", E[0].X, E[0].Y));
+                                    sb.Append(string.Format("L{0},{1} ", E[1].X, E[1].Y));
+                                }
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.F - 1] != null)
+                        {
+                            F = new[] { hex.Points[1], hex.Points[2] };
+                            sb.Append(string.Format("M{0},{1} ", F[0].X, F[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", F[1].X, F[1].Y));
+
+                            if (neighbors[(int)MegaLocation.E - 1] != null)
+                            {
+                                E = new[] { hex.Points[2], hex.Points[3] };
+                                sb.Append(string.Format("L{0},{1} ", E[0].X, E[0].Y));
+                                sb.Append(string.Format("L{0},{1} ", E[1].X, E[1].Y));
+                            }
+                        }
+                        else if (neighbors[(int)MegaLocation.E - 1] != null)
+                        {
+                            E = new[] { hex.Points[2], hex.Points[3] };
+                            sb.Append(string.Format("M{0},{1} ", E[0].X, E[0].Y));
+                            sb.Append(string.Format("L{0},{1} ", E[1].X, E[1].Y));
+                        }
+
+                        pathD = sb.ToString();
+                        break;
+
+                    default:
+                        break; // for X and N there is no path drawn
+                }
+
+                return pathD;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return string.Empty;
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+
+        // edges stuff
+
+
+
+        public static GridEdge[] GetEdgesFromPoints(GridPoint[] points)
+        {
+            GridEdge[] edges = new GridEdge[6];
+
+            for (int i = 0; i < 5; i++)
+            {
+                edges[i] = new GridEdge(points[i], points[i + 1]);
+            }
+
+            edges[5] = new GridEdge(points[5], points[0]);
+
+            return edges;
+        }
+
+        public static bool GetEdgeIsMegaLine(GridEdge edge)
+        {
+            bool isMegaLine = false;
+
+            if(edge.Hexagons != null && edge.Hexagons.Count == 2)
+            {
+                Hexagon[] hexagons = edge.Hexagons.Values.ToArray();
+                isMegaLine = hexagons[0].MegaLocation == MegaLocation.A && hexagons[1].MegaLocation == MegaLocation.D 
+                          || hexagons[0].MegaLocation == MegaLocation.A && hexagons[1].MegaLocation == MegaLocation.C 
+                          || hexagons[0].MegaLocation == MegaLocation.A && hexagons[1].MegaLocation == MegaLocation.E 
+
+                          || hexagons[0].MegaLocation == MegaLocation.B && hexagons[1].MegaLocation == MegaLocation.E 
+                          || hexagons[0].MegaLocation == MegaLocation.B && hexagons[1].MegaLocation == MegaLocation.D 
+                          || hexagons[0].MegaLocation == MegaLocation.B && hexagons[1].MegaLocation == MegaLocation.F 
+
+                          || hexagons[0].MegaLocation == MegaLocation.C && hexagons[1].MegaLocation == MegaLocation.F 
+                          || hexagons[0].MegaLocation == MegaLocation.C && hexagons[1].MegaLocation == MegaLocation.E 
+                          || hexagons[0].MegaLocation == MegaLocation.C && hexagons[1].MegaLocation == MegaLocation.A 
+
+                          || hexagons[0].MegaLocation == MegaLocation.D && hexagons[1].MegaLocation == MegaLocation.A 
+                          || hexagons[0].MegaLocation == MegaLocation.D && hexagons[1].MegaLocation == MegaLocation.F 
+                          || hexagons[0].MegaLocation == MegaLocation.D && hexagons[1].MegaLocation == MegaLocation.B 
+
+                          || hexagons[0].MegaLocation == MegaLocation.E && hexagons[1].MegaLocation == MegaLocation.B 
+                          || hexagons[0].MegaLocation == MegaLocation.E && hexagons[1].MegaLocation == MegaLocation.A 
+                          || hexagons[0].MegaLocation == MegaLocation.E && hexagons[1].MegaLocation == MegaLocation.C 
+
+                          || hexagons[0].MegaLocation == MegaLocation.F && hexagons[1].MegaLocation == MegaLocation.C 
+                          || hexagons[0].MegaLocation == MegaLocation.F && hexagons[1].MegaLocation == MegaLocation.B 
+                          || hexagons[0].MegaLocation == MegaLocation.F && hexagons[1].MegaLocation == MegaLocation.D;
+            }
+
+            return isMegaLine;
+        }
+
+        public static string GetPathD(GridEdge edge)
+        {
+            return string.Format("M{0},{1} L{2},{3} ", edge.PointA.X, edge.PointA.Y, edge.PointB.X, edge.PointB.Y);
+        }
+
     }
 
 }
