@@ -66,6 +66,7 @@ namespace TFT_HexGrid.Grids
             Layout = new HexLayout(geometry, size, origin);
             Hexagons = new HexDictionary<int, Hexagon>();
             SvgHexagons = new Dictionary<int, SvgHexagon>();
+            SvgMegagons = new Dictionary<int, SvgMegagon>();
 
             var halfRows = (int)Math.Floor(rows / 2d);
             var splitRows = halfRows - rows;
@@ -95,17 +96,16 @@ namespace TFT_HexGrid.Grids
             // get the SVG data for each hexagon
             foreach (Hexagon h in Hexagons.Values)
             {
-                h.PathD = SvgMegagonsFactory.GetPathD(h);
-                SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.Points, h.PathD));
+                string pathD = SvgMegagonsFactory.GetPathD(h);
+                SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.Points));
+                SvgMegagons.Add(h.ID, new SvgMegagon(h.ID, pathD));
             }
-
-            // this is going away
-            SvgMegagons = new Dictionary<int, SvgMegagon>(); 
 
             // TRIM hexagons outside the requested offset limits for the grid
             Overscan.ForEach(id => {
                 Hexagons.Remove(id);
                 SvgHexagons.Remove(id);
+                SvgMegagons.Remove(id);
             });
 
         }

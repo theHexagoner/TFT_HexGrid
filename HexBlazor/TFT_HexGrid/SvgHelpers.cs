@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TFT_HexGrid.Grids;
@@ -11,22 +12,20 @@ namespace TFT_HexGrid.SvgHelpers
         public readonly int Id;
         public readonly string Points;
         public readonly bool IsSelected;
-        public readonly string PathD;
 
-        public SvgHexagon(int id, GridPoint[] points, string pathD) : this(id, points, pathD, true) { }
+        public SvgHexagon(int id, GridPoint[] points) : this(id, points, true) { }
 
-        public SvgHexagon(int id, GridPoint[] points, string pathD, bool isSelected)
+        public SvgHexagon(int id, GridPoint[] points, bool isSelected)
         {
             Id = id;
             Points = string.Join(" ", points.Select(p => string.Format("{0},{1}", p.X, p.Y)));
             IsSelected = isSelected;
-            PathD = pathD;
         }
     }
 
     public enum MegaLocation
     {
-        N = -1,  // not set
+        N = -1, // not set
         X = 0,  // center
         A = 1,  // flat = lower-right   pointy = right
         B = 2,  // flat = upper-right   pointy = upper-right
@@ -302,34 +301,161 @@ namespace TFT_HexGrid.SvgHelpers
             // path D will vary based on location in megagon
             MegaLocation locationInMegagon = hex.MegaLocation;
 
-            // and by presence/absence of neighbors?
+            GridPoint[] p;
 
             switch(locationInMegagon)
             {
                 case MegaLocation.A:
+                    p = new[] { hex.Points[5], hex.Points[0], hex.Points[1], hex.Points[2] };
+                    pathD = GetPathD(p);
                     break;
 
                 case MegaLocation.B:
+                    p = new[] { hex.Points[4], hex.Points[5], hex.Points[0], hex.Points[1] };
+                    pathD = GetPathD(p);
                     break;
 
                 case MegaLocation.C:
+                    p = new[] { hex.Points[3], hex.Points[4], hex.Points[5], hex.Points[0] };
+                    pathD = GetPathD(p);
                     break;
 
                 case MegaLocation.D:
+                    p = new[] { hex.Points[2], hex.Points[3], hex.Points[4], hex.Points[5] };
+                    pathD = GetPathD(p);
                     break;
 
                 case MegaLocation.E:
+                    p = new[] { hex.Points[1], hex.Points[2], hex.Points[3], hex.Points[4] };
+                    pathD = GetPathD(p);
                     break;
 
                 case MegaLocation.F:
+                    p = new[] { hex.Points[0], hex.Points[1], hex.Points[2], hex.Points[3] };
+                    pathD = GetPathD(p);
                     break;
+
                 default:
                     break; // for X and N there is no path drawn
             }
 
-            // for now lets just figure out where points A and B are?
-            var p = new[] { hex.Points[0], hex.Points[1] };
-            GetPathD(p);
+            return pathD;
+        }
+
+        /// <summary>
+        /// return the SVG path d for megagon lines of given hex and its neighbors
+        /// </summary>
+        /// <param name="hexagons">the context from which to return neighbors</param>
+        /// <param name="hex">the hex for which to calculate path d</param>
+        /// <returns>System.String containing the path d</returns>
+        public static string GetPathD(ICollection<Hexagon> hexagons, Hexagon hex)
+        {
+            string pathD = string.Empty;
+
+            // path D will vary based on location in megagon
+            MegaLocation locationInMegagon = hex.MegaLocation;
+
+            // and by presence/absence of neighbors?
+            Cube[] adjs = Cube.GetAdjacents(hex.CubicLocation);
+            Hexagon[] neighbors = new Hexagon[6];
+
+            for (int i = 0; i < 6; i++)
+            {
+                neighbors[i] = hexagons.SingleOrDefault(h => adjs[i] == h.CubicLocation);
+            }
+
+            GridPoint[] p;
+            
+            GridPoint[] B = Array.Empty<GridPoint>();
+            GridPoint[] A = Array.Empty<GridPoint>();
+            GridPoint[] F = Array.Empty<GridPoint>();
+            GridPoint[] E = Array.Empty<GridPoint>();
+            GridPoint[] D = Array.Empty<GridPoint>();
+            GridPoint[] C = Array.Empty<GridPoint>();
+
+            switch (locationInMegagon)
+            {
+                case MegaLocation.A:
+                    if (neighbors[(int)MegaLocation.B - 1] != null) B = new[] { hex.Points[5], hex.Points[0] }; else B = Array.Empty<GridPoint>();
+                    if (neighbors[(int)MegaLocation.A - 1] != null) A = new[] { hex.Points[0], hex.Points[1] }; else A = Array.Empty<GridPoint>();
+                    if (neighbors[(int)MegaLocation.F - 1] != null) F = new[] { hex.Points[1], hex.Points[2] }; else F = Array.Empty<GridPoint>();
+
+                    p = new GridPoint[B.Length + A.Length + F.Length];
+                    B.CopyTo(p, 0);
+                    A.CopyTo(p, B.Length);
+                    F.CopyTo(p, B.Length + A.Length);
+
+                    pathD = GetPathD(p);
+                    break;
+
+                case MegaLocation.B:
+                    if (neighbors[(int)MegaLocation.C - 1] != null) C = new[] { hex.Points[4], hex.Points[5] }; else C = Array.Empty<GridPoint>();
+                    if (neighbors[(int)MegaLocation.B - 1] != null) B = new[] { hex.Points[5], hex.Points[0] }; else B = Array.Empty<GridPoint>();
+                    if (neighbors[(int)MegaLocation.A - 1] != null) A = new[] { hex.Points[0], hex.Points[1] }; else A = Array.Empty<GridPoint>();
+
+                    p = new GridPoint[C.Length + B.Length + A.Length];
+                    C.CopyTo(p, 0);
+                    B.CopyTo(p, C.Length);
+                    A.CopyTo(p, C.Length + B.Length);
+
+                    pathD = GetPathD(p);
+                    break;
+
+                case MegaLocation.C:
+                    if (neighbors[(int)MegaLocation.D - 1] != null) D = new[] { hex.Points[3], hex.Points[4] }; else D = Array.Empty<GridPoint>();
+                    if (neighbors[(int)MegaLocation.C - 1] != null) C = new[] { hex.Points[4], hex.Points[5] }; else C = Array.Empty<GridPoint>();
+                    if (neighbors[(int)MegaLocation.B - 1] != null) B = new[] { hex.Points[5], hex.Points[0] }; else B = Array.Empty<GridPoint>();
+
+                    p = new GridPoint[D.Length + C.Length + B.Length];
+                    D.CopyTo(p, 0);
+                    C.CopyTo(p, D.Length);
+                    B.CopyTo(p, D.Length + C.Length);
+
+                    pathD = GetPathD(p);
+                    break;
+
+                case MegaLocation.D:
+                    if (neighbors[(int)MegaLocation.E - 1] != null) E = new[] { hex.Points[2], hex.Points[3] }; else E = Array.Empty<GridPoint>();
+                    if (neighbors[(int)MegaLocation.D - 1] != null) D = new[] { hex.Points[3], hex.Points[4] }; else D = Array.Empty<GridPoint>();
+                    if (neighbors[(int)MegaLocation.C - 1] != null) C = new[] { hex.Points[4], hex.Points[5] }; else C = Array.Empty<GridPoint>();
+
+                    p = new GridPoint[E.Length + D.Length + C.Length];
+                    E.CopyTo(p, 0);
+                    D.CopyTo(p, E.Length);
+                    C.CopyTo(p, E.Length + D.Length);
+
+                    pathD = GetPathD(p);
+                    break;
+
+                case MegaLocation.E:
+                    if (neighbors[(int)MegaLocation.F - 1] != null) F = new[] { hex.Points[1], hex.Points[2] }; else F = Array.Empty<GridPoint>();
+                    if (neighbors[(int)MegaLocation.E - 1] != null) E = new[] { hex.Points[2], hex.Points[3] }; else E = Array.Empty<GridPoint>();
+                    if (neighbors[(int)MegaLocation.D - 1] != null) D = new[] { hex.Points[3], hex.Points[4] }; else D = Array.Empty<GridPoint>();
+
+                    p = new GridPoint[F.Length + E.Length + D.Length];
+                    F.CopyTo(p, 0);
+                    E.CopyTo(p, F.Length);
+                    D.CopyTo(p, F.Length + E.Length);
+
+                    pathD = GetPathD(p);
+                    break;
+
+                case MegaLocation.F:
+                    if (neighbors[(int)MegaLocation.A - 1] != null) A = new[] { hex.Points[0], hex.Points[1] }; else A = Array.Empty<GridPoint>();
+                    if (neighbors[(int)MegaLocation.F - 1] != null) F = new[] { hex.Points[1], hex.Points[2] }; else F = Array.Empty<GridPoint>();
+                    if (neighbors[(int)MegaLocation.E - 1] != null) E = new[] { hex.Points[2], hex.Points[3] }; else E = Array.Empty<GridPoint>();
+
+                    p = new GridPoint[F.Length + E.Length + D.Length];
+                    F.CopyTo(p, 0);
+                    E.CopyTo(p, F.Length);
+                    D.CopyTo(p, F.Length + E.Length);
+
+                    pathD = GetPathD(p);
+                    break;
+
+                default:
+                    break; // for X and N there is no path drawn
+            }
 
             return pathD;
         }
@@ -338,10 +464,10 @@ namespace TFT_HexGrid.SvgHelpers
         {
             // use a string builder to build up the D for the path
             var sb = new StringBuilder();
-            
+
             if(points.Length > 1)
             {
-                var radius = GridPoint.GetDistance(points[0], points[1]);
+                var radius = Math.Round(GridPoint.GetDistance(points[0], points[1]));
 
                 sb.Append(string.Format("M{0},{1} ", points[0].X, points[0].Y));
 
@@ -350,89 +476,21 @@ namespace TFT_HexGrid.SvgHelpers
                     // get the distance from previous point
                     var distance = Math.Round(points[i].GetDistanceTo(points[i - 1]));
 
-                    if (distance > radius)
+                    if (distance > 0 && distance > radius)
                     {
                         sb.Append(string.Format("M{0},{1} ", points[i].X, points[i].Y));
                     }
-                    else
+                    else if (distance > 0)
                     {
                         sb.Append(string.Format("L{0},{1} ", points[i].X, points[i].Y));
                     }
                 }
             }
-     
-            return sb.ToString();
-        }
 
+            return sb.ToString();
+
+        }
+    
     }
 
 }
-
-//private SvgMegagon GetSvgMegagon(Hexagon center)
-//{
-//    try
-//    {
-//        int id = center.ID;
-
-//        GridPoint[] centerPoints = center.Points;
-//        Cube[] adjs = Cube.GetAdjacents(center.CubicLocation);
-
-//        var somePoints = new List<GridPoint>();
-
-//        // loop over the adjacent cubes and add the hex corner points for each
-//        foreach (Cube c in adjs)
-//        {
-//            // figure out if the cube is part of the grid
-//            Hexagon hex = Hexagons.SingleOrDefault(h => h.CubicLocation.Equals(c) && Overscan.Contains(h.ID) == false);
-
-//            if (hex != null) // get the points
-//            {
-//                somePoints.AddRange(hex.Points);
-//            }
-//        }
-
-//        // get rid of duplicates and then any points that belong to the center hex
-//        // put them in clockwise order around the reference point of the center hex
-//        GridPoint[] outline = somePoints.Distinct().Except(centerPoints)
-//            .OrderBy(x => Math.Atan2(x.X - centerPoints[0].X, x.Y - centerPoints[0].Y)).ToArray();
-
-//        if (outline.Length > 0)
-//        {
-//            // use a string builder to build up the D for the path
-//            var sb = new StringBuilder();
-//            sb.Append(string.Format("M{0},{1} ", outline[0].X, outline[0].Y));
-
-//            for (int i = 1; i < outline.Length; i++)
-//            {
-//                // get the distance from previous point
-//                var distance = Math.Round(outline[i].GetDistanceTo(outline[i - 1]));
-
-//                if (distance > Radius)
-//                {
-//                    sb.Append(string.Format("M{0},{1} ", outline[i].X, outline[i].Y));
-//                }
-//                else
-//                {
-//                    sb.Append(string.Format("L{0},{1} ", outline[i].X, outline[i].Y));
-//                }
-//            }
-
-//            var distanceForLast = Math.Round(outline[^1].GetDistanceTo(outline[0]));
-
-//            if (distanceForLast <= Radius)
-//                sb.Append(string.Format("L{0},{1} ", outline[0].X, outline[0].Y));
-
-//            string d = sb.ToString();
-//            return new SvgMegagon(id, d);
-//        }
-
-//        return new SvgMegagon(0, "");
-
-//    }
-//    catch (Exception ex)
-//    {
-//        Console.WriteLine(ex.Message);
-//        return new SvgMegagon(0, "");
-//    }
-
-//}

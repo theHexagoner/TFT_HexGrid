@@ -32,11 +32,7 @@ namespace TFT_HexGrid.Grids
             CubicLocation = cubeCoords;
             ID = grid.GetHashcodeForCube(cubeCoords);
             Points = grid.GetHexCornerPoints(cubeCoords);
-            
             MegaLocation = MegaLocation.N;
-
-            _gridHexagons = grid.Hexagons;
-
         }
 
         public int ID { get; private set; }
@@ -60,9 +56,6 @@ namespace TFT_HexGrid.Grids
 
         #region Megagon
 
-        // hold a reference to the list of all hexagons in the grid
-        private readonly HexDictionary<int, Hexagon> _gridHexagons;
-
         /// <summary>
         /// location of hex within its associated megagon
         /// </summary>
@@ -77,16 +70,6 @@ namespace TFT_HexGrid.Grids
         {
             MegaLocation = locationInMegagon;
         }
-
-        public List<Hexagon> Neighbors { get; private set; }
-
-        public void UpdateNeighbors()
-        {
-            // get this hexagon's neighbors 
-            Neighbors = _gridHexagons.Values.Where(h => Cube.GetAdjacents(CubicLocation).Contains(h.CubicLocation)).OrderBy(h => h.MegaLocation).ToList();
-        }
-
-        public string PathD { get; set; }
 
         #endregion
 
@@ -141,7 +124,8 @@ namespace TFT_HexGrid.Grids
 
         public bool Remove(K key)
         {
-            OnDictionaryRemoveItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = key, Value = default });
+            var item = innerDict[key];
+            OnDictionaryRemoveItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = key, Value = item });
             return innerDict.Remove(key);
         }
 

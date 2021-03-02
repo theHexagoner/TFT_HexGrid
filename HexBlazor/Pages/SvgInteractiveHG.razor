@@ -67,8 +67,8 @@
 <div class="form-group">
     <label class="mb-sm-0">Clicked Row, Col: @_hexLabel</label>&nbsp;&nbsp;&nbsp;&nbsp;<label class="mb-sm-0">Clicked X, Y: @_mouseLabel</label>&nbsp;&nbsp;&nbsp;&nbsp;<label class="mb-sm-0">Translated X, Y: @_translateLabel</label>
     <div id="svgDiv" @ref="_divRef" @onclick="SvgOnClick" @oncontextmenu="SvgOnClick" @oncontextmenu:preventDefault="true">
-        <BSvg @ref="_svgRef" HeightInches="8.5in" WidthInches="11in" ViewBox="0 0 1056 816" Translation="@_translation"
-              HexStroke="@_hexStroke" HexStrokeWidth="@_hexStrokeWidth"
+        <BSvg @ref="_svgRef" HeightInches="8.5in" WidthInches="11in" ViewBox="0 0 1056 816" Translation="@_translation" 
+              HexStroke="@_hexStroke" HexStrokeWidth="@_hexStrokeWidth" 
               MegaStroke="@_megaStroke" MegaStrokeWidth="@_megaStrokeWidth" />
     </div>
     <button class="btn btn-outline-primary btn-sm" @onclick="Swap" disabled="@_saveDisabled">Swap View</button>
@@ -217,7 +217,7 @@
             // left-click to add the hex to the map if not already present
             if (hex != null && eventArgs.Button == 0 && _map.Hexagons.ContainsKey(hex.ID) == false)
             {
-                _grid.SvgHexagons[hex.ID] = new TFT_HexGrid.SvgHelpers.SvgHexagon(hex.ID, hex.Points, hex.PathD, true);
+                _grid.SvgHexagons[hex.ID] = new TFT_HexGrid.SvgHelpers.SvgHexagon(hex.ID, hex.Points, true);
                 _map.Hexagons.Add(hex.ID, hex);
                 await _svgRef.UpdateHexIsSelected(hex.ID, true);
             }
@@ -225,7 +225,7 @@
             // right-click to remove the hex from the map if it is present
             if (hex != null && eventArgs.Button == 2 && _map.Hexagons.ContainsKey(hex.ID))
             {
-                _grid.SvgHexagons[hex.ID] = new TFT_HexGrid.SvgHelpers.SvgHexagon(hex.ID, hex.Points, hex.PathD, false);
+                _grid.SvgHexagons[hex.ID] = new TFT_HexGrid.SvgHelpers.SvgHexagon(hex.ID, hex.Points, false);
                 _map.Hexagons.Remove(hex.ID);
                 await _svgRef.UpdateHexIsSelected(hex.ID, false);
             }

@@ -1,11 +1,7 @@
-﻿using TFT_HexGrid.Grids;
-using System.Collections.Generic;
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Collections;
-using System.Text;
-using TFT_HexGrid.SvgHelpers;
+﻿using System.Collections.Generic;
 using System.Linq;
+using TFT_HexGrid.Grids;
+using TFT_HexGrid.SvgHelpers;
 
 namespace TFT_HexGrid.Maps
 {
@@ -21,19 +17,18 @@ namespace TFT_HexGrid.Maps
             Hexagons.OnDictionaryClear += ClearingHexagons;
 
             SvgHexagons = new Dictionary<int, SvgHexagon>();
+            SvgMegagons = new Dictionary<int, SvgMegagon>();
 
             foreach (Hexagon h in Hexagons.Values)
             {
-                h.PathD = SvgMegagonsFactory.GetPathD(h);
-                SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.Points, h.PathD));
+                string pathD = SvgMegagonsFactory.GetPathD(Hexagons.Values, h) ;
+                SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.Points));
+                SvgMegagons.Add(h.ID, new SvgMegagon(h.ID, pathD));
             }
-
-            // this is going away
-            SvgMegagons = new Dictionary<int, SvgMegagon>();
-
         }
 
         public Dictionary<int, SvgHexagon> SvgHexagons { get; }
+        public Dictionary<int, SvgMegagon> SvgMegagons { get; }
 
         #region Hexagons
 
@@ -42,26 +37,37 @@ namespace TFT_HexGrid.Maps
         private void AddingHexagon(object sender, DictionaryChangingEventArgs<int, Hexagon> e)
         {
             var hex = e.Value;
-            hex.PathD = SvgMegagonsFactory.GetPathD(hex);
-            SvgHexagons.Add(hex.ID, new SvgHexagon(hex.ID, hex.Points, hex.PathD, true));
+            string pathD = SvgMegagonsFactory.GetPathD(Hexagons.Values, hex);
+            SvgHexagons.Add(hex.ID, new SvgHexagon(hex.ID, hex.Points, true));
+            SvgMegagons.Add(hex.ID, new SvgMegagon(hex.ID, pathD));
         }
 
         private void RemovingHexagon(object sender, DictionaryChangingEventArgs<int, Hexagon> e)
         {
             SvgHexagons.Remove(e.Key);
+            SvgMegagons.Remove(e.Key);
+
+            // for each neighbor, recalculate its corresponding SvgMegagon
+            Cube[] adjs = Cube.GetAdjacents(e.Value.CubicLocation);
+            Hexagon[] neighbors = new Hexagon[6];
+
+            for (int i = 0; i < 6; i++)
+            {
+                var hex = Hexagons.Values.SingleOrDefault(h => adjs[i] == h.CubicLocation);
+
+                if (hex != null)
+                {
+                    string pathD = SvgMegagonsFactory.GetPathD(Hexagons.Values, hex);
+                    SvgMegagons[hex.ID] = new SvgMegagon(hex.ID, pathD);
+                }
+            }
         }
 
         private void ClearingHexagons(object sender, DictionaryChangingEventArgs<int, Hexagon> e)
         {
             SvgHexagons.Clear();
+            SvgMegagons.Clear();
         }
-
-        #endregion
-
-        #region Megagons
-
-        // going away
-        public Dictionary<int, SvgMegagon> SvgMegagons { get; }
 
         #endregion
 
