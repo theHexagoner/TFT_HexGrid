@@ -34,13 +34,23 @@
             obj.offsetTop = domRect.top;
             return JSON.stringify(obj);
         };
+
         function onBodyScrolled() {
             var div = document.getElementById("svgDiv");
             if (div != null) {
                 var offsets = getDivOffsets(div);
                 DotNet.invokeMethodAsync('HexBlazor', 'OnBodyScrolled', offsets);
             }
-        }
+        };
+
+        function getDivDimensions(element) {
+            var obj = {};
+            var domRect = element.getBoundingClientRect()
+            obj.width = domRect.width;
+            obj.height = domRect.height;
+            return JSON.stringify(obj);
+        };
+
     </script>
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
