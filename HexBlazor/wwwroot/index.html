@@ -46,6 +46,8 @@
         function getDivDimensions(element) {
             var obj = {};
             var domRect = element.getBoundingClientRect()
+            obj.offsetLeft = domRect.left;
+            obj.offsetTop = domRect.top;
             obj.width = domRect.width;
             obj.height = domRect.height;
             return JSON.stringify(obj);
