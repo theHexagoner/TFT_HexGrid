@@ -27,22 +27,6 @@
         <a class="dismiss">&times;</a>
     </div>
     <script>
-        function getDivOffsets(element) {
-            var obj = {};
-            var domRect = element.getBoundingClientRect()
-            obj.offsetLeft = domRect.left;
-            obj.offsetTop = domRect.top;
-            return JSON.stringify(obj);
-        };
-
-        function onBodyScrolled() {
-            var div = document.getElementById("svgDiv");
-            if (div != null) {
-                var offsets = getDivOffsets(div);
-                DotNet.invokeMethodAsync('HexBlazor', 'OnBodyScrolled', offsets);
-            }
-        };
-
         function getDivDimensions(element) {
             var obj = {};
             var domRect = element.getBoundingClientRect()
@@ -52,7 +36,6 @@
             obj.height = domRect.height;
             return JSON.stringify(obj);
         };
-
     </script>
     <script src="_framework/blazor.webassembly.js"></script>
 </body>

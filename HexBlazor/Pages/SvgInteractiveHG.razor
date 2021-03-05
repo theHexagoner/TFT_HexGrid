@@ -71,7 +71,7 @@
 </div>
 
 <div class="form-group">
-    <label class="mb-sm-0">Clicked Row, Col: @_hexLabel</label>
+    <label class="mb-sm-0">Clicked Row, Col: @_hexLabel</label>&nbsp;&nbsp;&nbsp;&nbsp;<label class="mb-sm-0">Clicked X, Y: @_mouseLabel</label>&nbsp;&nbsp;&nbsp;&nbsp;<label class="mb-sm-0">Translated X, Y: @_translateLabel</label>
     <div id="svgDiv" @ref="_divRef" @onclick="SvgOnClick" @oncontextmenu="SvgOnClick" @oncontextmenu:preventDefault="true">
         <BSvg @ref="_svgRef" ViewBox="-408 -528 816 1056"
               HexStroke="@_hexStroke" HexStrokeWidth="@_hexStrokeWidth"
@@ -79,7 +79,7 @@
               ShowStars=@_showStars />
     </div>
     <button class="btn btn-outline-primary btn-sm" @onclick="Swap" disabled="@_saveDisabled">Swap View</button>
-    @*<label class="mb-sm-0">Clicked X, Y: @_mouseLabel</label>&nbsp;&nbsp;&nbsp;&nbsp;<label class="mb-sm-0">Translated X, Y: @_translateLabel</label>*@
+
 </div>
 
 @code {
@@ -101,15 +101,10 @@
     private string _mouseLabel = string.Empty;
     private string _translateLabel = string.Empty;
 
-    private double _offsetLeft;
-    private double _offsetTop;
-    private static Action<double, double> scrollAction;
-
-    private const double TRANSLATE_H = 528d; // half width in pixels @ 96ppi
-    private const double TRANSLATE_W = 408d; // half height in pixels @ 96ppi
-
     private const double VBOX_H = 1056d;
     private const double VBOX_W = 816d;
+    private const double TRANSLATE_H = 528d; // half width in pixels @ 96ppi
+    private const double TRANSLATE_W = 408d; // half height in pixels @ 96ppi
 
     private ElementReference _divRef;
     private BSvg _svgRef;
@@ -121,63 +116,6 @@
     private bool _isShowingMap = false;
 
     private bool _showStars = false;
-
-    #endregion
-
-    #region Component overrides
-
-    protected override void OnInitialized()
-    {
-        scrollAction = UpdateOffsets;
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await SetInitialOffsets();
-        }
-    }
-
-    #endregion
-
-    #region Handle Scrolling
-
-    /// <summary>
-    /// capture and set offsets for the div that holds the SVG
-    /// so that we can get the correct mouse-click coords
-    /// </summary>
-    private async Task SetInitialOffsets()
-    {
-        string data = await jsRuntime.InvokeAsync<string>("getDivOffsets", new object[] { _divRef });
-        JObject offsets = (JObject)JsonConvert.DeserializeObject(data);
-
-        // get the actual coordinates of the mouse click within the div:
-        _offsetLeft = offsets.Value<double>("offsetLeft");
-        _offsetTop = offsets.Value<double>("offsetTop");
-    }
-
-    /// <summary>
-    /// when the window has scrolled, we need to re-set the offsets
-    /// </summary>
-    /// <param name="left">the new left offset</param>
-    /// <param name="top">the new top offset</param>
-    private void UpdateOffsets(double left, double top)
-    {
-        _offsetLeft = left;
-        _offsetTop = top;
-    }
-
-    /// <summary>
-    /// listen for the OnScroll event from JS
-    /// </summary>
-    /// <param name="data">JSON formatted string containing new offset information</param>
-    [JSInvokable]
-    public static void OnBodyScrolled(string data)
-    {
-        JObject offsets = (JObject)JsonConvert.DeserializeObject(data);
-        scrollAction.Invoke(offsets.Value<double>("offsetLeft"), offsets.Value<double>("offsetTop"));
-    }
 
     #endregion
 
@@ -228,8 +166,8 @@
             var scaleH = VBOX_H / divHeight;
 
             // get the actual coordinates of the mouse click relative to the div:
-            double mouseX = eventArgs.ClientX - _offsetLeft;
-            double mouseY = eventArgs.ClientY - _offsetTop;
+            double mouseX = eventArgs.ClientX - oLeft;
+            double mouseY = eventArgs.ClientY - oTop;
 
             // translate these for the 0,0 origin being located at center
             // translation factor must be scaled relative to actual size of div as displayed on screen
