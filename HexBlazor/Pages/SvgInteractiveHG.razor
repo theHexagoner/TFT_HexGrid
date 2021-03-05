@@ -71,15 +71,16 @@
 </div>
 
 <div class="form-group">
-    <label class="mb-sm-0">Clicked Row, Col: @_hexLabel</label>&nbsp;&nbsp;&nbsp;&nbsp;<label class="mb-sm-0">Clicked X, Y: @_mouseLabel</label>&nbsp;&nbsp;&nbsp;&nbsp;<label class="mb-sm-0">Translated X, Y: @_translateLabel</label>
-    <div id="svgDiv" @ref="_divRef" @onclick="SvgOnClick" @oncontextmenu="SvgOnClick" @oncontextmenu:preventDefault="true">
+    <label class="mb-sm-0">Clicked Row, Col: @_hexLabel</label>
+    <div id="svgDiv" @ref="_divRef" @onclick="SvgOnClick" @oncontextmenu="SvgOnClick" @oncontextmenu:preventDefault="true" >
         <BSvg @ref="_svgRef" ViewBox="-408 -528 816 1056"
               HexStroke="@_hexStroke" HexStrokeWidth="@_hexStrokeWidth"
               MegaStroke="@_megaStroke" MegaStrokeWidth="@_megaStrokeWidth"
               ShowStars=@_showStars />
     </div>
     <button class="btn btn-outline-primary btn-sm" @onclick="Swap" disabled="@_saveDisabled">Swap View</button>
-
+    @*<label class="mb-sm-0">Clicked X, Y: @_mouseLabel</label>
+      <label class="mb-sm-0">Translated X, Y: @_translateLabel</label>*@
 </div>
 
 @code {
@@ -98,8 +99,8 @@
     private string _megaStroke = "#000000";
 
     private string _hexLabel = string.Empty;
-    private string _mouseLabel = string.Empty;
-    private string _translateLabel = string.Empty;
+    //private string _mouseLabel = string.Empty;
+    //private string _translateLabel = string.Empty;
 
     private const double VBOX_H = 1056d;
     private const double VBOX_W = 816d;
@@ -174,8 +175,8 @@
             var translatedX = (mouseX * scaleW) - TRANSLATE_W;
             var translatedY = (mouseY * scaleH) - TRANSLATE_H;
 
-            _mouseLabel = string.Format(" {0}, {1}", mouseX, mouseY);
-            _translateLabel = string.Format(" {0}, {1}", translatedX, translatedY);
+            //_mouseLabel = string.Format(" {0}, {1}", mouseX, mouseY);
+            //_translateLabel = string.Format(" {0}, {1}", translatedX, translatedY);
 
             // get the grid hex the user clicked on, if any:
             var hex = _grid.GetHexAt(new GridPoint(translatedX, translatedY));
