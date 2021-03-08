@@ -108,17 +108,17 @@ namespace TFT_HexGrid.Grids
             };
         }
 
-        private static Cube OffsetToCubeQ(int offset, Offset h)
+        private static Cube OffsetToCubeQ(int push, Offset h)
         {
             int x = h.Col;
-            int y = h.Row - (int)((h.Col + offset * (h.Col & 1)) / 2);
+            int y = h.Row - (int)((h.Col + push * (h.Col & 1)) / 2);
             int z = -x - y;
             return new Cube(x, y, z);
         }
 
-        private static Cube OffsetToCubeR(int offset, Offset h)
+        private static Cube OffsetToCubeR(int push, Offset h)
         {
-            int x = h.Col - (int)((h.Row + offset * (h.Row & 1)) / 2);
+            int x = h.Col - (int)((h.Row + push * (h.Row & 1)) / 2);
             int y = h.Row;
             int z = -x - y;
             return new Cube(x, y, z);
@@ -242,17 +242,17 @@ namespace TFT_HexGrid.Grids
             };
         }
 
-        private static Offset GetOffsetQ(int offset, Cube hex)
+        private static Offset GetOffsetQ(int push, Cube hex)
         {
             int col = hex.X;
-            int row = hex.Y + ((hex.X + offset * (hex.X & 1)) / 2);
+            int row = hex.Y + ((hex.X + push * (hex.X & 1)) / 2);
             return new Offset(row, col);
         }
 
-        private static Offset GetOffsetR(int offset, Cube h)
+        private static Offset GetOffsetR(int push, Cube hex)
         {
-            int col = h.X + (int)((h.Y + offset * (h.Y & 1)) / 2);
-            int row = h.Y;
+            int col = hex.X + (hex.Y + push * (hex.Y & 1)) / 2;
+            int row = hex.Y;
             return new Offset(col, row);
         }
 

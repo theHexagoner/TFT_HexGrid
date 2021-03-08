@@ -23,11 +23,10 @@ namespace TFT_HexGrid.SvgHelpers
 
             // figure out where and how big to draw the star:
             GridPoint midPoint = new GridPoint((points[3].X + points[0].X) / 2, (points[3].Y + points[0].Y) / 2);
-
             double outerRadius = points[0].GetDistanceTo(points[1]) / 64;
-            double innerRadius = outerRadius / 3;
 
-            StarD = SvgStar.GetPathD(midPoint, outerRadius, innerRadius);
+            StarD = SvgPathDFactory.Instance.GetPathD(SvgPathDFactory.Type.Star, midPoint, outerRadius);
+            
         }
     }
 
@@ -394,22 +393,79 @@ namespace TFT_HexGrid.SvgHelpers
 
     }
 
-    public static class SvgStar
+    public sealed class SvgPathDFactory
     {
+        private static readonly SvgPathDFactory instance = new SvgPathDFactory();
+        private readonly Dictionary<Type, ISvgPathDGetter> dictionary;
 
-        /// <summary>
-        /// Return an array of 10 points to be used to create an SVG path d
-        /// </summary>
-        /// <param name="center"> The origin is the middle of the star</param>
-        /// <param name="outerRadius">Radius of the surrounding circle</param>
-        /// <param name="innerRadius">Radius of the circle for the "inner" points</param>
-        /// <returns>Array of 10 GridPoint structures</returns>
-        public static string GetPathD(GridPoint center, double outerRadius, double innerRadius)
+        public enum Type
         {
+            Star
+        }
+
+        private SvgPathDFactory() 
+        {
+            dictionary = new Dictionary<Type, ISvgPathDGetter>
+            {
+                { Type.Star, new StarSvgPathDGetter() }
+            };
+        }
+
+        public static SvgPathDFactory Instance
+        {
+            get
+            {
+                return instance ?? new SvgPathDFactory();
+            }
+        }
+
+        public string GetPathD(Type type, GridPoint origin, double size)
+        {
+            return (dictionary[type].GetPathD(origin, size));
+        }
+
+    }
+
+    public interface ISvgPathDGetter
+    {
+        string GetPathD(GridPoint origin, double size);
+    }
+
+    public abstract class SvgPathDGetter : ISvgPathDGetter
+    {
+        public abstract string GetPathD(GridPoint origin, double size);
+
+        protected static string GetPathD(GridPoint[] points)
+        {
+            // use a string builder to build up the D for the path
+            var sb = new StringBuilder();
+
+            // move to the first point
+            sb.Append(string.Format("M{0},{1} ", points[0].X, points[0].Y));
+
+            // draw lines to the rest
+            for (int i = 1; i < points.Length; i++)
+            {
+                sb.Append(string.Format("L{0},{1} ", points[i].X, points[i].Y));
+            }
+
+            sb.Append(" Z");
+
+            return sb.ToString();
+        }
+
+    }
+
+    public class StarSvgPathDGetter : SvgPathDGetter
+    {
+        public override string GetPathD(GridPoint center, double outerRadius)
+        {
+            double innerRadius = outerRadius * Math.Sqrt(3.5 - (1.5 * Math.Sqrt(5)));
+
             // conversions to radians
             double Ang36 = Math.PI / 5.0;   // 36Â° x PI/180
             double Ang72 = 2.0 * Ang36;     // 72Â° x PI/180
-            
+
             // some sine and cosine values we need
             double Sin36 = Math.Sin(Ang36);
             double Sin72 = Math.Sin(Ang72);
@@ -432,26 +488,8 @@ namespace TFT_HexGrid.SvgHelpers
             points[9] = new GridPoint(center.X - (innerRadius * Sin36), center.Y - (innerRadius * Cos36)); // 0:54 hours
 
             return GetPathD(points);
+
         }
-
-        private static string GetPathD(GridPoint[] points)
-        {
-            // use a string builder to build up the D for the path
-            var sb = new StringBuilder();
-
-            // move to the first point
-            sb.Append(string.Format("M{0},{1} ", points[0].X, points[0].Y));
-
-            // draw lines to the rest
-            for (int i = 1; i < points.Length; i++)
-            {
-                sb.Append(string.Format("L{0},{1} ", points[i].X, points[i].Y));
-            }
-
-            sb.Append(" Z");
-
-            return sb.ToString();
-        }
-
     }
+
 }
