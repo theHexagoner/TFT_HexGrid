@@ -1,8 +1,8 @@
-﻿
-using System;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using TFT_HexGrid.Grids;
 
-namespace TFT_HexGrid.Grids
+namespace TFT_HexGrid.Coordinates
 {
     /// <summary>
     /// structure to store the cubic coordinates for a Hexagon, provide math operations, calculate distances, etc. within an arbitrary grid

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using TFT_HexGrid.Coordinates;
 using TFT_HexGrid.SvgHelpers;
 
 namespace TFT_HexGrid.Grids

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using TFT_HexGrid.Grids;
 using TFT_HexGrid.SvgHelpers;
 

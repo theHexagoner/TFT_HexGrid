@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Threading.Tasks;
+using TFT_HexGrid.Coordinates;
 using TFT_HexGrid.Grids;
 using TFT_HexGrid.Maps;
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TFT_HexGrid.Coordinates;
 using TFT_HexGrid.Grids;
 
 namespace TFT_HexGrid.SvgHelpers
@@ -318,7 +319,7 @@ namespace TFT_HexGrid.SvgHelpers
             for (int i = 0; i < adjs.Length; i++)
             {
                 Hexagon hex = hexagons.SingleOrDefault(h => h.CubicLocation.Equals(adjs[i]));
-                if (hex != null) hex.SetLocationInMegagon((MegaLocation)(i+1));
+                if (hex != null) hex.SetLocationInMegagon((MegaLocation)(i + 1));
             }
         }
 

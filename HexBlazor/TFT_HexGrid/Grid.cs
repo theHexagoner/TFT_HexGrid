@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TFT_HexGrid.Coordinates;
 using TFT_HexGrid.Maps;
 using TFT_HexGrid.SvgHelpers;
 
