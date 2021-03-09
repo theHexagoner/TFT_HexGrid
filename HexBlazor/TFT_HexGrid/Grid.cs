@@ -93,7 +93,7 @@ namespace TFT_HexGrid.Grids
             }
 
             // get the megagon location of each hexagon
-            SvgMegagonsFactory.SetMegaLocations(OffsetScheme, Hexagons.Values.ToArray());
+            SvgMegagonsFactory.Instance.SetMegaLocations(OffsetScheme, Hexagons.Values.ToArray());
 
             // get the SVG data for each hexagon
             foreach (Hexagon h in Hexagons.Values)
