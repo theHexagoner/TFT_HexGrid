@@ -112,34 +112,32 @@ namespace HexBlazor.Pages
 
                 // get the grid hex the user clicked on, if any:
                 var hex = _grid.GetHexAt(new GridPoint(translatedX, translatedY));
-                _hexLabel = hex != null ? string.Format("Clicked Row, Col: {0}, {1}", hex.OffsetLocation.Row, hex.OffsetLocation.Col) : "none";
+                _hexLabel = hex != null ? string.Format("Clicked Row, Col: {0}, {1}", hex.Row, hex.Col) : "none";
 
                 // left-click to add the hex to the map if not already present
                 if (hex != null && eventArgs.Button == 0)
                 {
                     // update the look of the grid hexagon in case we need to redraw it from scratch later
-                    _grid.SvgHexagons[hex.ID] = new TFT_HexGrid.SvgHelpers.SvgHexagon(hex.ID, hex.Points, true);
+                    _grid.SvgHexagons[hex.ID].IsSelected = true;
 
-                    // actually update the current view
+                    // update the current view
                     await _svgRef.UpdateHexIsSelected(hex.ID, true);
 
                     // if the map does not contain the hexagon, add it to the map
-                    if (_map.Hexagons.ContainsKey(hex.ID) == false)
-                        _map.Hexagons.Add(hex.ID, hex);
+                    _map.AddHexagon(hex.ID);
                 }
 
                 // right-click to remove the hex from the map if it is present
                 if (hex != null && eventArgs.Button == 2)
                 {
                     // update the look of the grid hexagon in case we need to redraw it from scratch later
-                    _grid.SvgHexagons[hex.ID] = new TFT_HexGrid.SvgHelpers.SvgHexagon(hex.ID, hex.Points, false);
+                    _grid.SvgHexagons[hex.ID].IsSelected = false;
 
                     // actually update the current view
                     await _svgRef.UpdateHexIsSelected(hex.ID, false);
 
                     // if the map contains the hex, remove it from the map
-                    if (_map.Hexagons.ContainsKey(hex.ID))
-                        _map.Hexagons.Remove(hex.ID);
+                    _map.RemoveHexagon(hex.ID);
                 }
             }
         }

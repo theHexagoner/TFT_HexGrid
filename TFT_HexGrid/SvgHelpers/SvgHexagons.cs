@@ -6,19 +6,21 @@ namespace TFT_HexGrid.SvgHelpers
     /// <summary>
     /// encapsulate information useful for drawing a hexagon as SVG
     /// </summary>
-    public struct SvgHexagon
+    public class SvgHexagon
     {
-        public readonly int Id;
+        public readonly int ID;
         public readonly string Points;
-        public readonly bool IsSelected;
         public readonly string StarD;
+
+        public readonly int Row;
+        public readonly int Col;
 
         /// <summary>
         /// constructor, if you don't specify IsSelected it will default to true
         /// </summary>
         /// <param name="id">Supply a unique ID for SvgHexagon</param>
         /// <param name="points">The points from which to derive the SVG</param>
-        public SvgHexagon(int id, GridPoint[] points) : this(id, points, true) { }
+        public SvgHexagon(int id, int row, int col, GridPoint[] points) : this(id, row, col, points, true) { }
 
         /// <summary>
         /// constructor
@@ -26,9 +28,12 @@ namespace TFT_HexGrid.SvgHelpers
         /// <param name="id">Supply a unique ID for SvgHexagon</param>
         /// <param name="points">The points from which to derive the SVG</param>
         /// <param name="isSelected">Flag indicating how the client might fill the polygon</param>
-        public SvgHexagon(int id, GridPoint[] points, bool isSelected)
+        public SvgHexagon(int id, int row, int col, GridPoint[] points, bool isSelected)
         {
-            Id = id;
+            ID = id;
+            Row = row;
+            Col = col;
+
             Points = string.Join(" ", points.Select(p => string.Format("{0},{1}", p.X, p.Y)));
             IsSelected = isSelected;
 
@@ -38,5 +43,8 @@ namespace TFT_HexGrid.SvgHelpers
 
             StarD = SvgPathDFactory.Instance.GetPathD(SvgPathDFactory.Type.Star, midPoint, outerRadius);
         }
+
+        public bool IsSelected { get; set; }
+
     }
 }

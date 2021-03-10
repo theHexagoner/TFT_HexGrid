@@ -7,7 +7,7 @@ namespace TFT_HexGrid.Coordinates
     /// <summary>
     /// structure to store the cubic coordinates for a Hexagon, provide math operations, calculate distances, etc. within an arbitrary grid
     /// </summary>
-    public struct Cube : IEquatable<Cube>
+    internal struct Cube : IEquatable<Cube>
     {
         public readonly int X;
         public readonly int Y;
@@ -162,7 +162,7 @@ namespace TFT_HexGrid.Coordinates
     /// <summary>
     /// floating point value cubic coordinates, useful for rounding and linear interpolation
     /// </summary>
-    public struct CubeF
+    internal struct CubeF
     {
         public readonly double X;
         public readonly double Y;
@@ -211,7 +211,7 @@ namespace TFT_HexGrid.Coordinates
     /// <summary>
     /// structure for conversions between offset and cubic coordinate systems
     /// </summary>
-    public struct Offset : IEquatable<Offset>
+    internal struct Offset : IEquatable<Offset>
     {
         public readonly int Row;
         public readonly int Col;

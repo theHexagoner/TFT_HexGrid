@@ -33,7 +33,7 @@ namespace TFT_HexGrid.SvgHelpers
 
     }
 
-    public sealed class SvgMegagonsFactory
+    internal sealed class SvgMegagonsFactory
     {
         private static readonly SvgMegagonsFactory _instance = new SvgMegagonsFactory();
         private readonly Dictionary<OffsetScheme, IMegagonLocationSetter> _dictionary;
@@ -134,12 +134,12 @@ namespace TFT_HexGrid.SvgHelpers
 
     }
 
-    public interface IMegagonLocationSetter
+    internal interface IMegagonLocationSetter
     {
         void SetMegagonLocations(Hexagon[] hexagons);
     }
 
-    public abstract class MegagonLocationSetter : IMegagonLocationSetter
+    internal abstract class MegagonLocationSetter : IMegagonLocationSetter
     {
         public abstract void SetMegagonLocations(Hexagon[] hexagons);
 

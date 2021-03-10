@@ -65,7 +65,7 @@ namespace TFT_HexGrid.Grids
                 new HexGeometry(Math.Sqrt(3d), Math.Sqrt(3d) / 2d, 0d, 1.5d, Math.Sqrt(3d) / 3d, -1d / 3d, 0d, 2d / 3d, 0.5d); // pointy
 
             Layout = new HexLayout(geometry, size, origin);
-            Hexagons = new HexDictionary<int, Hexagon>();
+            Hexagons = new Dictionary<int, Hexagon>();
             SvgHexagons = new Dictionary<int, SvgHexagon>();
             SvgMegagons = new Dictionary<int, SvgMegagon>();
             Edges = new Dictionary<int, GridEdge>();
@@ -98,7 +98,7 @@ namespace TFT_HexGrid.Grids
             // get the SVG data for each hexagon
             foreach (Hexagon h in Hexagons.Values)
             {
-                SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.Points));
+                SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.OffsetLocation.Row, h.OffsetLocation.Col, h.Points));
             }
 
             // TRIM hexagons outside the requested offset limits for the grid
@@ -134,27 +134,19 @@ namespace TFT_HexGrid.Grids
         /// <summary>
         /// which version of the rectangular offset coordinate scheme this grid uses
         /// </summary>
-        public OffsetScheme OffsetScheme { get; private set; }
+        internal OffsetScheme OffsetScheme { get; private set; }
 
         private HexLayout Layout { get; set; }
 
         /// <summary>
         /// size of one dimension of the matrix of hexagons
         /// </summary>
-        public int Rows { get; }
+        private int Rows { get; }
 
         /// <summary>
         /// size of the other dimension of the matrix of hexagons
         /// </summary>
-        public int Cols { get; }
-
-        public double SideLen
-        {
-            get
-            {
-                return Layout.Size.X;
-            }
-        }
+        private int Cols { get; }
 
         private List<int> Overscan { get; set; }
 
@@ -268,11 +260,11 @@ namespace TFT_HexGrid.Grids
 
         #region Hexes
 
-        public HexDictionary<int, Hexagon> Hexagons { get; }
+        internal Dictionary<int, Hexagon> Hexagons { get; }
 
         public Dictionary<int, SvgHexagon> SvgHexagons { get; }
 
-        public Hexagon GetHexAt(GridPoint point)
+        public SvgHexagon GetHexAt(GridPoint point)
         {
             // turn the point into a CubeF
             var cubeF = Layout.PointToCubeF(point);
@@ -281,7 +273,7 @@ namespace TFT_HexGrid.Grids
             var cube = cubeF.Round();
 
             // get the Hexagon from the hash of the cubic coordinates
-            Hexagons.TryGetValue(GetHashcodeForCube(cube), out Hexagon hex);
+            SvgHexagons.TryGetValue(GetHashcodeForCube(cube), out SvgHexagon hex);
 
             if (hex != null)
                 return hex;
@@ -289,7 +281,7 @@ namespace TFT_HexGrid.Grids
             return null;
         }
 
-        public static bool GetIsOutOfBounds(int rows, int cols, Offset offsetLocation)
+        private static bool GetIsOutOfBounds(int rows, int cols, Offset offsetLocation)
         {
             var halfRows = (int)Math.Floor(rows / 2d);
             var splitRows = halfRows - rows;
@@ -302,12 +294,12 @@ namespace TFT_HexGrid.Grids
                     offsetLocation.Col > halfCols;
         }
 
-        public int GetHashcodeForCube(Cube cube)
+        internal int GetHashcodeForCube(Cube cube)
         {
             return HashCode.Combine(OffsetScheme, Rows, Cols, cube.GetHashCode());
         }
 
-        public GridPoint[] GetHexCornerPoints(Cube hex, double factor = 1)
+        internal GridPoint[] GetHexCornerPoints(Cube hex, double factor = 1)
         {
             return Layout.GetHexCornerPoints(hex, factor);
         }
@@ -318,7 +310,7 @@ namespace TFT_HexGrid.Grids
 
         public Dictionary<int, SvgMegagon> SvgMegagons { get; }
 
-        public Dictionary<int, GridEdge> Edges { get; }
+        internal Dictionary<int, GridEdge> Edges { get; }
 
         #endregion
 
@@ -331,9 +323,6 @@ namespace TFT_HexGrid.Grids
         }
 
         #endregion
-
-        // Translate?
-        // Rotate?
 
     }
 

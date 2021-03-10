@@ -16,6 +16,10 @@
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TFT_HexGrid\TFT_HexGrid.csproj" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="if $(ConfigurationName) == Release Powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -Command &quot;$(ProjectDir)\postBuild.ps1&quot; -pathToIndexHtml &quot;$(ProjectDir)\wwwroot\index.html&quot;" />
   </Target>

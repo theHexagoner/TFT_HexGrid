@@ -7,7 +7,7 @@
             <g id="Hexagons" stroke="@HexStroke" stroke-width="@HexStrokeWidth">
                 @foreach (SvgHexagon h in Hexagons.Values)
                 {
-                    <BPolygon @key="h" Id="@h.Id" Points="@h.Points" IsSelected="@h.IsSelected" StarD="@h.StarD" />
+                    <BPolygon @key="h" Id="@h.ID" Points="@h.Points" IsSelected="@h.IsSelected" StarD="@h.StarD" />
                 }
             </g>
             <g id="Megahexes" stroke="@MegaStroke" stroke-width="@MegaStrokeWidth">

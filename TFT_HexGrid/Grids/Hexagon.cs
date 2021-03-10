@@ -8,7 +8,7 @@ using TFT_HexGrid.SvgHelpers;
 namespace TFT_HexGrid.Grids
 {
 
-    public class Hexagon
+    internal class Hexagon
     {
         // no default constructor
         private Hexagon() { }
@@ -82,13 +82,13 @@ namespace TFT_HexGrid.Grids
         /// sets the location in its megagon
         /// </summary>
         /// <param name="locationInMegagon">the enumerated location within the megagon</param>
-        public void SetLocationInMegagon(MegaLocation locationInMegagon)
+        internal void SetLocationInMegagon(MegaLocation locationInMegagon)
         {
             MegaLocation = locationInMegagon;
         }
     }
 
-    public class GridEdge
+    internal class GridEdge
     {
         private GridEdge() { }
 
@@ -117,7 +117,7 @@ namespace TFT_HexGrid.Grids
     /// </summary>
     /// <typeparam name="K"></typeparam>
     /// <typeparam name="V"></typeparam>
-    public class HexDictionary<K, V> : IDictionary<K, V>
+    internal class HexDictionary<K, V> : IDictionary<K, V>
     {
         public delegate void DictionaryAddItem(object sender, DictionaryChangingEventArgs<K, V> e);
         public event DictionaryAddItem OnDictionaryAddItem;
@@ -219,7 +219,7 @@ namespace TFT_HexGrid.Grids
 
     }
 
-    public class DictionaryChangingEventArgs<K, V> : EventArgs
+    internal class DictionaryChangingEventArgs<K, V> : EventArgs
     {
         public K Key
         {

@@ -10,44 +10,67 @@ namespace TFT_HexGrid.Maps
 
         internal Map(Grid grid)
         {
-            Hexagons = new HexDictionary<int, Hexagon>(grid.Hexagons);
+            GridHexagons = grid.Hexagons;
+            MapHexagons = new HexDictionary<int, Hexagon>();
             Edges = new Dictionary<int, GridEdge>(grid.Edges);
-            Hexagons.OnDictionaryAddItem += AddingHexagon;
-            Hexagons.OnDictionaryRemoveItem += RemovingHexagon;
-            Hexagons.OnDictionaryClear += ClearingHexagons;
+
+            MapHexagons.OnDictionaryAddItem += AddingHexagon;
+            MapHexagons.OnDictionaryRemoveItem += RemovingHexagon;
+            MapHexagons.OnDictionaryClear += ClearingHexagons;
 
             SvgHexagons = new Dictionary<int, SvgHexagon>();
             SvgMegagons = new Dictionary<int, SvgMegagon>();
 
-            // get the SVG data for hexagons
-            foreach (Hexagon h in Hexagons.Values)
+            foreach (Hexagon h in grid.Hexagons.Values)
             {
-                SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.Points));
+                MapHexagons.Add(h.ID, h);
             }
 
-            // build the SvgMegagons
-            foreach (GridEdge edge in Edges.Values)
-            {
-                if (SvgMegagonsFactory.GetEdgeIsMegaLine(edge))
-                {
-                    // add a new SvgMegagon
-                    SvgMegagons.Add(edge.ID, new SvgMegagon(edge.ID, SvgMegagonsFactory.GetPathD(edge)));
-                }
-            }
+            //// get the SVG data for hexagons
+            //foreach (Hexagon h in MapHexagons.Values)
+            //{
+            //    SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.OffsetLocation.Row, h.OffsetLocation.Col, h.Points));
+            //}
+            
+
+            //// build the SvgMegagons
+            //foreach (GridEdge edge in Edges.Values)
+            //{
+            //    if (SvgMegagonsFactory.GetEdgeIsMegaLine(edge))
+            //    {
+            //        // add a new SvgMegagon
+            //        SvgMegagons.Add(edge.ID, new SvgMegagon(edge.ID, SvgMegagonsFactory.GetPathD(edge)));
+            //    }
+            //}
         }
 
         public Dictionary<int, SvgHexagon> SvgHexagons { get; }
         public Dictionary<int, SvgMegagon> SvgMegagons { get; }
-        public Dictionary<int, GridEdge> Edges { get; }
 
-        #region Hexagons
+        public void AddHexagon(int ID)
+        {
+            if (MapHexagons.ContainsKey(ID) == false)
+                MapHexagons.Add(ID, GridHexagons[ID]);
+        }
 
-        public HexDictionary<int, Hexagon> Hexagons { get; private set; }
+        public void RemoveHexagon(int ID)
+        {
+            if (MapHexagons.ContainsKey(ID))
+                MapHexagons.Remove(ID);
+        }
+
+        #region Manage Hexagons
+
+        private Dictionary<int, GridEdge> Edges { get; }
+
+        private HexDictionary<int, Hexagon> MapHexagons { get; set; }
+
+        private Dictionary<int, Hexagon> GridHexagons { get; set; }
         
         private void AddingHexagon(object sender, DictionaryChangingEventArgs<int, Hexagon> e)
         {
             var hex = e.Value;
-            SvgHexagons.Add(e.Key, new SvgHexagon(e.Key, hex.Points, true));
+            SvgHexagons.Add(e.Key, new SvgHexagon(e.Key, hex.OffsetLocation.Row, hex.OffsetLocation.Col,  hex.Points, true));
 
             // update the map's edges and revise the SvgMegagons as necessary
             foreach (GridEdge edge in hex.Edges)
