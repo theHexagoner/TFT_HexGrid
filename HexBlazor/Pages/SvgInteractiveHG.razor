@@ -3,51 +3,58 @@
 
 @inject IJSRuntime jsRuntime
 
-<h1>SVG Hex Grid</h1>
-
-<div class="form-group row ml-0">
-    <div class="col-xs-2 w-10 mr-3">
-        <label for="rowCount" class="mb-sm-0">Rows</label>
+<div class="form-group row ml-0 align-items-center">
+    <div class="mr-3 mb-3" style="width:50px">
+        <label for="rowCount" class="mb-0">Rows</label>
         <input class="form-control form-control-sm" id="rowCount" type="text" @bind="_rowCount">
     </div>
-    <div class="col-xs-2 w-10 mr-3">
-        <label for="colCount" class="mb-sm-0">Columns</label>
-        <input class="form-control form-control-sm" id="colCount" type="text" @bind="_colCount">
+    <div class="mr-3 mb-3" style="width:50px">
+        <label for="colCount" class="mb-0">Cols</label>
+        <input class="form-control form-control-sm" id="colCount" type="text" @bind="_rowCount">
     </div>
-    <div class="col-xs-2 w-10 mr-3">
-        <label for="sideLength" class="mb-sm-0">Side Length (96 = 1")</label>
-        <input class="form-control form-control-sm" id="sideLength" type="text" @bind="_sideLen">
+    <div class="mr-5 mb-3 " style="width:50px">
+        <label for="size" class="mb-0">Size</label>
+        <input class="form-control form-control-sm" id="size" type="text" @bind="_size">
     </div>
-</div>
-
-<div class="form-group row ml-2">
-    <div class="col-xs-2 w-10 mr-3 form-row align-items-center">
-        @foreach (var scheme in new[] { OffsetScheme.Even_Q, OffsetScheme.Odd_Q, OffsetScheme.Even_R, OffsetScheme.Odd_R })
-        {
-            <label class="mr-3" style='margin-bottom:0rem !important;' >
-                <input name="offsetScheme" type="radio" value="@scheme" checked="@(_offsetScheme == scheme)" @onchange="@(() => { _offsetScheme = scheme; })" />
-                @scheme.ToString()
-            </label>
-        }
+    <div class="mr-3 mb-3" style="width:80px">
+        <label for="style" class="mb-0">Style</label>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="style" checked="@(_isStylePointy == false)" @onchange="@(() => ToggleStyle())">
+            <label class="custom-control-label" for="style">@_styleText</label>
+        </div>
     </div>
-    <div class="col-xs-2 w-10 mr-3">
+    <div class="mr-3 mb-3" style="width:80px">
+        <label for="offset" class="mb-0">Offset</label>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="offset" checked="@(_isOffsetOdd == false)" @onchange="@(() => ToggleOffset())">
+            <label class="custom-control-label" for="offset">@_offsetText</label>
+        </div>
+    </div>
+    <div class="mr-3 mb-3" style="width:80px">
+        <label for="skew" class="mb-0">Skew</label>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="skew" checked="@(_isSkewRight == false)" @onchange="@(() => ToggleSkew())">
+            <label class="custom-control-label" for="skew">@_skewText</label>
+        </div>
+    </div>
+    <div class="mr-3 mb-3">
         <button class="btn btn-outline-primary btn-sm" @onclick="GenerateTheGrid">Generate The Grid</button>
     </div>
-    <div class="col-xs-2 w-10 mr-3">
+    <div class="mr-3 mb-3">
         <button class="btn btn-outline-primary btn-sm" @onclick="SaveMe" disabled="@_saveDisabled">Save To File</button>
     </div>
 </div>
 
 <div class="form-group row ml-0">
-    <div class="col-xs-2 w-10 mr-3">
-        <label for="hexStrokeWidth" class="mb-sm-0">Hex Line Thickness</label>
+    <div class="mr-3">
+        <label for="hexStrokeWidth" class="mb-0">Hex Line Thickness</label>
         <input class="form-control form-control-sm" id="hexStrokeWidth" type="text" @bind="_hexStrokeWidth">
     </div>
-    <div class="col-xs-2 w-10 mr-3">
-        <label for="hexStroke" class="mb-sm-0">Hex Line Color</label>
+    <div class="mr-3">
+        <label for="hexStroke" class="mb-0">Hex Line Color</label>
         <input class="form-control form-control-sm" id="hexStroke" type="text" @bind="_hexStroke">
     </div>
-    <div class="col-xs-2 w-10 mr-3 form-row align-items-end">
+    <div class="mr-3 form-row align-items-end">
         <label for="showStars" class="ml-3" style="margin-bottom:0rem !important;">
             <input id="showStars" type="checkbox" @bind="_showStars">
             Show Center Points
@@ -56,19 +63,19 @@
 </div>
 
 <div class="form-group row ml-0">
-    <div class="col-xs-2 w-10 mr-3">
-        <label for="megaStrokeWidth" class="mb-sm-0">Megahex Line Thickness</label>
+    <div class="mr-3">
+        <label for="megaStrokeWidth" class="mb-0">Megahex Line Thickness</label>
         <input class="form-control form-control-sm" id="megaStrokeWidth" type="text" @bind="_megaStrokeWidth">
     </div>
-    <div class="col-xs-2 w-10 mr-3">
-        <label for="megaStroke" class="mb-sm-0">Megahex Line Color</label>
+    <div class="mr-3">
+        <label for="megaStroke" class="mb-0">Megahex Line Color</label>
         <input class="form-control form-control-sm" id="megaStroke" type="text" @bind="_megaStroke">
     </div>
 </div>
 
 <div class="form-group">
-    <label class="mb-sm-0">@_hexLabel</label>
-    <div id="svgDiv" @ref="_divRef" @onclick="SvgOnClick" @oncontextmenu="SvgOnClick" @oncontextmenu:preventDefault="true" >
+    <label class="mb-0">@_hexLabel</label>
+    <div id="svgDiv" @ref="_divRef" @onclick="SvgOnClick" @oncontextmenu="SvgOnClick" @oncontextmenu:preventDefault="true" class="mb-2" >
         <BSvg @ref="_svgRef" ViewBox="-408 -528 816 1056"
               HexStroke="@_hexStroke" HexStrokeWidth="@_hexStrokeWidth"
               MegaStroke="@_megaStroke" MegaStrokeWidth="@_megaStrokeWidth"

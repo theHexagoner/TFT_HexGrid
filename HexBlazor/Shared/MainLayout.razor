@@ -1,15 +1,15 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="page">
-    <div class="sidebar">
+    @*<div class="sidebar">
         <NavMenu />
-    </div>
+    </div>*@
 
     <div class="main">
-        <div class="top-row px-4">
-            <a href="https://github.com/theHexagoner/TFT_HexGrid" target="_blank" class="ml-md-auto">TFT HexGrid On GitHub</a>
+        <div class="top-row px-4 d-flex justify-content-between align-items-end">
+            <h2 class="mb-0">TFT Hex Grid</h2>
+            <a href="https://github.com/theHexagoner/TFT_HexGrid" target="_blank">TFT HexGrid On GitHub</a>
         </div>
-
         <div class="content px-4">
             @Body
         </div>

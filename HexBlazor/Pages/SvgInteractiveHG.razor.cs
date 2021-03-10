@@ -18,7 +18,17 @@ namespace HexBlazor.Pages
 
         private int _rowCount = 23;
         private int _colCount = 21;
-        private double _sideLen = 24d;
+        private double _size = 24d;
+
+        private string _styleText = "Flat";
+        private bool _isStylePointy = false;
+
+        private string _offsetText = "Even";
+        private bool _isOffsetOdd = false;
+        
+        private string _skewText = "Left";
+        private bool _isSkewRight = false;
+
         private OffsetScheme _offsetScheme = OffsetScheme.Even_Q;
 
         private float _hexStrokeWidth = 1f;
@@ -47,6 +57,24 @@ namespace HexBlazor.Pages
 
         #endregion
 
+        private void ToggleStyle()
+        {
+            _isStylePointy = !_isStylePointy;
+            _styleText = _isStylePointy ? "Pointy" : " Flat ";
+        }
+
+        private void ToggleOffset()
+        {
+            _isOffsetOdd = !_isOffsetOdd;
+            _offsetText = _isOffsetOdd ? "Odd" : "Even";
+        }
+
+        private void ToggleSkew()
+        {
+            _isSkewRight = !_isSkewRight;
+            _skewText = _isSkewRight ? "Right" : "Left";
+        }
+
         /// <summary>
         /// instantiate the grid and it's content, then pass its geometry into the SVG
         /// </summary>
@@ -57,7 +85,7 @@ namespace HexBlazor.Pages
                 _hexLabel = "Loading...";
                 await Task.Delay(1);
 
-                var size = new GridPoint(_sideLen, _sideLen);
+                var size = new GridPoint(_size, _size);
                 var origin = new GridPoint(0.5d, .5d);
 
                 _grid = new Grid(_rowCount, _colCount, size, origin, _offsetScheme);
@@ -167,7 +195,7 @@ namespace HexBlazor.Pages
         {
             if (!_saveDisabled)
             {
-                var filename = string.Format("{0}r_{1}c_{2}_hexgrid.svg", _rowCount, _colCount, _sideLen);
+                var filename = string.Format("{0}r_{1}c_{2}_hexgrid.svg", _rowCount, _colCount, _size);
                 var paramz = new object[] { _svgRef.Svg, filename };
                 try
                 {
