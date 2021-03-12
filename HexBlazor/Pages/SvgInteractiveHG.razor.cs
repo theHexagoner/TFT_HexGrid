@@ -29,8 +29,6 @@ namespace HexBlazor.Pages
         private string _skewText = "Left";
         private bool _isSkewRight = false;
 
-        private OffsetScheme _offsetScheme = OffsetScheme.Even_Q;
-
         private float _hexStrokeWidth = 1f;
         private string _hexStroke = "#000000";
 
