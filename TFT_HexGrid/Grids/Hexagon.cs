@@ -18,14 +18,14 @@ namespace TFT_HexGrid.Grids
         /// </summary>
         /// <param name="grid">the parent grid that contains this hexagon</param>
         /// <param name="coords">the offset coordinates of the hexagon</param>
-        public Hexagon(Grid grid, Offset coords) : this(grid, Cube.GetCubeFromOffset(grid.OffsetScheme, coords), coords) { }
+        public Hexagon(Grid grid, Offset coords) : this(grid, Cube.GetCubeFromOffset(grid.OffsetSchema, coords), coords) { }
 
         /// <summary>
         /// construct a hexagon by passing the grid and cubic coordinates
         /// </summary>
         /// <param name="grid">the parent grid that contains this hex</param>
         /// <param name="coords">the cubic coordinates of the hexagon</param>
-        public Hexagon(Grid grid, Cube coords) : this(grid, coords, Offset.GetOffset(grid.OffsetScheme, coords)) { }
+        public Hexagon(Grid grid, Cube coords) : this(grid, coords, Offset.GetOffset(grid.OffsetSchema, coords)) { }
 
         private Hexagon(Grid grid, Cube cubeCoords, Offset offsetCoords)
         {

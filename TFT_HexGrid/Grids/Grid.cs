@@ -7,16 +7,6 @@ using TFT_HexGrid.SvgHelpers;
 
 namespace TFT_HexGrid.Grids
 {
-    /// <summary>
-    /// enumeration describing the four different ways to organize a hex grid into rectangular pattern of offset coordinates
-    /// </summary>
-    public enum OffsetScheme
-    {
-        Even_Q, // flat-top hexes, shoves even columns down
-        Odd_Q,  // flat-too hexes, shoves odd columns down
-        Odd_R,  // pointy-top hexes, shoves odd rows towards right
-        Even_R  // pointy-top hexes, shoves even rows towards right
-    }
 
     public enum HexagonStyle
     {
@@ -98,18 +88,9 @@ namespace TFT_HexGrid.Grids
         {
             Rows = rows;
             Cols = cols;
+            OffsetSchema = schema;
 
-            switch (schema.Offset)
-            {
-                case OffsetPush.Even:
-                    OffsetScheme = schema.Style == HexagonStyle.Flat ? OffsetScheme.Even_Q : OffsetScheme.Even_R;
-                    break;
-                case OffsetPush.Odd:
-                    OffsetScheme = schema.Style == HexagonStyle.Flat ? OffsetScheme.Odd_Q : OffsetScheme.Odd_R;
-                    break;
-            }
-
-            HexGeometry geometry = OffsetScheme == OffsetScheme.Even_Q || OffsetScheme == OffsetScheme.Odd_Q ?
+            HexGeometry geometry = OffsetSchema.Style == HexagonStyle.Flat ?
                 new HexGeometry(1.5d, 0d, Math.Sqrt(3d) / 2d, Math.Sqrt(3d), 2d / 3d, 0d, -1d / 3d, Math.Sqrt(3d) / 3d, 0d) : // flat
                 new HexGeometry(Math.Sqrt(3d), Math.Sqrt(3d) / 2d, 0d, 1.5d, Math.Sqrt(3d) / 3d, -1d / 3d, 0d, 2d / 3d, 0.5d); // pointy
 
@@ -142,7 +123,7 @@ namespace TFT_HexGrid.Grids
             }
 
             // get the megagon location of each hexagon
-            SvgMegagonsFactory.Instance.SetMegaLocations(OffsetScheme, Hexagons.Values.ToArray());
+            SvgMegagonsFactory.Instance.SetMegaLocations(OffsetSchema, Hexagons.Values.ToArray());
 
             // get the SVG data for each hexagon
             foreach (Hexagon h in Hexagons.Values)
@@ -182,9 +163,9 @@ namespace TFT_HexGrid.Grids
         #region Layout
 
         /// <summary>
-        /// which version of the rectangular offset coordinate scheme this grid uses
+        /// which permutation of a rectangular offset coordinate scheme this grid uses
         /// </summary>
-        internal OffsetScheme OffsetScheme { get; private set; }
+        internal OffsetSchema OffsetSchema { get; private set; }
 
         private HexLayout Layout { get; set; }
 
@@ -346,7 +327,7 @@ namespace TFT_HexGrid.Grids
 
         internal int GetHashcodeForCube(Cube cube)
         {
-            return HashCode.Combine(OffsetScheme, Rows, Cols, cube.GetHashCode());
+            return HashCode.Combine(OffsetSchema.Style, OffsetSchema.Offset, OffsetSchema.Skew, Rows, Cols, cube.GetHashCode());
         }
 
         internal GridPoint[] GetHexCornerPoints(Cube hex, double factor = 1)

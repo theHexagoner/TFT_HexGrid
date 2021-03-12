@@ -97,14 +97,13 @@ namespace TFT_HexGrid.Coordinates
         private static readonly int EVEN = 1;
         private static readonly int ODD = -1;
 
-        public static Cube GetCubeFromOffset(OffsetScheme layout, Offset hex)
+        public static Cube GetCubeFromOffset(OffsetSchema schema, Offset hex)
         {
-            return layout switch
+            return schema.Style switch
             {
-                OffsetScheme.Even_R => OffsetToCubeR(EVEN, hex),
-                OffsetScheme.Odd_Q => OffsetToCubeQ(ODD, hex),
-                OffsetScheme.Odd_R => OffsetToCubeR(ODD, hex),
-                _ => OffsetToCubeQ(EVEN, hex),
+                HexagonStyle.Flat => OffsetToCubeQ(schema.Offset == OffsetPush.Even ? EVEN : ODD, hex),
+                HexagonStyle.Pointy => OffsetToCubeR(schema.Offset == OffsetPush.Even ? EVEN : ODD, hex),
+                _ => throw new ArgumentException(string.Format("Invalid Style {0} specified for OffsetSchema", schema.Style))
             };
         }
 
@@ -228,17 +227,16 @@ namespace TFT_HexGrid.Coordinates
         /// <summary>
         /// convert a cube to offset (row, column) coordinates
         /// </summary>
-        /// <param name="layout">the layout of the parent grid</param>
+        /// <param name="schema">the schema of the parent grid</param>
         /// <param name="hex">the hex for which you want the offset coordinates</param>
         /// <returns>Offset</returns>
-        public static Offset GetOffset(OffsetScheme layout, Cube hex)
+        public static Offset GetOffset(OffsetSchema schema, Cube hex)
         {
-            return layout switch
+            return schema.Style switch
             {
-                OffsetScheme.Even_R => GetOffsetR(EVEN, hex),
-                OffsetScheme.Odd_Q => GetOffsetQ(ODD, hex),
-                OffsetScheme.Odd_R => GetOffsetR(ODD, hex),
-                _ => GetOffsetQ(EVEN, hex),
+                HexagonStyle.Flat => GetOffsetQ(schema.Offset == OffsetPush.Even ? EVEN : ODD, hex),
+                HexagonStyle.Pointy => GetOffsetR(schema.Offset == OffsetPush.Even ? EVEN : ODD, hex),
+                _ => throw new ArgumentException(string.Format("Invalid Style {0} specified for OffsetSchema", schema.Style))
             };
         }
 
