@@ -57,6 +57,8 @@ namespace HexBlazor.Pages
 
         #endregion
 
+        #region Offset Scheme
+
         private void ToggleStyle()
         {
             _isStylePointy = !_isStylePointy;
@@ -75,6 +77,8 @@ namespace HexBlazor.Pages
             _skewText = _isSkewRight ? "Right" : "Left";
         }
 
+        #endregion
+
         /// <summary>
         /// instantiate the grid and it's content, then pass its geometry into the SVG
         /// </summary>
@@ -87,8 +91,9 @@ namespace HexBlazor.Pages
 
                 var size = new GridPoint(_size, _size);
                 var origin = new GridPoint(0.5d, .5d);
+                var schema = new OffsetSchema(_isStylePointy, _isOffsetOdd, _isSkewRight);
 
-                _grid = new Grid(_rowCount, _colCount, size, origin, _offsetScheme);
+                _grid = new Grid(_rowCount, _colCount, size, origin, schema);
                 _map = _grid.InitMap();
 
                 _svgRef.SetGeometry(_grid.SvgHexagons, _grid.SvgMegagons);

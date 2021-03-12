@@ -18,6 +18,46 @@ namespace TFT_HexGrid.Grids
         Even_R  // pointy-top hexes, shoves even rows towards right
     }
 
+    public enum HexagonStyle
+    {
+        Flat = 0,
+        Pointy = 1
+    }
+
+    public enum MegagonSkew
+    {
+        Left = 0,
+        Right = 1
+    }
+
+    public enum OffsetPush
+    {
+        Even = 0,
+        Odd = 1
+    }
+
+    public struct OffsetSchema
+    {
+        public readonly HexagonStyle Style;
+        public readonly OffsetPush Offset;
+        public readonly MegagonSkew Skew;
+
+        public OffsetSchema(HexagonStyle style, OffsetPush offset, MegagonSkew skew)
+        {
+            Style = style;
+            Offset = offset;
+            Skew = skew;
+        }
+
+        public OffsetSchema(bool isPointy, bool isOdd, bool isRight)
+        {
+            Style = isPointy ? HexagonStyle.Pointy : HexagonStyle.Flat;
+            Offset = isOdd ? OffsetPush.Odd : OffsetPush.Even;
+            Skew = isRight ? MegagonSkew.Right : MegagonSkew.Left;
+        }
+
+    }
+
     public class Grid
     {
         // notes:   Hexagonal grids can be thought of as two-dimensional representation of a three-dimensional (cubic) coordinate system.
@@ -128,6 +168,93 @@ namespace TFT_HexGrid.Grids
                 }
             }
         }
+
+        public Grid(int rows, int cols, GridPoint size, GridPoint origin, OffsetSchema schema)
+        {
+            Rows = rows;
+            Cols = cols;
+
+            switch (schema.Offset)
+            {
+                case OffsetPush.Even:
+                    OffsetScheme = schema.Style == HexagonStyle.Flat ? OffsetScheme.Even_Q : OffsetScheme.Even_R;
+                    break;
+                case OffsetPush.Odd:
+                    OffsetScheme = schema.Style == HexagonStyle.Flat ? OffsetScheme.Odd_Q : OffsetScheme.Odd_R;
+                    break;
+            }
+
+            HexGeometry geometry = OffsetScheme == OffsetScheme.Even_Q || OffsetScheme == OffsetScheme.Odd_Q ?
+                new HexGeometry(1.5d, 0d, Math.Sqrt(3d) / 2d, Math.Sqrt(3d), 2d / 3d, 0d, -1d / 3d, Math.Sqrt(3d) / 3d, 0d) : // flat
+                new HexGeometry(Math.Sqrt(3d), Math.Sqrt(3d) / 2d, 0d, 1.5d, Math.Sqrt(3d) / 3d, -1d / 3d, 0d, 2d / 3d, 0.5d); // pointy
+
+            Layout = new HexLayout(geometry, size, origin);
+            Hexagons = new Dictionary<int, Hexagon>();
+            SvgHexagons = new Dictionary<int, SvgHexagon>();
+            SvgMegagons = new Dictionary<int, SvgMegagon>();
+            Edges = new Dictionary<int, GridEdge>();
+
+            var halfRows = (int)Math.Floor(rows / 2d);
+            var splitRows = halfRows - rows;
+            var halfCols = (int)Math.Floor(cols / 2d);
+            var splitCols = halfCols - cols;
+
+            // iterate over requested colums and rows and create hexes, adding them to hash table
+            // create some "overscan" to facilitate getting partial megagons
+            Overscan = new List<int>();
+
+            for (int r = splitRows - 1; r < halfRows + 2; r++)
+            {
+                for (int c = splitCols - 1; c < halfCols + 2; c++)
+                {
+                    var hex = new Hexagon(this, new Offset(r, c));
+                    var hash = hex.ID;
+                    Hexagons.Add(hash, hex);
+
+                    if (GetIsOutOfBounds(Rows, Cols, hex.OffsetLocation))
+                        Overscan.Add(hex.ID);
+                }
+            }
+
+            // get the megagon location of each hexagon
+            SvgMegagonsFactory.Instance.SetMegaLocations(OffsetScheme, Hexagons.Values.ToArray());
+
+            // get the SVG data for each hexagon
+            foreach (Hexagon h in Hexagons.Values)
+            {
+                SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.OffsetLocation.Row, h.OffsetLocation.Col, h.Points));
+            }
+
+            // TRIM hexagons outside the requested offset limits for the grid
+            Overscan.ForEach(id => {
+                foreach (GridEdge edge in Hexagons[id].Edges)
+                {
+                    if (edge.Hexagons.ContainsKey(id))
+                        edge.Hexagons.Remove(id);
+
+                    if (edge.Hexagons.Count == 0 && Edges.ContainsKey(edge.ID))
+                    {
+                        Edges.Remove(edge.ID);
+                    }
+                }
+
+                Hexagons.Remove(id);
+                SvgHexagons.Remove(id);
+            });
+
+            // build the SvgMegagons
+            foreach (GridEdge edge in Edges.Values)
+            {
+                if (SvgMegagonsFactory.GetEdgeIsMegaLine(edge))
+                {
+                    // add a new SvgMegagon
+                    SvgMegagons.Add(edge.ID, new SvgMegagon(edge.ID, SvgMegagonsFactory.GetPathD(edge)));
+                }
+            }
+
+        }
+
+
 
         #region Layout
 
