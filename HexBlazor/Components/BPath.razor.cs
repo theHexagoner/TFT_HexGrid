@@ -13,19 +13,19 @@ namespace HexBlazor.Components
         [Parameter]
         public string D { get; set; }
 
-        [CascadingParameter]
-        public BSvg Container { get; set; }
+        //[CascadingParameter]
+        //public BSvg Container { get; set; }
 
-        protected override void OnInitialized()
-        {
-            Container.AddBPath(this);
-        }
+        //protected override void OnInitialized()
+        //{
+        //    Container.AddBPath(this);
+        //}
 
-        public async Task SetD(string d)
-        {
-            D = d;
-            StateHasChanged();
-        }
+        //public async Task SetD(string d)
+        //{
+        //    D = d;
+        //    StateHasChanged();
+        //}
 
     }
 }

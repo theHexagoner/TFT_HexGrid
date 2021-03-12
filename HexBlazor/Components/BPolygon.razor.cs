@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using System.Threading.Tasks;
 
 namespace HexBlazor.Components
 {
@@ -32,20 +31,8 @@ namespace HexBlazor.Components
             return IsSelected ? Container.HexStroke : "none";
         }
 
-
         [CascadingParameter]
         public BSvg Container { get; set; }
-
-        protected override void OnInitialized()
-        {
-            Container.AddBPolygon(this);
-        }
-
-        public async Task SetIsSelected(bool isSelected)
-        {
-            await Task.Delay(1);
-            IsSelected = isSelected;
-        }
 
     }
 
