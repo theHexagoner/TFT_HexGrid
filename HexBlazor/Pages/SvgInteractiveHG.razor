@@ -4,17 +4,17 @@
 @inject IJSRuntime jsRuntime
 
 <div class="form-group row ml-0 align-items-center">
-    <div class="mr-3 mb-3" style="width:50px">
+    <div class="mr-3 mb-3" style="width:55px">
         <label for="rowCount" class="mb-0">Rows</label>
-        <input class="form-control form-control-sm" id="rowCount" type="text" @bind="_rowCount">
+        <input type="number" min="1" step="1" class="form-control form-control-sm" id="rowCount" @bind="_rowCount">
     </div>
-    <div class="mr-3 mb-3" style="width:50px">
+    <div class="mr-3 mb-3" style="width:55px">
         <label for="colCount" class="mb-0">Cols</label>
-        <input class="form-control form-control-sm" id="colCount" type="text" @bind="_colCount">
+        <input type="number" min="1" step="1" class="form-control form-control-sm" id="colCount" @bind="_colCount">
     </div>
-    <div class="mr-5 mb-3 " style="width:50px">
+    <div class="mr-5 mb-3" style="width:55px">
         <label for="size" class="mb-0">Size</label>
-        <input class="form-control form-control-sm" id="size" type="text" @bind="_size">
+        <input type="number" min="1" class="form-control form-control-sm" id="size" @bind="_size">
     </div>
     
     <div class="mr-3 mb-3" style="width:80px">
@@ -47,31 +47,38 @@
     </div>
 </div>
 
-<div class="form-group row ml-0">
-    <div class="mr-3">
-        <label for="hexStrokeWidth" class="mb-0">Hex Line Thickness</label>
-        <input class="form-control form-control-sm" id="hexStrokeWidth" type="text" @bind="_hexStrokeWidth">
+<div class="form-group row ml-0" >
+    <div class="form-group mr-0" >
+        <small class="form-text text-muted">Hexagon Lines</small>
+        <div class="form-group row ml-3 mr-0">
+            <div class="mr-3" style="width:55px">
+                <label for="hexStrokeWidth" class="mb-0">Width</label>
+                <input type="number" min="1" class="form-control form-control-sm" id="hexStrokeWidth" @bind="_hexStrokeWidth">
+            </div>
+            <div style="width:55px">
+                <label for="hexStroke" class="mb-0">Color</label>
+                <input class="form-control form-control-sm" id="hexStroke" type="color" @bind="_hexStroke">
+            </div>
+        </div>
     </div>
-    <div class="mr-3">
-        <label for="hexStroke" class="mb-0">Hex Line Color</label>
-        <input class="form-control form-control-sm" id="hexStroke" type="text" @bind="_hexStroke">
-    </div>
-    <div class="mr-3 form-row align-items-end">
-        <label for="showStars" class="ml-3" style="margin-bottom:0rem !important;">
-            <input id="showStars" type="checkbox" @bind="_showStars">
-            Show Center Points
-        </label>
-    </div>
-</div>
-
-<div class="form-group row ml-0">
-    <div class="mr-3">
-        <label for="megaStrokeWidth" class="mb-0">Megahex Line Thickness</label>
-        <input class="form-control form-control-sm" id="megaStrokeWidth" type="text" @bind="_megaStrokeWidth">
-    </div>
-    <div class="mr-3">
-        <label for="megaStroke" class="mb-0">Megahex Line Color</label>
-        <input class="form-control form-control-sm" id="megaStroke" type="text" @bind="_megaStroke">
+    <div class="ml-3">
+        <small class="form-text text-muted">Megahex Lines</small>
+        <div class="form-group row ml-3">
+            <div class="mr-3" style="width:55px">
+                <label for="megaStrokeWidth" class="mb-0">Width</label>
+                <input type="number" min="1" class="form-control form-control-sm" id="megaStrokeWidth" @bind="_megaStrokeWidth">
+            </div>
+            <div class="mr-4" style="width:55px">
+                <label for="megaStroke" class="mb-0">Color</label>
+                <input class="form-control form-control-sm" id="megaStroke" type="color" @bind="_megaStroke">
+            </div>
+            <div class="mt-3 form-row align-items-end">
+                <label for="showStars" class="ml-3" style="margin-bottom:0rem !important;">
+                    <input id="showStars" type="checkbox" @bind="_showStars">
+                    Show Center Points
+                </label>
+            </div>
+        </div>
     </div>
 </div>
 
