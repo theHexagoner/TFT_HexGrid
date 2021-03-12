@@ -179,8 +179,6 @@ namespace TFT_HexGrid.Grids
 
         }
 
-
-
         #region Layout
 
         /// <summary>

@@ -69,6 +69,7 @@ namespace HexBlazor.Components
         public async Task UpdateHexIsSelected(int id, bool isSelected)
         {
             await _bPolys[id].SetIsSelected(isSelected);
+            StateHasChanged();
         }
 
         #endregion

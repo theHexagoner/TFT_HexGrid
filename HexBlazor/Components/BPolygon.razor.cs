@@ -43,8 +43,8 @@ namespace HexBlazor.Components
 
         public async Task SetIsSelected(bool isSelected)
         {
+            await Task.Delay(1);
             IsSelected = isSelected;
-            StateHasChanged();
         }
 
     }

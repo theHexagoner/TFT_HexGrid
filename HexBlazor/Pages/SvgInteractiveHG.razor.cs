@@ -138,9 +138,6 @@ namespace HexBlazor.Pages
                 var translatedX = (mouseX * scaleW) - TRANSLATE_W;
                 var translatedY = (mouseY * scaleH) - TRANSLATE_H;
 
-                //_mouseLabel = string.Format(" {0}, {1}", mouseX, mouseY);
-                //_translateLabel = string.Format(" {0}, {1}", translatedX, translatedY);
-
                 // get the grid hex the user clicked on, if any:
                 var hex = _grid.GetHexAt(new GridPoint(translatedX, translatedY));
                 _hexLabel = hex != null ? string.Format("Clicked Row, Col: {0}, {1}", hex.Row, hex.Col) : "none";
