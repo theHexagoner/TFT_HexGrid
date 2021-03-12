@@ -44,8 +44,8 @@ namespace TFT_HexGrid.SvgHelpers
             {
                 { OffsetScheme.Even_Q, new EvenQ_MegagonLocationSetter() }
                ,{ OffsetScheme.Even_R, new EvenR_MegagonLocationSetter() }
-               ,{ OffsetScheme.Odd_Q, new EvenR_MegagonLocationSetter() }
-               ,{ OffsetScheme.Odd_R, new EvenR_MegagonLocationSetter() }
+               ,{ OffsetScheme.Odd_Q, new OddQ_MegagonLocationSetter() }
+               ,{ OffsetScheme.Odd_R, new OddR_MegagonLocationSetter() }
             };
 
         }
