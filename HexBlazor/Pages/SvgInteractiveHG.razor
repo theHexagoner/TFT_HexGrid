@@ -12,8 +12,8 @@
         <label for="colCount" class="mb-0">Cols</label>
         <input type="number" min="1" step="1" class="form-control form-control-sm" id="colCount" @bind="_colCount">
     </div>
-    <div class="mr-5 mb-3" style="width:55px">
-        <label for="size" class="mb-0">Size</label>
+    <div class="mr-5 mb-3" style="width:75px">
+        <label for="size" class="mb-0">Size &Prime;</label>
         <input type="number" min="1" class="form-control form-control-sm" id="size" @bind="_size">
     </div>
     
@@ -97,9 +97,21 @@
 </div>
 
 <div class="form-group">
-    <label class="mb-0">@_hexLabel</label>
-    <div id="svgDiv" @ref="_divRef" @onclick="SvgOnClick" @oncontextmenu="SvgOnClick" @oncontextmenu:preventDefault="true" class="mb-2" >
-        <BSvg @ref="_svgRef" ViewBox="-408 -528 816 1056"
+    <div class="row ml-0 mb-1" >
+        <div class="mr-3 ml-0 row">
+            <label for="widthInches" class="col-form-label col-form-label-sm ml-0 mr-1">Width</label>
+            <input type="number" min="1" class="form-control form-control-sm ml-1 mr-0" id="widthInches" @bind="_widthInches" style="width:55px">
+        </div>
+        <div class="mr-3 ml-0 row" >
+            <label for="heightInches" class="col-form-label col-form-label-sm ml-0 mr-1">Height</label>
+            <input type="number" min="1" class="form-control form-control-sm ml-1 mr-0" id="heightInches" @bind="_heightInches" style="width:55px">
+        </div>
+        <div class="mr-3 ml-0">
+            <button class="btn btn-outline-primary btn-sm" @onclick="SetViewBox">Set Dimensions</button>
+        </div>
+    </div>
+    <div id="svgDiv" @ref="_divRef" @onclick="SvgOnClick" @oncontextmenu="SvgOnClick" @oncontextmenu:preventDefault="true" class="mb-2">
+        <BSvg @ref="_svgRef" ViewBox="@_viewBox"
               BackgroundFill="@_bgFill"
               HexStroke="@_hexStroke" HexStrokeWidth="@_hexStrokeWidth" HexFill="@_hexFill"
               MegaStroke="@_megaStroke" MegaStrokeWidth="@_megaStrokeWidth"

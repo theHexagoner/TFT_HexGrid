@@ -20,7 +20,7 @@ namespace HexBlazor.Components
         public string BackgroundFill { get; set; }
 
         [Parameter]
-        public string ViewBox { get; set; }
+        public SvgViewBox ViewBox { get; set; }
 
         [Parameter]
         public string Translation { get; set; }

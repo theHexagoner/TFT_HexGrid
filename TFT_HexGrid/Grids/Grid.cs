@@ -72,19 +72,19 @@ namespace TFT_HexGrid.Grids
         /// </summary>
         /// <param name="rows">the number of rows in the grid</param>
         /// <param name="cols">the number of columns in the grid</param>
-        /// <param name="size">controls size of hexs, using a point allows for "squishy" hexes</param>
-        /// <param name="origin">sets the coordinates for the center of hex 0,0,0</param>
-        public Grid(int rows, int cols, GridPoint size, GridPoint origin) : this(rows, cols, size, origin, new OffsetSchema()) {}
+        /// <param name="radius">distance from center of a hex to any of its corner points</param>
+        /// <param name="origin">sets the cartesian coordinates for the center of cube a location 0,0,0</param>
+        public Grid(int rows, int cols, GridPoint radius, GridPoint origin) : this(rows, cols, radius, origin, new OffsetSchema()) {}
 
         /// <summary>
         /// constructor for Grid, passing all configuration options
         /// </summary>
         /// <param name="rows">the number of rows in the grid</param>
         /// <param name="cols">the number of columns in the grid</param>
-        /// <param name="size">controls size of hexs, using a point allows for "squishy" hexes</param>
-        /// <param name="origin">sets the coordinates for the center of hex 0,0,0</param>
+        /// <param name="radius">distance from the center of a hexagon, in px, to any of its corner points</param>
+        /// <param name="origin">sets the cartesian coordinates for the center of cube a location 0,0,0</param>
         /// <param name="schema">determines orientation and offsets of hexes and megahexes</param>
-        public Grid(int rows, int cols, GridPoint size, GridPoint origin, OffsetSchema schema)
+        public Grid(int rows, int cols, GridPoint radius, GridPoint origin, OffsetSchema schema)
         {
             Rows = rows;
             Cols = cols;
@@ -94,7 +94,7 @@ namespace TFT_HexGrid.Grids
                 new HexGeometry(1.5d, 0d, Math.Sqrt(3d) / 2d, Math.Sqrt(3d), 2d / 3d, 0d, -1d / 3d, Math.Sqrt(3d) / 3d, 0d) : // flat
                 new HexGeometry(Math.Sqrt(3d), Math.Sqrt(3d) / 2d, 0d, 1.5d, Math.Sqrt(3d) / 3d, -1d / 3d, 0d, 2d / 3d, 0.5d); // pointy
 
-            Layout = new HexLayout(geometry, size, origin);
+            Layout = new HexLayout(geometry, radius, origin);
             Hexagons = new Dictionary<int, Hexagon>();
             SvgHexagons = new Dictionary<int, SvgHexagon>();
             SvgMegagons = new Dictionary<int, SvgMegagon>();

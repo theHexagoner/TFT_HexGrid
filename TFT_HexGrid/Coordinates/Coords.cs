@@ -294,6 +294,12 @@ namespace TFT_HexGrid.Coordinates
         public readonly double X;
         public readonly double Y;
 
+        public GridPoint(double size)
+        {
+            X = size;
+            Y = size;
+        }
+
         public GridPoint(double x, double y)
         {
             X = x;

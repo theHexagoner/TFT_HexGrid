@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using TFT_HexGrid.Coordinates;
 using TFT_HexGrid.Grids;
 using TFT_HexGrid.Maps;
+using TFT_HexGrid.SvgHelpers;
 
 namespace HexBlazor.Pages
 {
@@ -16,9 +17,40 @@ namespace HexBlazor.Pages
     {
         #region private fields
 
+        private const int DPI = 96;
+
+        private ElementReference _divRef;
+        private BSvg _svgRef;
+        private Grid _grid;
+        private Map _map;
+
+        private bool _saveDisabled = true;
+        private bool _isShowingMap = false;
+
+        #region the SVG
+
+        public double _widthInches = 8.5d;
+        public double _heightInches = 11d;
+        private SvgViewBox _viewBox = new(-408d, -528d, 816d, 1056d);
+
+        private void SetViewBox()
+        {
+            double pxH = _heightInches * DPI;
+            double pxW = _widthInches * DPI;
+
+            double transW = -pxW / 2;
+            double transH = -pxH / 2;
+
+            _viewBox = new SvgViewBox(transW, transH, pxW, pxH);
+        }
+
+        #endregion
+
+        #region the Grid
+
         private int _rowCount = 23;
         private int _colCount = 21;
-        private double _size = 24d;
+        private double _size = .25d;
 
         private string _styleText = "Flat";
         private bool _isStylePointy = false;
@@ -37,24 +69,10 @@ namespace HexBlazor.Pages
 
         private float _megaStrokeWidth = 3f;
         private string _megaStroke = "#000000";
-
-        private string _hexLabel = string.Empty;
-
-        private const double VBOX_H = 1056d;
-        private const double VBOX_W = 816d;
-        private const double TRANSLATE_H = 528d; // half width in pixels @ 96ppi
-        private const double TRANSLATE_W = 408d; // half height in pixels @ 96ppi
-
-        private ElementReference _divRef;
-        private BSvg _svgRef;
-
-        private Grid _grid;
-        private Map _map;
-
-        private bool _saveDisabled = true;
-        private bool _isShowingMap = false;
-
+        
         private bool _showStars = false;
+
+        #endregion
 
         #endregion
 
@@ -87,24 +105,26 @@ namespace HexBlazor.Pages
         {
             try
             {
-                _hexLabel = "Loading...";
+                // show a spinner here
                 await Task.Delay(1);
-
-                var size = new GridPoint(_size, _size);
+                
                 var origin = new GridPoint(0.5d, .5d);
                 var schema = new OffsetSchema(_isStylePointy, _isOffsetOdd, _isSkewRight);
+                var pxRadius = (_size / Math.Sqrt(3)) * DPI;
+                var size = new GridPoint(pxRadius);
 
                 _grid = new Grid(_rowCount, _colCount, size, origin, schema);
                 _map = _grid.InitMap();
 
                 _svgRef.SetGeometry(_grid.SvgHexagons, _grid.SvgMegagons);
                 _saveDisabled = false;
-                _hexLabel = "Clicked Row, Col: ";
+
+                // hide the spinner here
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                _hexLabel = "Error!";
+                // hide the spinner here
             }
         }
 
@@ -129,8 +149,8 @@ namespace HexBlazor.Pages
                 // calculate the factor by which to multiply the TRANSLATE_ vars
                 // Width and Height should be same factor?
 
-                var scaleW = VBOX_W / divWidth;
-                var scaleH = VBOX_H / divHeight;
+                var scaleW = _viewBox.Width / divWidth;
+                var scaleH = _viewBox.Height / divHeight;
 
                 // get the actual coordinates of the mouse click relative to the div:
                 double mouseX = eventArgs.ClientX - oLeft;
@@ -138,12 +158,11 @@ namespace HexBlazor.Pages
 
                 // translate these for the 0,0 origin being located at center
                 // translation factor must be scaled relative to actual size of div as displayed on screen
-                var translatedX = (mouseX * scaleW) - TRANSLATE_W;
-                var translatedY = (mouseY * scaleH) - TRANSLATE_H;
+                var translatedX = (mouseX * scaleW) + _viewBox.OriginX;
+                var translatedY = (mouseY * scaleH) + _viewBox.OriginY;
 
                 // get the grid hex the user clicked on, if any:
                 var hex = _grid.GetHexAt(new GridPoint(translatedX, translatedY));
-                _hexLabel = hex != null ? string.Format("Clicked Row, Col: {0}, {1}", hex.Row, hex.Col) : "none";
 
                 // left-click to add the hex to the map if not already present
                 if (hex != null && eventArgs.Button == 0)
