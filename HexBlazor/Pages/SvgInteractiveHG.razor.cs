@@ -29,8 +29,11 @@ namespace HexBlazor.Pages
         private string _skewText = "Left";
         private bool _isSkewRight = false;
 
+        private string _bgFill = "#E0E0E0";
+
         private float _hexStrokeWidth = 1f;
         private string _hexStroke = "#000000";
+        private string _hexFill = "#FFFFFF";
 
         private float _megaStrokeWidth = 3f;
         private string _megaStroke = "#000000";

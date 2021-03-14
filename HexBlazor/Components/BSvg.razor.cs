@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
-using TFT_HexGrid.SvgHelpers;
-using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
+using TFT_HexGrid.SvgHelpers;
 
 namespace HexBlazor.Components
 {
@@ -16,6 +15,9 @@ namespace HexBlazor.Components
 
         [Parameter]
         public string HeightInches { get; set; }
+
+        [Parameter]
+        public string BackgroundFill { get; set; }
 
         [Parameter]
         public string ViewBox { get; set; }
@@ -43,6 +45,9 @@ namespace HexBlazor.Components
 
         [Parameter]
         public float HexStrokeWidth { get; set; }
+
+        [Parameter]
+        public string HexFill { get; set; }
 
         public async Task UpdateHexIsSelected(int id, bool isSelected)
         {

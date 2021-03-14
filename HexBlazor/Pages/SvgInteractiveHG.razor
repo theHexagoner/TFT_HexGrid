@@ -47,8 +47,8 @@
     </div>
 </div>
 
-<div class="form-group row ml-0" >
-    <div class="form-group mr-0" >
+<div class="form-group row ml-0">
+    <div class="form-group mr-0">
         <small class="form-text text-muted">Hexagon Lines</small>
         <div class="form-group row ml-3 mr-0">
             <div class="mr-3" style="width:55px">
@@ -72,6 +72,20 @@
                 <label for="megaStroke" class="mb-0">Color</label>
                 <input class="form-control form-control-sm" id="megaStroke" type="color" @bind="_megaStroke">
             </div>
+
+        </div>
+    </div>
+    <div class="ml-3">
+        <small class="form-text text-muted">Fill Colors</small>
+        <div class="form-group row ml-3">
+            <div class="mr-3" style="width:55px">
+                <label for="hexagonFill" class="mb-0">Hex</label>
+                <input class="form-control form-control-sm" id="hexagonFill" type="color" @bind="_hexFill">
+            </div>
+            <div class="mr-4" style="width:55px">
+                <label for="backgroundFill" class="mb-0">BG</label>
+                <input class="form-control form-control-sm" id="backgroundFill" type="color" @bind="_bgFill">
+            </div>
             <div class="mt-3 form-row align-items-end">
                 <label for="showStars" class="ml-3" style="margin-bottom:0rem !important;">
                     <input id="showStars" type="checkbox" @bind="_showStars">
@@ -86,7 +100,8 @@
     <label class="mb-0">@_hexLabel</label>
     <div id="svgDiv" @ref="_divRef" @onclick="SvgOnClick" @oncontextmenu="SvgOnClick" @oncontextmenu:preventDefault="true" class="mb-2" >
         <BSvg @ref="_svgRef" ViewBox="-408 -528 816 1056"
-              HexStroke="@_hexStroke" HexStrokeWidth="@_hexStrokeWidth"
+              BackgroundFill="@_bgFill"
+              HexStroke="@_hexStroke" HexStrokeWidth="@_hexStrokeWidth" HexFill="@_hexFill"
               MegaStroke="@_megaStroke" MegaStrokeWidth="@_megaStrokeWidth"
               ShowStars=@_showStars />
     </div>

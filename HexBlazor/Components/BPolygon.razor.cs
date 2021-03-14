@@ -4,6 +4,9 @@ namespace HexBlazor.Components
 {
     public partial class BPolygon : ComponentBase
     {
+        [CascadingParameter]
+        public BSvg Container { get; set; }
+        
         [Parameter]
         public int Id { get; set; }
 
@@ -16,14 +19,14 @@ namespace HexBlazor.Components
         [Parameter]
         public string StarD { get; set; }
 
-        public bool GetShowStars()
+        private bool GetShowStars()
         {
             return Container.ShowStars;
         }
 
         private string GetFill()
         {
-            return IsSelected ? "#FFFFFF" : "none";
+            return IsSelected ? Container.HexFill : "none";
         }
 
         private string GetStarFill()
@@ -31,8 +34,6 @@ namespace HexBlazor.Components
             return IsSelected ? Container.HexStroke : "none";
         }
 
-        [CascadingParameter]
-        public BSvg Container { get; set; }
 
     }
 
