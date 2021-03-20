@@ -7,7 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HexBlazor", "HexBlazor\HexB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TFT_HexGrid", "TFT_HexGrid\TFT_HexGrid.csproj", "{CFEB7D89-861F-4FCE-A332-CA06F302A190}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugConsole", "DebugConsole\DebugConsole.csproj", "{BEB24BFC-4DA5-4D4E-BAEC-305C40FAD605}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DebugConsole", "DebugConsole\DebugConsole.csproj", "{BEB24BFC-4DA5-4D4E-BAEC-305C40FAD605}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexGridLib", "HexGridLib\HexGridLib.csproj", "{B7F3DA30-9B3C-45D9-91C0-E4308A57A4ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SvgLib", "SvgLib\SvgLib.csproj", "{0E5BC84A-EEA6-4907-ABBD-F4FEB8591ACC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +38,18 @@ Global
 		{BEB24BFC-4DA5-4D4E-BAEC-305C40FAD605}.Development|Any CPU.Build.0 = Debug|Any CPU
 		{BEB24BFC-4DA5-4D4E-BAEC-305C40FAD605}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BEB24BFC-4DA5-4D4E-BAEC-305C40FAD605}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7F3DA30-9B3C-45D9-91C0-E4308A57A4ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7F3DA30-9B3C-45D9-91C0-E4308A57A4ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7F3DA30-9B3C-45D9-91C0-E4308A57A4ED}.Development|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7F3DA30-9B3C-45D9-91C0-E4308A57A4ED}.Development|Any CPU.Build.0 = Debug|Any CPU
+		{B7F3DA30-9B3C-45D9-91C0-E4308A57A4ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7F3DA30-9B3C-45D9-91C0-E4308A57A4ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E5BC84A-EEA6-4907-ABBD-F4FEB8591ACC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E5BC84A-EEA6-4907-ABBD-F4FEB8591ACC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E5BC84A-EEA6-4907-ABBD-F4FEB8591ACC}.Development|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E5BC84A-EEA6-4907-ABBD-F4FEB8591ACC}.Development|Any CPU.Build.0 = Debug|Any CPU
+		{0E5BC84A-EEA6-4907-ABBD-F4FEB8591ACC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E5BC84A-EEA6-4907-ABBD-F4FEB8591ACC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
