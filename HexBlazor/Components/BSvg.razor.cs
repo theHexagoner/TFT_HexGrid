@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TFT_HexGrid.SvgHelpers;
+using SvgLib.ViewBoxes;
+using SvgLib.Polygons;
+using SvgLib.Paths;
 
 namespace HexBlazor.Components
 {

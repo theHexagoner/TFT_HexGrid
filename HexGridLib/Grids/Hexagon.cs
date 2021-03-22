@@ -3,42 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using HexGridLib.Coordinates;
+using HexGridLib.Converters;
 
 namespace HexGridLib.Grids
 {
 
-    internal class Hexagon
+    public class Hexagon
     {
         // no default constructor
         private Hexagon() { }
 
-        /// <summary>
-        /// construct a Hexagon by passing the grid and offset coordinates
-        /// </summary>
-        /// <param name="grid">the parent grid that contains this hexagon</param>
-        /// <param name="offsetCoords">the offset coordinates of the hexagon</param>
-        public Hexagon(Grid grid, Offset offsetCoords) : this(grid, grid.OffsetSchema.GetCubicCoords(offsetCoords), offsetCoords) { }
-
-        /// <summary>
-        /// construct a hexagon by passing the grid and cubic coordinates
-        /// </summary>
-        /// <param name="grid">the parent grid that contains this hex</param>
-        /// <param name="cubicCoords">the cubic coordinates of the hexagon</param>
-        public Hexagon(Grid grid, Cube cubicCoords) : this(grid, cubicCoords, grid.OffsetSchema.GetOffsetCoords(cubicCoords)) { }
-
-        private Hexagon(Grid grid, Cube cubeCoords, Offset offsetCoords)
+        internal Hexagon(Grid grid, Cube cubicCoords, Offset offsetCoords)
         {
             OffsetLocation = offsetCoords;
-            CubicLocation = cubeCoords;
+            CubicLocation = cubicCoords;
 
-            if (OffsetLocation.Col != CubicLocation.X || OffsetLocation.Row != CubicLocation.Y)
-                Console.WriteLine("Shame");
+            ID = grid.GetHashcodeForCube(cubicCoords);
+            Points = grid.GetHexCornerPoints(cubicCoords);
+            Edges = Converter.GetEdgesFromPoints(Points);
 
-            ID = grid.GetHashcodeForCube(cubeCoords);
-            Points = grid.GetHexCornerPoints(cubeCoords);
-            Edges = SvgMegagonsFactory.GetEdgesFromPoints(Points);
-
-            foreach (GridEdge e in Edges)
+            foreach (Edge e in Edges)
             {
                 if (grid.Edges.ContainsKey(e.ID))
                 {
@@ -57,29 +41,45 @@ namespace HexGridLib.Grids
 
         public int ID { get; private set; }
 
-        /// <summary>
-        /// cubic coordinates of the hexagon within the grid
-        /// X, Y and Z dimensions to represent 2d grid as 3d matrix
-        /// used to calculate most things like distance to other hexes, line of sight, etc.
-        /// </summary>        
-        public Cube CubicLocation { get; private set; }
-
-        /// <summary>
-        /// offset (row and column) coordinates of the hexagon within the grid
-        /// </summary>
-        public Offset OffsetLocation { get; private set; }
+        public int Row
+        {
+            get
+            {
+                return OffsetLocation.Row;
+            }
+        }
+        
+        public int Col
+        {
+            get
+            {
+                return OffsetLocation.Col;
+            }
+        }
 
         /// <summary>
         /// the points that define the six corners of the hexagon
         /// </summary>
         public GridPoint[] Points { get; private set; }
 
-        public GridEdge[] Edges { get; private set; }
+        /// <summary>
+        /// cubic coordinates of the hexagon within the grid
+        /// X, Y and Z dimensions to represent 2d grid as 3d matrix
+        /// used to calculate most things like distance to other hexes, line of sight, etc.
+        /// </summary>        
+        internal Cube CubicLocation { get; private set; }
+
+        /// <summary>
+        /// offset (row and column) coordinates of the hexagon within the grid
+        /// </summary>
+        internal Offset OffsetLocation { get; private set; }
+
+        internal Edge[] Edges { get; private set; }
 
         /// <summary>
         /// location of hex within its associated megagon
         /// </summary>
-        public MegaLocation MegaLocation { get; private set; }
+        internal MegaLocation MegaLocation { get; private set; }
 
         /// <summary>
         /// sets the location in its megagon
@@ -91,29 +91,6 @@ namespace HexGridLib.Grids
         }
     }
 
-    internal class GridEdge
-    {
-        private GridEdge() { }
-
-        public GridEdge(GridPoint gpa, GridPoint gpb)
-        {
-            // get the midpoint of gpa and gpb 
-            GridPoint midPoint = new GridPoint((gpa.X + gpb.X) / 2, (gpa.Y + gpb.Y) / 2);
-            ID = HashCode.Combine(midPoint.X, midPoint.Y);
-            Hexagons = new HexDictionary<int, Hexagon>() { };
-            PointA = gpa;
-            PointB = gpb;
-        }
-
-        public int ID { get; private set; }
-
-        public HexDictionary<int, Hexagon> Hexagons { get; }
-
-        public GridPoint PointA { get; }
-
-        public GridPoint PointB { get; }
-
-    }
     
     /// <summary>
     /// custom dictionary to support events for adding and removing hexagons 

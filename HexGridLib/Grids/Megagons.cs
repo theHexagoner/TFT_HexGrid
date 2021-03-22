@@ -18,38 +18,15 @@ namespace HexGridLib.Grids
         F = 6   // flat = bottom        pointy = lower-right
     }
 
-    //public struct SvgMegagon
-    //{
-    //    public readonly int Id;
-    //    public readonly string D; //e.g. <path d = "M20,230 Q40,205 50,230 T90,230" />
-
-    //    public SvgMegagon(int id, string d)
-    //    {
-    //        Id = id;
-    //        D = d;
-    //    }
-
-    //}
-
-    internal sealed class SvgMegagonsFactory
+    internal sealed class MegagonLocationSetter
     {
-        private static readonly SvgMegagonsFactory _instance = new SvgMegagonsFactory();
-
-        private SvgMegagonsFactory()
+        private MegagonLocationSetter()
         {
-        }
-
-        public static SvgMegagonsFactory Instance
-        {
-            get
-            {
-                return _instance ?? new SvgMegagonsFactory();
-            }
         }
 
         #region Set Location of Hex in Megagon
 
-        public void SetMegaLocations(OffsetSchema schema, Hexagon[] hexagons)
+        public static void SetMegaLocations(OffsetSchema schema, Hexagon[] hexagons)
         {
             if (schema.Style == HexagonStyle.Flat && schema.Offset == OffsetPush.Even && schema.Skew == MegagonSkew.Right)
             {
@@ -87,7 +64,7 @@ namespace HexGridLib.Grids
 
         #region Find Centers
 
-        private void FindFlatEvenLeftCenters(Hexagon[] hexagons)
+        private static void FindFlatEvenLeftCenters(Hexagon[] hexagons)
         {
             // For Even Q scheme the hex is the central hex in a megagon if:
             // (Row mod 7 == 0) => Col + 14 mod 14 == 0  OR ELSE Col + 17 mod 14 == 0
@@ -137,7 +114,7 @@ namespace HexGridLib.Grids
             }
         }
 
-        private void FindFlatEvenRightCenters(Hexagon[] hexagons)
+        private static void FindFlatEvenRightCenters(Hexagon[] hexagons)
         {
             // For Even Q scheme the hex is the central hex in a megagon if:
             // (Row mod 7 == 0) => Col + 14 mod 14 == 0  OR ELSE Col + 11 mod 14 == 0
@@ -187,7 +164,7 @@ namespace HexGridLib.Grids
             }
         }
 
-        private void FindFlatOddLeftCenters(Hexagon[] hexagons)
+        private static void FindFlatOddLeftCenters(Hexagon[] hexagons)
         {
             // For Even Q scheme the hex is the central hex in a megagon if:
             // (Row mod 7 == 0) => Col + 14 mod 14 == 0  OR ELSE Col + 11 mod 14 == 0
@@ -237,7 +214,7 @@ namespace HexGridLib.Grids
             }
         }
         
-        private void FindFlatOddRightCenters(Hexagon[] hexagons)
+        private static void FindFlatOddRightCenters(Hexagon[] hexagons)
         {
             // For Even Q scheme the hex is the central hex in a megagon if:
             // (Row mod 7 == 0) => Col + 14 mod 14 == 0  OR ELSE Col + 17 mod 14 == 0
@@ -287,7 +264,7 @@ namespace HexGridLib.Grids
             }
         }
 
-        private void FindPointyEvenLeftCenters(Hexagon[] hexagons)
+        private static void FindPointyEvenLeftCenters(Hexagon[] hexagons)
         {
             // For Even R scheme the hex is the central hex in a megagon if:
             // (Col mod 7 == 0) => Row + 14 mod 14 == 0  OR ELSE Row + 17 mod 14 == 0
@@ -337,7 +314,7 @@ namespace HexGridLib.Grids
             }
         }
 
-        private void FindPointyEvenRightCenters(Hexagon[] hexagons)
+        private static void FindPointyEvenRightCenters(Hexagon[] hexagons)
         {
             // For Even R scheme the hex is the central hex in a megagon if:
             // (Col mod 7 == 0) => Row + 14 mod 14 == 0  OR ELSE Row + 11 mod 14 == 0
@@ -387,7 +364,7 @@ namespace HexGridLib.Grids
             }
         }
 
-        private void FindPointyOddLeftCenters(Hexagon[] hexagons)
+        private static void FindPointyOddLeftCenters(Hexagon[] hexagons)
         {
             // For Odd R scheme the hex is the central hex in a megagon if:
             // (Col mod 7 == 0) => Row + 14 mod 14 == 0  OR ELSE Row + 11 mod 14 == 0
@@ -437,7 +414,7 @@ namespace HexGridLib.Grids
             }
         }
         
-        private void FindPointyOddRightCenters(Hexagon[] hexagons)
+        private static void FindPointyOddRightCenters(Hexagon[] hexagons)
         {
             // For Odd R scheme the hex is the central hex in a megagon if:
             // (Col mod 7 == 0) => Row + 14 mod 14 == 0  OR ELSE Row + 17 mod 14 == 0
@@ -509,80 +486,6 @@ namespace HexGridLib.Grids
                 if (hex != null) hex.SetLocationInMegagon((MegaLocation)(i + 1));
             }
         }
-
-        #endregion
-
-        #region Edges
-
-        /// <summary>
-        /// iterate over a set of points and return an array of GridEdge objects
-        /// </summary>
-        /// <param name="points">Array of GridPoint objects, generally this would be the points belonging to a hexagon</param>
-        /// <returns>Array of GridEdge objects</returns>
-        public static GridEdge[] GetEdgesFromPoints(GridPoint[] points)
-        {
-            GridEdge[] edges = new GridEdge[6];
-
-            for (int i = 0; i < 5; i++)
-            {
-                edges[i] = new GridEdge(points[i], points[i + 1]);
-            }
-
-            edges[5] = new GridEdge(points[5], points[0]);
-
-            return edges;
-        }
-
-        /// <summary>
-        /// determines if the given edge should be displayed as part of a megagon
-        /// </summary>
-        /// <param name="edge">the edge to examine</param>
-        /// <returns>Boolean, true if the edge should be represented by a megagon</returns>
-        public static bool GetEdgeIsMegaLine(GridEdge edge)
-        {
-            bool isMegaLine = false;
-
-            if (edge.Hexagons != null && edge.Hexagons.Count == 2)
-            {
-                Hexagon[] hexagons = edge.Hexagons.Values.ToArray();
-                isMegaLine = hexagons[0].MegaLocation == MegaLocation.A && hexagons[1].MegaLocation == MegaLocation.D
-                          || hexagons[0].MegaLocation == MegaLocation.A && hexagons[1].MegaLocation == MegaLocation.C
-                          || hexagons[0].MegaLocation == MegaLocation.A && hexagons[1].MegaLocation == MegaLocation.E
-
-                          || hexagons[0].MegaLocation == MegaLocation.B && hexagons[1].MegaLocation == MegaLocation.E
-                          || hexagons[0].MegaLocation == MegaLocation.B && hexagons[1].MegaLocation == MegaLocation.D
-                          || hexagons[0].MegaLocation == MegaLocation.B && hexagons[1].MegaLocation == MegaLocation.F
-
-                          || hexagons[0].MegaLocation == MegaLocation.C && hexagons[1].MegaLocation == MegaLocation.F
-                          || hexagons[0].MegaLocation == MegaLocation.C && hexagons[1].MegaLocation == MegaLocation.E
-                          || hexagons[0].MegaLocation == MegaLocation.C && hexagons[1].MegaLocation == MegaLocation.A
-
-                          || hexagons[0].MegaLocation == MegaLocation.D && hexagons[1].MegaLocation == MegaLocation.A
-                          || hexagons[0].MegaLocation == MegaLocation.D && hexagons[1].MegaLocation == MegaLocation.F
-                          || hexagons[0].MegaLocation == MegaLocation.D && hexagons[1].MegaLocation == MegaLocation.B
-
-                          || hexagons[0].MegaLocation == MegaLocation.E && hexagons[1].MegaLocation == MegaLocation.B
-                          || hexagons[0].MegaLocation == MegaLocation.E && hexagons[1].MegaLocation == MegaLocation.A
-                          || hexagons[0].MegaLocation == MegaLocation.E && hexagons[1].MegaLocation == MegaLocation.C
-
-                          || hexagons[0].MegaLocation == MegaLocation.F && hexagons[1].MegaLocation == MegaLocation.C
-                          || hexagons[0].MegaLocation == MegaLocation.F && hexagons[1].MegaLocation == MegaLocation.B
-                          || hexagons[0].MegaLocation == MegaLocation.F && hexagons[1].MegaLocation == MegaLocation.D;
-            }
-
-            return isMegaLine;
-        }
-
-        /// <summary>
-        /// gets the SVG path information for an edge 
-        /// </summary>
-        /// <param name="edge">the edge from which to derive the SVG path data</param>
-        /// <returns>System.String containing SVG Path d content</returns>
-        public static string GetPathD(GridEdge edge)
-        {
-            return string.Format("M{0},{1} L{2},{3} ", edge.PointA.X, edge.PointA.Y, edge.PointB.X, edge.PointB.Y);
-        }
-
 
         #endregion
 

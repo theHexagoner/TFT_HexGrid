@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using HexGridLib.Coordinates;
 using HexGridLib.Maps;
 
@@ -50,7 +51,6 @@ namespace HexGridLib.Grids
         private static readonly int ODD = -1;
 
         #region Offset to Cubic Coords
-
 
         internal Cube GetCubicCoords(Offset hex)
         {
@@ -137,15 +137,6 @@ namespace HexGridLib.Grids
         private Grid() {}
 
         /// <summary>
-        /// if you pass no OffsetSchems, it will default to using flat hexes, even offset, and right megahex skew
-        /// </summary>
-        /// <param name="rows">the number of rows in the grid</param>
-        /// <param name="cols">the number of columns in the grid</param>
-        /// <param name="radius">distance from center of a hex to any of its corner points</param>
-        /// <param name="origin">sets the cartesian coordinates for the center of cube a location 0,0,0</param>
-        public Grid(int rows, int cols, GridPoint radius, GridPoint origin) : this(rows, cols, radius, origin, new OffsetSchema()) {}
-
-        /// <summary>
         /// constructor for Grid, passing all configuration options
         /// </summary>
         /// <param name="rows">the number of rows in the grid</param>
@@ -165,9 +156,7 @@ namespace HexGridLib.Grids
 
             Layout = new HexLayout(geometry, radius, origin);
             Hexagons = new Dictionary<int, Hexagon>();
-            //SvgHexagons = new Dictionary<int, SvgHexagon>();
-            //SvgMegagons = new Dictionary<int, SvgMegagon>();
-            Edges = new Dictionary<int, GridEdge>();
+            Edges = new Dictionary<int, Edge>();
 
             var halfRows = (int)Math.Floor(rows / 2d);
             var splitRows = halfRows - rows;
@@ -182,7 +171,10 @@ namespace HexGridLib.Grids
             {
                 for (int c = splitCols - 1; c < halfCols + 2; c++)
                 {
-                    var hex = new Hexagon(this, new Offset(r, c));
+                    var offsetCoord = new Offset(r, c);
+                    var cubicCoord = OffsetSchema.GetCubicCoords(offsetCoord);
+
+                    var hex = new Hexagon(this, cubicCoord, offsetCoord);
                     var hash = hex.ID;
                     Hexagons.Add(hash, hex);
 
@@ -191,18 +183,12 @@ namespace HexGridLib.Grids
                 }
             }
 
-            // get the megagon location of each hexagon
-            //SvgMegagonsFactory.Instance.SetMegaLocations(OffsetSchema, Hexagons.Values.ToArray());
-
-            // get the SVG data for each hexagon
-            foreach (Hexagon h in Hexagons.Values)
-            {
-                //SvgHexagons.Add(h.ID, new SvgHexagon(h.ID, h.OffsetLocation.Row, h.OffsetLocation.Col, h.Points));
-            }
+            // set the megagon location of each hexagon
+            MegagonLocationSetter.SetMegaLocations(OffsetSchema, Hexagons.Values.ToArray());
 
             // TRIM hexagons outside the requested offset limits for the grid
             Overscan.ForEach(id => {
-                foreach (GridEdge edge in Hexagons[id].Edges)
+                foreach (Edge edge in Hexagons[id].Edges)
                 {
                     if (edge.Hexagons.ContainsKey(id))
                         edge.Hexagons.Remove(id);
@@ -214,19 +200,7 @@ namespace HexGridLib.Grids
                 }
 
                 Hexagons.Remove(id);
-                //SvgHexagons.Remove(id);
             });
-
-            //// build the SvgMegagons
-            //foreach (GridEdge edge in Edges.Values)
-            //{
-            //    if (SvgMegagonsFactory.GetEdgeIsMegaLine(edge))
-            //    {
-            //        // add a new SvgMegagon
-            //        SvgMegagons.Add(edge.ID, new SvgMegagon(edge.ID, SvgMegagonsFactory.GetPathD(edge)));
-            //    }
-            //}
-
         }
 
         #region Layout
@@ -360,7 +334,8 @@ namespace HexGridLib.Grids
 
         #region Hexes
 
-        internal Dictionary<int, Hexagon> Hexagons { get; }
+        public Dictionary<int, Hexagon> Hexagons { get; }
+        public Dictionary<int, Edge> Edges { get; }
 
         //public Dictionary<int, SvgHexagon> SvgHexagons { get; }
 
@@ -402,24 +377,6 @@ namespace HexGridLib.Grids
         internal GridPoint[] GetHexCornerPoints(Cube hex, double factor = 1)
         {
             return Layout.GetHexCornerPoints(hex, factor);
-        }
-
-        #endregion
-
-        #region Megas
-
-        //public Dictionary<int, SvgMegagon> SvgMegagons { get; }
-
-        internal Dictionary<int, GridEdge> Edges { get; }
-
-        #endregion
-
-        #region Maps
-
-        public Map InitMap()
-        {
-            var map = new Map(this);
-            return map;
         }
 
         #endregion

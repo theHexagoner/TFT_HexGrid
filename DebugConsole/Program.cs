@@ -1,6 +1,6 @@
 ﻿using System;
-using TFT_HexGrid.Coordinates;
-using TFT_HexGrid.Grids;
+using HexGridLib.Coordinates;
+using HexGridLib.Grids;
 
 namespace DebugConsole
 {
@@ -13,9 +13,10 @@ namespace DebugConsole
             var schema = new OffsetSchema(false, false, false);
             var pxRadius = (1 / Math.Sqrt(3)) * 96;
             var size = new GridPoint(pxRadius);
+            var grid = new Grid(138, 106, size, origin, schema);
+            _ = SvgLib.Grids.SvgGridBuilder.Build(grid);
 
-            _ = new Grid(69, 53, size, origin, schema);
-
+            Console.WriteLine("Done, press any key...");
             Console.ReadKey();
 
         }

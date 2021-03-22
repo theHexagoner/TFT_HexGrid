@@ -11,7 +11,7 @@ namespace HexGridLib.Maps
         {
             GridHexagons = grid.Hexagons;
             MapHexagons = new HexDictionary<int, Hexagon>();
-            Edges = new Dictionary<int, GridEdge>(grid.Edges);
+            Edges = new Dictionary<int, Edge>(grid.Edges);
 
             MapHexagons.OnDictionaryAddItem += AddingHexagon;
             MapHexagons.OnDictionaryRemoveItem += RemovingHexagon;
@@ -60,7 +60,7 @@ namespace HexGridLib.Maps
 
         #region Manage Hexagons
 
-        private Dictionary<int, GridEdge> Edges { get; }
+        private Dictionary<int, Edge> Edges { get; }
 
         private HexDictionary<int, Hexagon> MapHexagons { get; set; }
 
@@ -72,7 +72,7 @@ namespace HexGridLib.Maps
             //SvgHexagons.Add(e.Key, new SvgHexagon(e.Key, hex.OffsetLocation.Row, hex.OffsetLocation.Col,  hex.Points, true));
 
             // update the map's edges and revise the SvgMegagons as necessary
-            foreach (GridEdge edge in hex.Edges)
+            foreach (Edge edge in hex.Edges)
             {
                 if(Edges.ContainsKey(edge.ID))
                 {
@@ -92,7 +92,7 @@ namespace HexGridLib.Maps
             //SvgHexagons.Remove(e.Key);
 
             // update the map's edges and revise the SvgMegagons as necessary
-            foreach(GridEdge edge in hex.Edges)
+            foreach(Edge edge in hex.Edges)
             {
                 if(Edges.ContainsKey(edge.ID))
                 {
