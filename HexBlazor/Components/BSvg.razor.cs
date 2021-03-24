@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SvgLib.ViewBoxes;
-using SvgLib.Polygons;
-using SvgLib.Paths;
+using HexGridInterfaces.Structs;
+using HexGridInterfaces.SvgHelpers;
 
 namespace HexBlazor.Components
 {
@@ -30,7 +29,7 @@ namespace HexBlazor.Components
         [Parameter]
         public bool ShowStars { get; set; }
 
-        public void SetGeometry(Dictionary<int, SvgHexagon> hexagons, Dictionary<int, SvgMegagon> megagons)
+        public void SetGeometry(IDictionary<int, ISvgHexagon> hexagons, IDictionary<int, SvgMegagon> megagons)
         {
             Hexagons = hexagons;
             Megagons = megagons;
@@ -40,7 +39,7 @@ namespace HexBlazor.Components
         #region Hexagons
 
         [Parameter]
-        public Dictionary<int, SvgHexagon> Hexagons { get; set; } = new Dictionary<int, SvgHexagon>();
+        public IDictionary<int, ISvgHexagon> Hexagons { get; set; } = new Dictionary<int, ISvgHexagon>();
 
         [Parameter]
         public string HexStroke { get; set; }
@@ -63,7 +62,7 @@ namespace HexBlazor.Components
         #region Megagons
 
         [Parameter]
-        public Dictionary<int, SvgMegagon> Megagons { get; set; } = new Dictionary<int, SvgMegagon>();
+        public IDictionary<int, SvgMegagon> Megagons { get; set; } = new Dictionary<int, SvgMegagon>();
 
         [Parameter]
         public string MegaStroke { get; set; }

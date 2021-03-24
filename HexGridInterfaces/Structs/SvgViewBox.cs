@@ -1,5 +1,5 @@
 ﻿
-namespace SvgLib.ViewBoxes
+namespace HexGridInterfaces.Structs
 {
     public struct SvgViewBox
     {
@@ -22,4 +22,5 @@ namespace SvgLib.ViewBoxes
         }
 
     }
+
 }

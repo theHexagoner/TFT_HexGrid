@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using HexGridInterfaces.Grids;
 using HexGridLib.Grids;
 
 namespace HexGridLib.Maps
@@ -7,11 +8,11 @@ namespace HexGridLib.Maps
     {
         private Map() { }
 
-        internal Map(Grid grid)
+        internal Map(IGrid grid)
         {
             GridHexagons = grid.Hexagons;
-            MapHexagons = new HexDictionary<int, Hexagon>();
-            Edges = new Dictionary<int, Edge>(grid.Edges);
+            MapHexagons = new HexDictionary<int, IHexagon>();
+            Edges = new Dictionary<int, IEdge>(grid.Edges);
 
             MapHexagons.OnDictionaryAddItem += AddingHexagon;
             MapHexagons.OnDictionaryRemoveItem += RemovingHexagon;
@@ -60,13 +61,13 @@ namespace HexGridLib.Maps
 
         #region Manage Hexagons
 
-        private Dictionary<int, Edge> Edges { get; }
+        private Dictionary<int, IEdge> Edges { get; }
 
-        private HexDictionary<int, Hexagon> MapHexagons { get; set; }
+        private HexDictionary<int, IHexagon> MapHexagons { get; set; }
 
-        private Dictionary<int, Hexagon> GridHexagons { get; set; }
+        private IDictionary<int, IHexagon> GridHexagons { get; set; }
         
-        private void AddingHexagon(object sender, DictionaryChangingEventArgs<int, Hexagon> e)
+        private void AddingHexagon(object sender, DictionaryChangingEventArgs<int, IHexagon> e)
         {
             var hex = e.Value;
             //SvgHexagons.Add(e.Key, new SvgHexagon(e.Key, hex.OffsetLocation.Row, hex.OffsetLocation.Col,  hex.Points, true));
@@ -86,7 +87,7 @@ namespace HexGridLib.Maps
             }
         }
 
-        private void RemovingHexagon(object sender, DictionaryChangingEventArgs<int, Hexagon> e)
+        private void RemovingHexagon(object sender, DictionaryChangingEventArgs<int, IHexagon> e)
         {
             var hex = e.Value;
             //SvgHexagons.Remove(e.Key);
@@ -106,7 +107,7 @@ namespace HexGridLib.Maps
             }    
         }
 
-        private void ClearingHexagons(object sender, DictionaryChangingEventArgs<int, Hexagon> e)
+        private void ClearingHexagons(object sender, DictionaryChangingEventArgs<int, IHexagon> e)
         {
             //SvgHexagons.Clear();
             //SvgMegagons.Clear();

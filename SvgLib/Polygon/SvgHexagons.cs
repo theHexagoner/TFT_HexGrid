@@ -1,5 +1,6 @@
 ﻿using System.Linq;
-using HexGridLib.Coordinates;
+using HexGridInterfaces.Structs;
+using HexGridInterfaces.SvgHelpers;
 using SvgLib.Paths;
 
 namespace SvgLib.Polygons
@@ -7,14 +8,14 @@ namespace SvgLib.Polygons
     /// <summary>
     /// encapsulate information useful for drawing a hexagon as SVG
     /// </summary>
-    public class SvgHexagon
+    public class SvgHexagon : ISvgHexagon
     {
-        public readonly int ID;
-        public readonly string Points;
-        public readonly string StarD;
+        public int ID { get; }
+        public string Points { get; }
+        public string CenterD { get; }
 
-        public readonly int Row;
-        public readonly int Col;
+        public int Row { get; }
+        public int Col { get; }
 
         /// <summary>
         /// constructor, if you don't specify IsSelected it will default to true
@@ -42,7 +43,7 @@ namespace SvgLib.Polygons
             GridPoint midPoint = new((points[3].X + points[0].X) / 2, (points[3].Y + points[0].Y) / 2);
             double outerRadius = points[0].GetDistanceTo(points[1]) / 64;
 
-            StarD = SvgPathDFactory.Instance.GetPathD(SvgPathDFactory.Type.Star, midPoint, outerRadius);
+            CenterD = SvgPathDFactory.Instance.GetPathD(SvgPathDFactory.Type.Star, midPoint, outerRadius);
         }
 
         public bool IsSelected { get; set; }

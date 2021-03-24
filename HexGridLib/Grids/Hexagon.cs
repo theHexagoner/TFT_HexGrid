@@ -2,25 +2,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using HexGridLib.Coordinates;
-using HexGridLib.Converters;
+using HexGridInterfaces.Structs;
+using HexGridInterfaces.Grids;
 
 namespace HexGridLib.Grids
 {
 
-    public class Hexagon
+    public class Hexagon : IHexagon
     {
         // no default constructor
         private Hexagon() { }
 
-        internal Hexagon(Grid grid, Cube cubicCoords, Offset offsetCoords)
+        internal Hexagon(Grid grid, CubicCoordinate cubicCoords, OffsetCoordinate offsetCoords)
         {
             OffsetLocation = offsetCoords;
             CubicLocation = cubicCoords;
 
             ID = grid.GetHashcodeForCube(cubicCoords);
             Points = grid.GetHexCornerPoints(cubicCoords);
-            Edges = Converter.GetEdgesFromPoints(Points);
+            Edges = GetEdgesFromPoints(Points);
 
             foreach (Edge e in Edges)
             {
@@ -48,7 +48,7 @@ namespace HexGridLib.Grids
                 return OffsetLocation.Row;
             }
         }
-        
+
         public int Col
         {
             get
@@ -67,31 +67,51 @@ namespace HexGridLib.Grids
         /// X, Y and Z dimensions to represent 2d grid as 3d matrix
         /// used to calculate most things like distance to other hexes, line of sight, etc.
         /// </summary>        
-        internal Cube CubicLocation { get; private set; }
+        public CubicCoordinate CubicLocation { get; private set; }
 
         /// <summary>
         /// offset (row and column) coordinates of the hexagon within the grid
         /// </summary>
-        internal Offset OffsetLocation { get; private set; }
+        public OffsetCoordinate OffsetLocation { get; private set; }
 
-        internal Edge[] Edges { get; private set; }
+        public IEdge[] Edges { get; private set; }
 
         /// <summary>
         /// location of hex within its associated megagon
         /// </summary>
-        internal MegaLocation MegaLocation { get; private set; }
+        public MegaLocation MegaLocation { get; private set; }
 
         /// <summary>
         /// sets the location in its megagon
         /// </summary>
         /// <param name="locationInMegagon">the enumerated location within the megagon</param>
-        internal void SetLocationInMegagon(MegaLocation locationInMegagon)
+        public void SetLocationInMegagon(MegaLocation locationInMegagon)
         {
             MegaLocation = locationInMegagon;
         }
+
+        /// <summary>
+        /// iterate over a set of points and return an array of GridEdge objects
+        /// </summary>
+        /// <param name="points">Array of GridPoint objects, generally this would be the points belonging to a hexagon</param>
+        /// <returns>Array of GridEdge objects</returns>
+        private static IEdge[] GetEdgesFromPoints(GridPoint[] points)
+        {
+            IEdge[] edges = new Edge[6];
+
+            for (int i = 0; i < 5; i++)
+            {
+                edges[i] = new Edge(points[i], points[i + 1]);
+            }
+
+            edges[5] = new Edge(points[5], points[0]);
+
+            return edges;
+        }
+
     }
 
-    
+
     /// <summary>
     /// custom dictionary to support events for adding and removing hexagons 
     /// </summary>

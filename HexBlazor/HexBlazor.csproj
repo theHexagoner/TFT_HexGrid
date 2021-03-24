@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HexGridLib\HexGridLib.csproj" />
     <ProjectReference Include="..\SvgLib\SvgLib.csproj" />
   </ItemGroup>
 

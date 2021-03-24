@@ -1,6 +1,7 @@
 ﻿@page "/"
 
 @inject IJSRuntime jsRuntime
+@inject ISvgGridBuilder gridBuilder 
 
 <div class="form-group row ml-0 align-items-center">
     <div class="mr-3 mb-3" style="width:55px">
@@ -110,7 +111,7 @@
         </div>
     </div>
     <div id="svgDiv" @ref="_divRef" @onclick="SvgOnClick" @oncontextmenu="SvgOnClick" @oncontextmenu:preventDefault="true" class="mb-2">
-        <BSvg @ref="_svgRef" ViewBox="@_viewBox"
+        <BSvg @ref="_svgRef" ViewBox="_viewBox"
               BackgroundFill="@_bgFill"
               HexStroke="@_hexStroke" HexStrokeWidth="@_hexStrokeWidth" HexFill="@_hexFill"
               MegaStroke="@_megaStroke" MegaStrokeWidth="@_megaStrokeWidth"

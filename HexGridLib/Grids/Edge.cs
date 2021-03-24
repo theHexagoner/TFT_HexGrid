@@ -1,11 +1,14 @@
-﻿using HexGridLib.Coordinates;
+﻿using HexGridInterfaces.Grids;
+using HexGridInterfaces.Structs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace HexGridLib.Grids
 {
-    public class Edge
+
+
+    public class Edge : IEdge
     {
         private Edge() { }
 
@@ -14,7 +17,7 @@ namespace HexGridLib.Grids
             // get the midpoint of gpa and gpb 
             GridPoint midPoint = new((gpa.X + gpb.X) / 2, (gpa.Y + gpb.Y) / 2);
             ID = HashCode.Combine(midPoint.X, midPoint.Y);
-            Hexagons = new Dictionary<int, Hexagon>() { };
+            Hexagons = new Dictionary<int, IHexagon>() { };
             PointA = gpa;
             PointB = gpb;
             PathD = string.Format("M{0},{1} L{2},{3} ", PointA.X, PointA.Y, PointB.X, PointB.Y);
@@ -22,7 +25,7 @@ namespace HexGridLib.Grids
 
         public int ID { get; private set; }
 
-        public Dictionary<int, Hexagon> Hexagons { get; }
+        public IDictionary<int, IHexagon> Hexagons { get; }
 
         public GridPoint PointA { get; }
 
@@ -38,9 +41,9 @@ namespace HexGridLib.Grids
         {
             bool isMegaLine = false;
 
-            if (Hexagons != null && Hexagons.Count == 2)
+            if (Hexagons != null && Hexagons.Count() == 2)
             {
-                Hexagon[] hexagons = Hexagons.Values.ToArray();
+                IHexagon[] hexagons = Hexagons.Values.ToArray();
                 isMegaLine = hexagons[0].MegaLocation == MegaLocation.A && hexagons[1].MegaLocation == MegaLocation.D
                           || hexagons[0].MegaLocation == MegaLocation.A && hexagons[1].MegaLocation == MegaLocation.C
                           || hexagons[0].MegaLocation == MegaLocation.A && hexagons[1].MegaLocation == MegaLocation.E

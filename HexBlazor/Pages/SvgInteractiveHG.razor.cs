@@ -2,11 +2,10 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Threading.Tasks;
-using SvgLib.ViewBoxes;
+using HexGridInterfaces.Structs;
+using HexGridInterfaces.SvgHelpers;
 
 namespace HexBlazor.Pages
 {
@@ -18,7 +17,7 @@ namespace HexBlazor.Pages
 
         private ElementReference _divRef;
         private BSvg _svgRef;
-        //private Grid _grid;
+        private ISvgGrid _grid;
         //private Map _map;
 
         private bool _saveDisabled = true;
@@ -104,17 +103,18 @@ namespace HexBlazor.Pages
             {
                 // show a spinner here
                 await Task.Delay(1);
-                
-                //var origin = new GridPoint(0.5d, .5d);
-                //var schema = new OffsetSchema(_isStylePointy, _isOffsetOdd, _isSkewRight);
-                //var pxRadius = (_size / Math.Sqrt(3)) * DPI;
-                //var size = new GridPoint(pxRadius);
 
-                //_grid = new Grid(_rowCount, _colCount, size, origin, schema);
+                var origin = new GridPoint(0.5d, .5d);
+                var schema = new OffsetSchema(_isStylePointy, _isOffsetOdd, _isSkewRight);
+                var pxRadius = (_size / Math.Sqrt(3)) * DPI;
+                var size = new GridPoint(pxRadius,pxRadius);
+
+                _grid = gridBuilder.Build(_rowCount, _colCount, size, origin, schema, _viewBox);
+
                 //_map = _grid.InitMap();
 
-                //_svgRef.SetGeometry(_grid.SvgHexagons, _grid.SvgMegagons);
-                //_saveDisabled = false;
+                _svgRef.SetGeometry(_grid.SvgHexagons, _grid.SvgMegagons);
+                _saveDisabled = false;
 
                 // hide the spinner here
             }

@@ -1,5 +1,5 @@
 ﻿using System;
-using HexGridLib.Coordinates;
+using HexGridInterfaces.Structs;
 using HexGridLib.Grids;
 
 namespace DebugConsole
@@ -12,9 +12,9 @@ namespace DebugConsole
             var origin = new GridPoint(0.5d, .5d);
             var schema = new OffsetSchema(false, false, false);
             var pxRadius = (1 / Math.Sqrt(3)) * 96;
-            var size = new GridPoint(pxRadius);
+            var size = new GridPoint(pxRadius, pxRadius);
             var grid = new Grid(138, 106, size, origin, schema);
-            _ = SvgLib.Grids.SvgGridBuilder.Build(grid);
+            _ = SvgLib.Grids.SvgGridBuilder.Build(grid, new SvgViewBox());
 
             Console.WriteLine("Done, press any key...");
             Console.ReadKey();

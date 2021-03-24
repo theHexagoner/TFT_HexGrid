@@ -1,5 +1,5 @@
 ﻿
-namespace SvgLib.Paths
+namespace HexGridInterfaces.Structs
 {
     public struct SvgMegagon
     {

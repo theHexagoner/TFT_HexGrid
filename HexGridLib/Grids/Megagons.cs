@@ -1,22 +1,10 @@
 ﻿using System.Linq;
-using HexGridLib.Coordinates;
+using HexGridInterfaces.Grids;
+using HexGridInterfaces.Structs;
 
 namespace HexGridLib.Grids
 {
-    /// <summary>
-    /// identifies the location of a hex within a megahex
-    /// </summary>
-    public enum MegaLocation
-    {
-        N = -1, // not set
-        X = 0,  // center
-        A = 1,  // flat = lower-right   pointy = right
-        B = 2,  // flat = upper-right   pointy = upper-right
-        C = 3,  // flat = top           pointy = upper-left
-        D = 4,  // flat = upper-left    pointy = left
-        E = 5,  // flat = lower-left    pointy = lower-left
-        F = 6   // flat = bottom        pointy = lower-right
-    }
+
 
     internal sealed class MegagonLocationSetter
     {
@@ -26,7 +14,7 @@ namespace HexGridLib.Grids
 
         #region Set Location of Hex in Megagon
 
-        public static void SetMegaLocations(OffsetSchema schema, Hexagon[] hexagons)
+        public static void SetMegaLocations(OffsetSchema schema, IHexagon[] hexagons)
         {
             if (schema.Style == HexagonStyle.Flat && schema.Offset == OffsetPush.Even && schema.Skew == MegagonSkew.Right)
             {
@@ -64,7 +52,7 @@ namespace HexGridLib.Grids
 
         #region Find Centers
 
-        private static void FindFlatEvenLeftCenters(Hexagon[] hexagons)
+        private static void FindFlatEvenLeftCenters(IHexagon[] hexagons)
         {
             // For Even Q scheme the hex is the central hex in a megagon if:
             // (Row mod 7 == 0) => Col + 14 mod 14 == 0  OR ELSE Col + 17 mod 14 == 0
@@ -75,7 +63,7 @@ namespace HexGridLib.Grids
             // (Row mod 7 == 5) => Col + 14 mod 14 == 2  OR ELSE Col + 17 mod 14 == 2
             // (Row mod 7 == 6) => Col + 14 mod 14 == 8  OR ELSE Col + 17 mod 14 = 8
 
-            foreach (Hexagon h in hexagons)
+            foreach (IHexagon h in hexagons)
             {
                 int r7 = (h.OffsetLocation.Row + 7777) % 7;    // multiples of 7
                 int c14 = (h.OffsetLocation.Col + 15554) % 14; // multiples of 14
@@ -114,7 +102,7 @@ namespace HexGridLib.Grids
             }
         }
 
-        private static void FindFlatEvenRightCenters(Hexagon[] hexagons)
+        private static void FindFlatEvenRightCenters(IHexagon[] hexagons)
         {
             // For Even Q scheme the hex is the central hex in a megagon if:
             // (Row mod 7 == 0) => Col + 14 mod 14 == 0  OR ELSE Col + 11 mod 14 == 0
@@ -125,7 +113,7 @@ namespace HexGridLib.Grids
             // (Row mod 7 == 5) => Col + 14 mod 14 == 2  OR ELSE Col + 11 mod 14 == 12
             // (Row mod 7 == 6) => Col + 14 mod 14 == 8  OR ELSE Col + 11 mod 14 == 6
 
-            foreach (Hexagon h in hexagons)
+            foreach (IHexagon h in hexagons)
             {
                 int r7 = (h.OffsetLocation.Row + 7777) % 7;    // multiples of 7
                 int c14 = (h.OffsetLocation.Col + 15554) % 14; // multiples of 14
@@ -164,7 +152,7 @@ namespace HexGridLib.Grids
             }
         }
 
-        private static void FindFlatOddLeftCenters(Hexagon[] hexagons)
+        private static void FindFlatOddLeftCenters(IHexagon[] hexagons)
         {
             // For Even Q scheme the hex is the central hex in a megagon if:
             // (Row mod 7 == 0) => Col + 14 mod 14 == 0  OR ELSE Col + 11 mod 14 == 0
@@ -175,7 +163,7 @@ namespace HexGridLib.Grids
             // (Row mod 7 == 5) => Col + 14 mod 14 == 2  OR ELSE Col + 11 mod 14 == 2
             // (Row mod 7 == 6) => Col + 14 mod 14 == 8  OR ELSE Col + 11 mod 14 == 8
 
-            foreach (Hexagon h in hexagons)
+            foreach (IHexagon h in hexagons)
             {
                 int r7 = (h.OffsetLocation.Row + 7777) % 7;    // multiples of 7
                 int c14 = (h.OffsetLocation.Col + 15554) % 14; // multiples of 14
@@ -214,7 +202,7 @@ namespace HexGridLib.Grids
             }
         }
         
-        private static void FindFlatOddRightCenters(Hexagon[] hexagons)
+        private static void FindFlatOddRightCenters(IHexagon[] hexagons)
         {
             // For Even Q scheme the hex is the central hex in a megagon if:
             // (Row mod 7 == 0) => Col + 14 mod 14 == 0  OR ELSE Col + 17 mod 14 == 0
@@ -225,7 +213,7 @@ namespace HexGridLib.Grids
             // (Row mod 7 == 5) => Col + 14 mod 14 == 2  OR ELSE Col + 17 mod 14 == 12
             // (Row mod 7 == 6) => Col + 14 mod 14 == 8  OR ELSE Col + 17 mod 14 == 6
 
-            foreach (Hexagon h in hexagons)
+            foreach (IHexagon h in hexagons)
             {
                 int r7 = (h.OffsetLocation.Row + 7777) % 7;    // multiples of 7
                 int c14 = (h.OffsetLocation.Col + 15554) % 14; // multiples of 14
@@ -264,7 +252,7 @@ namespace HexGridLib.Grids
             }
         }
 
-        private static void FindPointyEvenLeftCenters(Hexagon[] hexagons)
+        private static void FindPointyEvenLeftCenters(IHexagon[] hexagons)
         {
             // For Even R scheme the hex is the central hex in a megagon if:
             // (Col mod 7 == 0) => Row + 14 mod 14 == 0  OR ELSE Row + 17 mod 14 == 0
@@ -275,7 +263,7 @@ namespace HexGridLib.Grids
             // (Col mod 7 == 5) => Row + 14 mod 14 == 2  OR ELSE Row + 17 mod 14 == 2
             // (Col mod 7 == 6) => Row + 14 mod 14 == 8  OR ELSE Row + 17 mod 14 = 8
 
-            foreach (Hexagon h in hexagons)
+            foreach (IHexagon h in hexagons)
             {
                 int c7 = (h.OffsetLocation.Col + 7777) % 7;    // multiples of 7
                 int r14 = (h.OffsetLocation.Row + 15554) % 14; // multiples of 14
@@ -314,7 +302,7 @@ namespace HexGridLib.Grids
             }
         }
 
-        private static void FindPointyEvenRightCenters(Hexagon[] hexagons)
+        private static void FindPointyEvenRightCenters(IHexagon[] hexagons)
         {
             // For Even R scheme the hex is the central hex in a megagon if:
             // (Col mod 7 == 0) => Row + 14 mod 14 == 0  OR ELSE Row + 11 mod 14 == 0
@@ -325,7 +313,7 @@ namespace HexGridLib.Grids
             // (Col mod 7 == 5) => Row + 14 mod 14 == 12 OR ELSE Row + 11 mod 14 == 12
             // (Col mod 7 == 6) => Row + 14 mod 14 == 6  OR ELSE Row + 11 mod 14 == 6
 
-            foreach (Hexagon h in hexagons)
+            foreach (IHexagon h in hexagons)
             {
                 int c7 = (h.OffsetLocation.Col + 7777) % 7;    // multiples of 7
                 int r14 = (h.OffsetLocation.Row + 15554) % 14; // multiples of 14
@@ -364,7 +352,7 @@ namespace HexGridLib.Grids
             }
         }
 
-        private static void FindPointyOddLeftCenters(Hexagon[] hexagons)
+        private static void FindPointyOddLeftCenters(IHexagon[] hexagons)
         {
             // For Odd R scheme the hex is the central hex in a megagon if:
             // (Col mod 7 == 0) => Row + 14 mod 14 == 0  OR ELSE Row + 11 mod 14 == 0
@@ -375,7 +363,7 @@ namespace HexGridLib.Grids
             // (Col mod 7 == 5) => Row + 14 mod 14 == 2  OR ELSE Row + 11 mod 14 == 2
             // (Col mod 7 == 6) => Row + 14 mod 14 == 8  OR ELSE Row + 11 mod 14 = 8
 
-            foreach (Hexagon h in hexagons)
+            foreach (IHexagon h in hexagons)
             {
                 int c7 = (h.OffsetLocation.Col + 7777) % 7;    // multiples of 7
                 int r14 = (h.OffsetLocation.Row + 15554) % 14; // multiples of 14
@@ -414,7 +402,7 @@ namespace HexGridLib.Grids
             }
         }
         
-        private static void FindPointyOddRightCenters(Hexagon[] hexagons)
+        private static void FindPointyOddRightCenters(IHexagon[] hexagons)
         {
             // For Odd R scheme the hex is the central hex in a megagon if:
             // (Col mod 7 == 0) => Row + 14 mod 14 == 0  OR ELSE Row + 17 mod 14 == 0
@@ -425,7 +413,7 @@ namespace HexGridLib.Grids
             // (Col mod 7 == 5) => Row + 14 mod 14 == 12 OR ELSE Row + 17 mod 14 == 12
             // (Col mod 7 == 6) => Row + 14 mod 14 == 6  OR ELSE Row + 17 mod 14 == 6
 
-            foreach (Hexagon h in hexagons)
+            foreach (IHexagon h in hexagons)
             {
                 int c7 = (h.OffsetLocation.Col + 7777) % 7;    // multiples of 7
                 int r14 = (h.OffsetLocation.Row + 15554) % 14; // multiples of 14
@@ -472,17 +460,17 @@ namespace HexGridLib.Grids
         /// </summary>
         /// <param name="center">the center hex</param>
         /// <param name="hexagons">the adjacent hexes</param>
-        private static void SetMegaLocations(Hexagon center, Hexagon[] hexagons)
+        private static void SetMegaLocations(IHexagon center, IHexagon[] hexagons)
         {
             // the center hex
             center.SetLocationInMegagon(MegaLocation.X);
 
             // get the adjacent hexagons and also set their Mega location
-            var adjs = Cube.GetAdjacents(center.CubicLocation);
+            var adjs = CubicCoordinate.GetAdjacents(center.CubicLocation);
 
             for (int i = 0; i < adjs.Length; i++)
             {
-                Hexagon hex = hexagons.SingleOrDefault(h => h.CubicLocation.Equals(adjs[i]));
+                IHexagon hex = hexagons.SingleOrDefault(h => h.CubicLocation.Equals(adjs[i]));
                 if (hex != null) hex.SetLocationInMegagon((MegaLocation)(i + 1));
             }
         }

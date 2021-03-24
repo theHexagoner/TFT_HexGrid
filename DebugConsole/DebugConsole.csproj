@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HexGridInterfaces\HexGridInterfaces.csproj" />
     <ProjectReference Include="..\HexGridLib\HexGridLib.csproj" />
     <ProjectReference Include="..\SvgLib\SvgLib.csproj" />
   </ItemGroup>

@@ -1,41 +1,30 @@
 ﻿
-using SvgLib.Paths;
-using SvgLib.Polygons;
+using HexGridInterfaces.Structs;
+using HexGridInterfaces.SvgHelpers;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json.Serialization;
 
 namespace SvgLib.Grids
 {
-    public class SvgGrid
+    public class SvgGrid : ISvgGrid
     {
         // no default constructor
         private SvgGrid() { }
 
         // call this from the builder
-        internal SvgGrid(Dictionary<int, SvgHexagon> hexagons, Dictionary<int, SvgMegagon> megagons)
+        internal SvgGrid(IDictionary<int, ISvgHexagon> hexagons, 
+                         IDictionary<int, SvgMegagon> megagons,
+                         SvgViewBox viewBox)
         {
             SvgHexagons = hexagons;
             SvgMegagons = megagons;
+            SvgViewBox = viewBox;
         }
 
-        [JsonIgnore]
-        public Dictionary<int, SvgHexagon> SvgHexagons { get; private set; }
+        public IDictionary<int, ISvgHexagon> SvgHexagons { get; private set; }
 
-        public List<KeyValuePair<int, SvgHexagon>> SvgHexList
-        {
-            get { return SvgHexagons.ToList(); }
-            set { SvgHexagons = value.ToDictionary(x => x.Key, x => x.Value); }
-        }
+        public IDictionary<int, SvgMegagon> SvgMegagons { get; private set; }
 
-        [JsonIgnore]
-        public Dictionary<int, SvgMegagon> SvgMegagons { get; private set; }
-
-        public List<KeyValuePair<int, SvgMegagon>> SvgMegaList
-        {
-            get { return SvgMegagons.ToList(); }
-            set { SvgMegagons = value.ToDictionary(x => x.Key, x => x.Value); }
-        }
+        public SvgViewBox SvgViewBox { get; private set; }
 
     }
 }

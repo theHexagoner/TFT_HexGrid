@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using HexGridLib.Coordinates;
+using HexGridInterfaces.Factories;
+using HexGridInterfaces.Structs;
 
 namespace SvgLib.Paths
 {
@@ -55,13 +56,13 @@ namespace SvgLib.Paths
 
     }
 
-    /// <summary>
-    /// interface for Path Getter helper classes
-    /// </summary>
-    public interface ISvgPathDGetter
-    {
-        string GetPathD(GridPoint origin, double size);
-    }
+    ///// <summary>
+    ///// interface for Path Getter helper classes
+    ///// </summary>
+    //public interface ISvgPathDGetter
+    //{
+    //    string GetPathD(GridPoint origin, double size);
+    //}
 
     /// <summary>
     /// base class for path getter helper classes
