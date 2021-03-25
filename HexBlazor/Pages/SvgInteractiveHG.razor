@@ -97,26 +97,29 @@
 </div>
 
 <div class="form-group">
-    <div class="row ml-0 mb-1" >
+    <div class="row ml-0 mb-1">
         <div class="mr-3 ml-0 row">
             <label for="widthInches" class="col-form-label col-form-label-sm ml-0 mr-1">Width</label>
             <input type="number" min="1" class="form-control form-control-sm ml-1 mr-0" id="widthInches" @bind="_widthInches" style="width:55px">
         </div>
-        <div class="mr-3 ml-0 row" >
+        <div class="mr-3 ml-0 row">
             <label for="heightInches" class="col-form-label col-form-label-sm ml-0 mr-1">Height</label>
             <input type="number" min="1" class="form-control form-control-sm ml-1 mr-0" id="heightInches" @bind="_heightInches" style="width:55px">
         </div>
         <div class="mr-3 ml-0">
             <button class="btn btn-outline-primary btn-sm" @onclick="SetViewBox">Set Dimensions</button>
         </div>
+        <div class="@_spinnerClass"></div>
     </div>
-    <div id="svgDiv" @ref="_divRef" @onclick="SvgOnClick" @oncontextmenu="SvgOnClick" @oncontextmenu:preventDefault="true" class="mb-2">
-        <BSvg @ref="_svgRef" ViewBox="_viewBox"
-              BackgroundFill="@_bgFill"
-              HexStroke="@_hexStroke" HexStrokeWidth="@_hexStrokeWidth" HexFill="@_hexFill"
-              MegaStroke="@_megaStroke" MegaStrokeWidth="@_megaStrokeWidth"
-              ShowStars=@_showStars />
+    <div class="@_svgClass">
+        <div id="svgDiv" @ref="_divRef" @onclick="SvgOnClick" @oncontextmenu="SvgOnClick" @oncontextmenu:preventDefault="true" class="mb-2">
+            <BSvg @ref="_svgRef" ViewBox="_viewBox"
+                  BackgroundFill="@_bgFill"
+                  HexStroke="@_hexStroke" HexStrokeWidth="@_hexStrokeWidth" HexFill="@_hexFill"
+                  MegaStroke="@_megaStroke" MegaStrokeWidth="@_megaStrokeWidth"
+                  ShowStars=@_showStars />
+        </div>
+        <button class="btn btn-outline-primary btn-sm" @onclick="Swap" disabled="@_saveDisabled">Swap View</button>
     </div>
-    <button class="btn btn-outline-primary btn-sm" @onclick="Swap" disabled="@_saveDisabled">Swap View</button>
 </div>
 

@@ -44,9 +44,9 @@ namespace HexBlazor.Pages
 
         #region the Grid
 
-        private int _rowCount = 23;
-        private int _colCount = 21;
-        private double _size = .25d;
+        private int _rowCount = 19;
+        private int _colCount = 17;
+        private double _size = .5d;
 
         private string _styleText = "Flat";
         private bool _isStylePointy = false;
@@ -94,6 +94,28 @@ namespace HexBlazor.Pages
 
         #endregion
 
+        #region Spinner
+
+        private async Task SetShowSpinner(bool showIt)
+        {
+            if (showIt)
+            {
+                _spinnerClass = "mb-2 spinner-border";
+                _svgClass = "d-none";
+            }
+            else
+            {
+                _spinnerClass = "mb-2 d-none";
+                _svgClass = "";
+            }
+            await Task.Delay(1);
+        }
+
+        private string _spinnerClass = "mb-2 d-none";
+        private string _svgClass = "";
+
+        #endregion
+
         /// <summary>
         /// instantiate the grid and it's content, then pass its geometry into the SVG
         /// </summary>
@@ -101,8 +123,7 @@ namespace HexBlazor.Pages
         {
             try
             {
-                // show a spinner here
-                await Task.Delay(1);
+                await SetShowSpinner(true);
 
                 var origin = new GridPoint(0.5d, .5d);
                 var schema = new OffsetSchema(_isStylePointy, _isOffsetOdd, _isSkewRight);
@@ -115,13 +136,12 @@ namespace HexBlazor.Pages
 
                 _svgRef.SetGeometry(_grid.SvgHexagons, _grid.SvgMegagons);
                 _saveDisabled = false;
-
-                // hide the spinner here
+                await SetShowSpinner(false);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                // hide the spinner here
+                await SetShowSpinner(false);
             }
         }
 
