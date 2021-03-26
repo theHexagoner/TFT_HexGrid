@@ -6,8 +6,8 @@ namespace HexGridInterfaces.SvgHelpers
     public interface ISvgGrid
     {
         SvgViewBox SvgViewBox { get; }
-        IDictionary<int, ISvgHexagon> SvgHexagons { get; }
-        IDictionary<int, SvgMegagon> SvgMegagons { get; }
+        IEnumerable<KeyValuePair<int, ISvgHexagon>> SvgHexagons { get; }
+        IEnumerable<KeyValuePair<int, SvgMegagon>> SvgMegagons { get; }
 
     }
 }

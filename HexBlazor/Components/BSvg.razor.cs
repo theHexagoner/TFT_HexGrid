@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using HexGridInterfaces.Structs;
 using HexGridInterfaces.SvgHelpers;
+using System.Linq;
 
 namespace HexBlazor.Components
 {
@@ -29,10 +30,10 @@ namespace HexBlazor.Components
         [Parameter]
         public bool ShowStars { get; set; }
 
-        public void SetGeometry(IDictionary<int, ISvgHexagon> hexagons, IDictionary<int, SvgMegagon> megagons)
+        public void SetGeometry(IEnumerable<KeyValuePair<int, ISvgHexagon>> hexagons, IEnumerable<KeyValuePair<int, SvgMegagon>> megagons)
         {
-            Hexagons = hexagons;
-            Megagons = megagons;
+            Hexagons = hexagons.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            Megagons = megagons.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             StateHasChanged();
         }
 

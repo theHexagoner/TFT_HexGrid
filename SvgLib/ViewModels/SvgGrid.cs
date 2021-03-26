@@ -11,18 +11,18 @@ namespace SvgLib.Grids
         private SvgGrid() { }
 
         // call this from the builder
-        internal SvgGrid(IDictionary<int, ISvgHexagon> hexagons, 
-                         IDictionary<int, SvgMegagon> megagons,
+        internal SvgGrid(IEnumerable<KeyValuePair<int, ISvgHexagon>> svgHexagons,
+                         IEnumerable<KeyValuePair<int, SvgMegagon>> svgMegagons,
                          SvgViewBox viewBox)
         {
-            SvgHexagons = hexagons;
-            SvgMegagons = megagons;
+            SvgHexagons = svgHexagons;
+            SvgMegagons = svgMegagons;
             SvgViewBox = viewBox;
         }
 
-        public IDictionary<int, ISvgHexagon> SvgHexagons { get; private set; }
+        public IEnumerable<KeyValuePair<int, ISvgHexagon>> SvgHexagons { get; private set; }
 
-        public IDictionary<int, SvgMegagon> SvgMegagons { get; private set; }
+        public IEnumerable<KeyValuePair<int, SvgMegagon>> SvgMegagons { get; private set; }
 
         public SvgViewBox SvgViewBox { get; private set; }
 
