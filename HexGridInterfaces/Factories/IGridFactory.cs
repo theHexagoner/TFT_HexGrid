@@ -8,7 +8,5 @@ namespace HexGridInterfaces.Factories
     {
         //_rowCount, _colCount, size, origin, schema
         IGrid Build(int rowCount, int colCount, GridPoint size, GridPoint origin, OffsetSchema schema);
-
-
     }
 }

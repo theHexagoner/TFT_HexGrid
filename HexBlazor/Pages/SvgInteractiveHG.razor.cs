@@ -27,7 +27,7 @@ namespace HexBlazor.Pages
 
         public double _widthInches = 8.5d;
         public double _heightInches = 11d;
-        private SvgViewBox _viewBox = new(-408d, -528d, 816d, 1056d);
+        private SvgViewBox _viewBox;
 
         private void SetViewBox()
         {
@@ -113,6 +113,87 @@ namespace HexBlazor.Pages
 
         private string _spinnerClass = "mb-2 d-none";
         private string _svgClass = "";
+
+        #endregion
+
+        #region Component Life-cycle
+
+        /// <summary>
+        /// Sets parameters supplied by the component's parent in the render 
+        /// tree or from route parameters.
+        /// </summary>
+        /// <param name="parameters">Represents a collection of parameters 
+        /// supplied to an IComponent by its parent in the render tree
+        /// </param>
+        /// <returns>
+        /// A Task that completes when the component has finished updating 
+        /// and rendering itself.
+        /// </returns>
+        public override async Task SetParametersAsync(ParameterView parameters) 
+        {
+            // if base.SetParametersAsync isn't invoked, developer code can interpret the 
+            // incoming parameters' values in any way required
+            await base.SetParametersAsync(parameters);
+
+            // If event handlers are provided in developer code, unhook them on disposal.
+        }
+
+        /// <summary>
+        /// OnInitialized (or OnInitializedAsync) are invoked when the component 
+        /// is initialized after having received its initial parameters in SetParametersAsync.
+        /// </summary>
+        protected override void OnInitialized() // or async Task OnInitializedAsync
+        {
+            SetViewBox();
+            // If event handlers are provided in developer code, unhook them on disposal.
+        }
+
+        /// <summary>
+        /// OnParametersSet (or OnParametersSetAsync) are called:
+        ///     - after the component is initialized in OnInitialized (or OnInitializedAsync)
+        ///     - when the parent component re-renders and supplies "changed" params
+        /// </summary>
+        protected override void OnParametersSet()
+        {
+            // If event handlers are provided in developer code, unhook them on disposal.
+        }
+
+        /// <summary>
+        /// OnAfterRender and OnAfterRenderAsync are called after a component has finished 
+        /// rendering. Element and component references are populated at this point. Use 
+        /// this stage to perform additional initialization steps with the rendered content, 
+        /// such as JS interop calls that interact with the rendered DOM elements.
+        /// </summary>
+        /// <param name="firstRender">True on first time component is rendered in browser</param>
+        protected override void OnAfterRender(bool firstRender)
+        {
+            if (firstRender)
+            {
+                // do something only once, after first render
+            }
+
+            // do something every time the component finished rendering
+
+            // NOTE: Even if you return a Task from OnAfterRenderAsync, the framework doesn't 
+            // schedule a further render cycle for your component once that task completes. 
+            // This is to avoid an infinite render loop. This is different from the other 
+            // lifecycle methods, which schedule a further render cycle once a returned 
+            // Task completes.
+
+            // If event handlers are provided in developer code, unhook them on disposal.
+        }
+
+        /// <summary>
+        /// ShouldRender is called each time a component is rendered. Override ShouldRender to 
+        /// manage UI refreshing. If the implementation returns true, the UI is refreshed. 
+        /// NOTE: even if ShouldRender is overridden, the component is always initially rendered.
+        /// </summary>
+        /// <returns>True if the component should render itself, or false if render 
+        /// should be suppressed</returns>
+        protected override bool ShouldRender()
+        {
+            return true;
+        }
 
         #endregion
 
