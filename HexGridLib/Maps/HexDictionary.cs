@@ -1,8 +1,7 @@
-﻿using System;
+﻿using HexGridInterfaces.Structs;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 
 namespace HexGridLib.Maps
 {
@@ -18,9 +17,6 @@ namespace HexGridLib.Maps
 
         public delegate void DictionaryRemoveItem(object sender, DictionaryChangingEventArgs<K, V> e);
         public event DictionaryRemoveItem OnDictionaryRemoveItem;
-
-        public delegate void DictionaryClear(object sender, DictionaryChangingEventArgs<K, V> e);
-        public event DictionaryClear OnDictionaryClear;
 
         private readonly IDictionary<K, V> innerDict;
 
@@ -41,12 +37,6 @@ namespace HexGridLib.Maps
             OnDictionaryAddItem?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = item.Key, Value = item.Value });
         }
 
-        public void Clear()
-        {
-            innerDict.Clear();
-            OnDictionaryClear?.Invoke(this, new DictionaryChangingEventArgs<K, V>() { Key = default, Value = default });
-        }
-
         public bool Remove(K key)
         {
             var item = innerDict[key];
@@ -63,6 +53,11 @@ namespace HexGridLib.Maps
         }
 
         #region Other IDictionary overrides
+
+        public void Clear()
+        {
+            innerDict.Clear();
+        }
 
         public ICollection<K> Keys => innerDict.Keys;
 
@@ -108,19 +103,5 @@ namespace HexGridLib.Maps
 
     }
 
-    internal class DictionaryChangingEventArgs<K, V> : EventArgs
-    {
-        public K Key
-        {
-            get;
-            set;
-        }
-
-        public V Value
-        {
-            get;
-            set;
-        }
-    }
 
 }
