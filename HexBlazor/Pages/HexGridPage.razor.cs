@@ -207,10 +207,11 @@ namespace HexBlazor.Pages
         /// </summary>
         private async Task GenerateTheGrid()
         {
+            await SetShowSpinner(true);
+            StateHasChanged();
+
             try
             {
-                await SetShowSpinner(true);
-
                 var origin = new GridPoint(0.5d, .5d);
                 var schema = new OffsetSchema(_isStylePointy, _isOffsetOdd, _isSkewRight);
                 var pxSize = (_size / Math.Sqrt(3)) * DPI;
