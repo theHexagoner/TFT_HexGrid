@@ -1,7 +1,7 @@
 ﻿@page "/"
 
 @inject IJSRuntime jsRuntime
-@inject ISvgGridBuilder gridBuilder 
+@inject IHexGridPageVmBuilder vmBuilder
 
 <div class="form-group row ml-0 align-items-center">
     <div class="mr-3 mb-3" style="width:55px">
@@ -16,7 +16,7 @@
         <label for="size" class="mb-0">Size &Prime;</label>
         <input type="number" min="1" class="form-control form-control-sm" id="size" @bind="_size">
     </div>
-    
+
     <div class="mr-3 mb-3" style="width:80px">
         <label for="style" class="mb-0">Style</label>
         <div class="custom-control custom-switch">
@@ -38,7 +38,7 @@
             <label class="custom-control-label" for="skew">@_skewText</label>
         </div>
     </div>
-    
+
     <div class="mr-3 mb-3">
         <button class="btn btn-outline-primary btn-sm" @onclick="GenerateTheGrid">Generate The Grid</button>
     </div>

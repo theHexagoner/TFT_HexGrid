@@ -1,31 +1,40 @@
-﻿using HexGridInterfaces.Grids;
+﻿using HexGridInterfaces.Factories;
+using HexGridInterfaces.Grids;
 using HexGridInterfaces.Structs;
 using HexGridInterfaces.SvgHelpers;
-using HexGridInterfaces.Factories;
+using HexGridInterfaces.ViewModels;
 using SvgLib.Polygons;
+using SvgLib.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SvgLib.Grids
+namespace SvgLib.Factories
 {
-    public sealed class SvgGridBuilder : ISvgGridBuilder
+    public class HexGridPageVmBuilder : IHexGridPageVmBuilder
     {
         private readonly IGridFactory _gridFactory;
+        private readonly ISvgGridBuilder _svgGridBuilder;
 
-        public SvgGridBuilder(IGridFactory gridFactory) { _gridFactory = gridFactory; }
+        public HexGridPageVmBuilder(IGridFactory gridFactory, ISvgGridBuilder svgGridBuilder) 
+        {
+            _gridFactory = gridFactory;
+            _svgGridBuilder = svgGridBuilder; 
+        }
 
-        public ISvgGrid Build(int rowCount, int colCount, GridPoint size, GridPoint origin, OffsetSchema schema, SvgViewBox viewBox)
+        public IHexGridPageVM Build(int rowCount, int colCount, GridPoint size, GridPoint origin, OffsetSchema schema, SvgViewBox viewBox)
         {
             // create a grid with the builder passed in by DI?
             IGrid grid = _gridFactory.Build(rowCount, colCount, size, origin, schema);
 
-            Dictionary<int, ISvgHexagon> svgHexagons = GetSvgHexagons(grid.Hexagons.Values.ToArray());
-            Dictionary<int, SvgMegagon> svgMegagons = GetSvgMegagons(grid.Edges.Values.ToArray());
+            IDictionary<int, ISvgHexagon> svgHexagons = GetSvgHexagons(grid.Hexagons.Values.ToArray());
+            IDictionary<int, SvgMegagon> svgMegagons = GetSvgMegagons(grid.Edges.Values.ToArray());
+
+            ISvgGrid svgGrid = _svgGridBuilder.Build(svgHexagons, svgMegagons, viewBox);
             
-            return new SvgGrid(svgHexagons, svgMegagons, viewBox);
+            return new HexGridPageVM(svgGrid, null);
         }
 
-        private static Dictionary<int, ISvgHexagon> GetSvgHexagons(IHexagon[] hexagons)
+        private static IDictionary<int, ISvgHexagon> GetSvgHexagons(IHexagon[] hexagons)
         {
             Dictionary<int, ISvgHexagon> svgHexagons = new();
 
@@ -38,7 +47,7 @@ namespace SvgLib.Grids
             return svgHexagons;
         }
 
-        private static Dictionary<int, SvgMegagon> GetSvgMegagons(IEdge[] edges)
+        private static IDictionary<int, SvgMegagon> GetSvgMegagons(IEdge[] edges)
         {
             Dictionary<int, SvgMegagon> svgMegagons = new();
 
@@ -54,6 +63,7 @@ namespace SvgLib.Grids
 
             return svgMegagons;
         }
+
 
     }
 }

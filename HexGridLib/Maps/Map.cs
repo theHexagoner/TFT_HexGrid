@@ -1,7 +1,5 @@
 ﻿using HexGridInterfaces.Grids;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace HexGridLib.Maps
 {

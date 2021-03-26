@@ -2,7 +2,7 @@ using HexGridInterfaces.Factories;
 using HexGridLib.Factories;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using SvgLib.Grids;
+using SvgLib.Factories;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -17,6 +17,7 @@ namespace HexBlazor
             builder.RootComponents.Add<App>("#app");
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            builder.Services.AddSingleton<IHexGridPageVmBuilder, HexGridPageVmBuilder>();
             builder.Services.AddSingleton<ISvgGridBuilder, SvgGridBuilder>();
             builder.Services.AddSingleton<IGridFactory, GridFactory>();
 

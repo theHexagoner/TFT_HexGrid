@@ -1,12 +1,13 @@
 ﻿using HexGridInterfaces.Structs;
 using HexGridInterfaces.SvgHelpers;
+using System.Collections.Generic;
 
 namespace HexGridInterfaces.Factories
 {
     public interface ISvgGridBuilder
     {
 
-        ISvgGrid Build(int rowCount, int colCount, GridPoint size, GridPoint origin, OffsetSchema schema, SvgViewBox viewBox);
+        ISvgGrid Build(IDictionary<int, ISvgHexagon> svgHexagons, IDictionary<int, SvgMegagon> svgMegagons, SvgViewBox viewBox);
 
     }
 }

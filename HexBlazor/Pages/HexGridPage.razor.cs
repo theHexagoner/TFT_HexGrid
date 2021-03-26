@@ -6,11 +6,14 @@ using System;
 using System.Threading.Tasks;
 using HexGridInterfaces.Structs;
 using HexGridInterfaces.SvgHelpers;
+using HexGridInterfaces.ViewModels;
 
 namespace HexBlazor.Pages
 {
-    public partial class SvgInteractiveHG : ComponentBase
+    public partial class HexGridPage : ComponentBase
     {
+        IHexGridPageVM viewModel;
+
         #region private fields
 
         private const int DPI = 96;
@@ -18,7 +21,7 @@ namespace HexBlazor.Pages
         private ElementReference _divRef;
         private BSvg _svgRef;
         private ISvgGrid _grid;
-        //private Map _map;
+        private ISvgMap _map;
 
         private bool _saveDisabled = true;
         private bool _isShowingMap = false;
@@ -211,9 +214,10 @@ namespace HexBlazor.Pages
                 var pxRadius = (_size / Math.Sqrt(3)) * DPI;
                 var size = new GridPoint(pxRadius,pxRadius);
 
-                _grid = gridBuilder.Build(_rowCount, _colCount, size, origin, schema, _viewBox);
+                viewModel = vmBuilder.Build(_rowCount, _colCount, size, origin, schema, _viewBox);
 
-                //_map = _grid.InitMap();
+                _grid = viewModel.Grid;
+                _map = viewModel.Map;
 
                 _svgRef.SetGeometry(_grid.SvgHexagons, _grid.SvgMegagons);
                 _saveDisabled = false;

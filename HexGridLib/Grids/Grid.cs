@@ -384,6 +384,15 @@ namespace HexGridLib.Grids
 
         #endregion
 
+        #region Map
+
+        public IMap InitMap()
+        {
+            return new Maps.Map(this);
+        }
+
+        #endregion
+
     }
 
 

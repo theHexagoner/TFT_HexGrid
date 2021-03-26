@@ -8,5 +8,8 @@ namespace HexGridInterfaces.Grids
     {
         IDictionary<int, IEdge> Edges { get; }
         IDictionary<int, IHexagon> Hexagons { get; }
+
+        IMap InitMap();
+
     }
 }
