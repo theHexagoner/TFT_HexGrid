@@ -18,8 +18,10 @@ namespace HexBlazor
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddSingleton<IHexGridPageVmBuilder, HexGridPageVmBuilder>();
-            builder.Services.AddSingleton<ISvgGridBuilder, SvgGridBuilder>();
             builder.Services.AddSingleton<IGridFactory, GridFactory>();
+            builder.Services.AddSingleton<ISvgGridBuilder, SvgGridBuilder>();
+            builder.Services.AddSingleton<ISvgMapBuilder, SvgMapBuilder>();
+            builder.Services.AddSingleton<IHitTesterFactory, HitTesterFactory>();
 
             await builder.Build().RunAsync();
         }

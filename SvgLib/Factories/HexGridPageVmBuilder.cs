@@ -14,24 +14,34 @@ namespace SvgLib.Factories
     {
         private readonly IGridFactory _gridFactory;
         private readonly ISvgGridBuilder _svgGridBuilder;
+        private readonly ISvgMapBuilder _svgMapBuilder;
+        private readonly IHitTesterFactory _hitTesterFactory;
 
-        public HexGridPageVmBuilder(IGridFactory gridFactory, ISvgGridBuilder svgGridBuilder) 
+        public HexGridPageVmBuilder(IGridFactory gridFactory, ISvgGridBuilder svgGridBuilder, ISvgMapBuilder svgMapBuilder, IHitTesterFactory hitTesterFactory) 
         {
             _gridFactory = gridFactory;
-            _svgGridBuilder = svgGridBuilder; 
+            _svgGridBuilder = svgGridBuilder;
+            _svgMapBuilder = svgMapBuilder;
+            _hitTesterFactory = hitTesterFactory;
         }
 
-        public IHexGridPageVM Build(int rowCount, int colCount, GridPoint size, GridPoint origin, OffsetSchema schema, SvgViewBox viewBox)
+        public IHexGridPageVM Build(int rowCount, int colCount, GridPoint radius, GridPoint origin, OffsetSchema schema, SvgViewBox viewBox)
         {
             // create a grid with the builder passed in by DI?
-            IGrid grid = _gridFactory.Build(rowCount, colCount, size, origin, schema);
+            IGrid grid = _gridFactory.Build(rowCount, colCount, radius, origin, schema);
+            IMap map = grid.InitMap();
 
             IDictionary<int, ISvgHexagon> svgHexagons = GetSvgHexagons(grid.Hexagons.Values.ToArray());
             IDictionary<int, SvgMegagon> svgMegagons = GetSvgMegagons(grid.Edges.Values.ToArray());
 
             ISvgGrid svgGrid = _svgGridBuilder.Build(svgHexagons, svgMegagons, viewBox);
-            
-            return new HexGridPageVM(svgGrid, null);
+            ISvgMap svgMap = _svgMapBuilder.Build(map, viewBox);
+
+            IEnumerable<int> hexagonIDs = grid.Hexagons.Keys;
+
+            IHitTester hitTester = _hitTesterFactory.Build(rowCount, colCount, radius, origin, schema, hexagonIDs);
+
+            return new HexGridPageVM(svgGrid, svgMap, hitTester);
         }
 
         private static IDictionary<int, ISvgHexagon> GetSvgHexagons(IHexagon[] hexagons)

@@ -2,6 +2,7 @@
 using HexGridInterfaces.Structs;
 using HexGridInterfaces.SvgHelpers;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SvgLib.Grids
 {
@@ -15,16 +16,41 @@ namespace SvgLib.Grids
                          IEnumerable<KeyValuePair<int, SvgMegagon>> svgMegagons,
                          SvgViewBox viewBox)
         {
-            SvgHexagons = svgHexagons;
+            _hexDict = svgHexagons.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             SvgMegagons = svgMegagons;
             SvgViewBox = viewBox;
         }
 
-        public IEnumerable<KeyValuePair<int, ISvgHexagon>> SvgHexagons { get; private set; }
+        private readonly IDictionary<int, ISvgHexagon> _hexDict;
+        public IEnumerable<KeyValuePair<int, ISvgHexagon>> SvgHexagons 
+        { 
+            get
+            {
+                return _hexDict;
+            }
+        }
 
         public IEnumerable<KeyValuePair<int, SvgMegagon>> SvgMegagons { get; private set; }
 
         public SvgViewBox SvgViewBox { get; private set; }
 
+        public bool TryGetHex(int? ID, out ISvgHexagon hex)
+        {
+            bool result = false;
+            ISvgHexagon foundHex = null;
+            
+            if (ID.HasValue)
+            {
+                result = _hexDict.TryGetValue(ID.Value, out foundHex);
+            }
+ 
+            hex = foundHex;
+            return result;
+        }
+
+        public ISvgHexagon GetHex(int ID)
+        {
+            return _hexDict.Single(kvp => kvp.Key == ID).Value;
+        }
     }
 }

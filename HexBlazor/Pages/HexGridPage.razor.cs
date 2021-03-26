@@ -1,12 +1,14 @@
 ﻿using HexBlazor.Components;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.JSInterop;
-using System;
-using System.Threading.Tasks;
 using HexGridInterfaces.Structs;
 using HexGridInterfaces.SvgHelpers;
 using HexGridInterfaces.ViewModels;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Threading.Tasks;
 
 namespace HexBlazor.Pages
 {
@@ -211,10 +213,10 @@ namespace HexBlazor.Pages
 
                 var origin = new GridPoint(0.5d, .5d);
                 var schema = new OffsetSchema(_isStylePointy, _isOffsetOdd, _isSkewRight);
-                var pxRadius = (_size / Math.Sqrt(3)) * DPI;
-                var size = new GridPoint(pxRadius,pxRadius);
+                var pxSize = (_size / Math.Sqrt(3)) * DPI;
+                var radius = new GridPoint(pxSize,pxSize);
 
-                viewModel = vmBuilder.Build(_rowCount, _colCount, size, origin, schema, _viewBox);
+                viewModel = vmBuilder.Build(_rowCount, _colCount, radius, origin, schema, _viewBox);
 
                 _grid = viewModel.Grid;
                 _map = viewModel.Map;
@@ -239,61 +241,62 @@ namespace HexBlazor.Pages
         {
             await Task.Delay(1);
 
-            //if (_grid != null && _map != null && _isShowingMap == false)
-            //{
-            //    // get the actual size of the DIV
-            //    string data = await jsRuntime.InvokeAsync<string>("getDivDimensions", new object[] { _divRef });
-            //    JObject dimensions = (JObject)JsonConvert.DeserializeObject(data);
+            if (_grid != null && _map != null && _isShowingMap == false)
+            {
+                // get the actual size of the DIV
+                string data = await jsRuntime.InvokeAsync<string>("getDivDimensions", new object[] { _divRef });
+                JObject dimensions = (JObject)JsonConvert.DeserializeObject(data);
 
-            //    var divWidth = dimensions.Value<double>("width");
-            //    var divHeight = dimensions.Value<double>("height");
-            //    var oLeft = dimensions.Value<double>("offsetLeft");
-            //    var oTop = dimensions.Value<double>("offsetTop");
+                var divWidth = dimensions.Value<double>("width");
+                var divHeight = dimensions.Value<double>("height");
+                var oLeft = dimensions.Value<double>("offsetLeft");
+                var oTop = dimensions.Value<double>("offsetTop");
 
-            //    // calculate the factor by which to multiply the TRANSLATE_ vars
-            //    // Width and Height should be same factor?
+                // calculate the factor by which to multiply the TRANSLATE_ vars
+                // Width and Height should be same factor?
 
-            //    var scaleW = _viewBox.Width / divWidth;
-            //    var scaleH = _viewBox.Height / divHeight;
+                var scaleW = _viewBox.Width / divWidth;
+                var scaleH = _viewBox.Height / divHeight;
 
-            //    // get the actual coordinates of the mouse click relative to the div:
-            //    double mouseX = eventArgs.ClientX - oLeft;
-            //    double mouseY = eventArgs.ClientY - oTop;
+                // get the actual coordinates of the mouse click relative to the div:
+                double mouseX = eventArgs.ClientX - oLeft;
+                double mouseY = eventArgs.ClientY - oTop;
 
-            //    // translate these for the 0,0 origin being located at center
-            //    // translation factor must be scaled relative to actual size of div as displayed on screen
-            //    var translatedX = (mouseX * scaleW) + _viewBox.OriginX;
-            //    var translatedY = (mouseY * scaleH) + _viewBox.OriginY;
+                // translate these for the 0,0 origin being located at center
+                // translation factor must be scaled relative to actual size of div as displayed on screen
+                var translatedX = (mouseX * scaleW) + _viewBox.OriginX;
+                var translatedY = (mouseY * scaleH) + _viewBox.OriginY;
 
-            //    // get the grid hex the user clicked on, if any:
-            //    var hex = _grid.GetHexAt(new GridPoint(translatedX, translatedY));
+                // get the grid hex the user clicked on, if any:
+                var ID = viewModel.HitTester.HitTest(new GridPoint(translatedX, translatedY));
+                var exists = _grid.TryGetHex(ID, out _);
 
-            //    // left-click to add the hex to the map if not already present
-            //    if (hex != null && eventArgs.Button == 0)
-            //    {
-            //        // update the look of the grid hexagon in case we need to redraw it from scratch later
-            //        _grid.SvgHexagons[hex.ID].IsSelected = true;
+                // left-click to add the hex to the map if not already present
+                if (exists && eventArgs.Button == 0)
+                {
+                    // update the look of the grid hexagon in case we need to redraw it from scratch later
+                    _grid.GetHex(ID.Value).IsSelected = true;
 
-            //        // update the current view
-            //        await _svgRef.UpdateHexIsSelected(hex.ID, true);
+                    // update the current view
+                    await _svgRef.UpdateHexIsSelected(ID.Value, true);
 
-            //        // if the map does not contain the hexagon, add it to the map
-            //        _map.AddHexagon(hex.ID);
-            //    }
+                    // if the map does not contain the hexagon, add it to the map
+                    _map.AddHexagon(ID.Value);
+                }
 
-            //    // right-click to remove the hex from the map if it is present
-            //    if (hex != null && eventArgs.Button == 2)
-            //    {
-            //        // update the look of the grid hexagon in case we need to redraw it from scratch later
-            //        _grid.SvgHexagons[hex.ID].IsSelected = false;
+                // right-click to remove the hex from the map if it is present
+                if (exists && eventArgs.Button == 2)
+                {
+                    // update the look of the grid hexagon in case we need to redraw it from scratch later
+                    _grid.GetHex(ID.Value).IsSelected = false;
 
-            //        // actually update the current view
-            //        await _svgRef.UpdateHexIsSelected(hex.ID, false);
+                    // actually update the current view
+                    await _svgRef.UpdateHexIsSelected(ID.Value, false);
 
-            //        // if the map contains the hex, remove it from the map
-            //        _map.RemoveHexagon(hex.ID);
-            //    }
-            //}
+                    // if the map contains the hex, remove it from the map
+                    _map.RemoveHexagon(ID.Value);
+                }
+            }
         }
 
         /// <summary>
@@ -303,11 +306,11 @@ namespace HexBlazor.Pages
         {
             if (!_isShowingMap)
             {
-                //_svgRef.SetGeometry(_map.SvgHexagons, _map.SvgMegagons);
+                _svgRef.SetGeometry(_map.SvgHexagons, _map.SvgMegagons);
             }
             else
             {
-                //_svgRef.SetGeometry(_grid.SvgHexagons, _grid.SvgMegagons);
+                _svgRef.SetGeometry(_grid.SvgHexagons, _grid.SvgMegagons);
             }
 
             _isShowingMap = !_isShowingMap;

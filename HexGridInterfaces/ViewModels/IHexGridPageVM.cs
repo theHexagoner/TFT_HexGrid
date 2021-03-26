@@ -1,4 +1,5 @@
-﻿using HexGridInterfaces.SvgHelpers;
+﻿using HexGridInterfaces.Grids;
+using HexGridInterfaces.SvgHelpers;
 
 namespace HexGridInterfaces.ViewModels
 {
@@ -6,8 +7,6 @@ namespace HexGridInterfaces.ViewModels
     {
         ISvgGrid Grid { get; }
         ISvgMap Map { get; }
-
-        // other properties used by the view
-
+        IHitTester HitTester { get; }
     }
 }
