@@ -204,10 +204,10 @@ namespace HexBlazor.Pages
         /// <summary>
         /// instantiate the grid and it's content, then pass its geometry into the SVG
         /// </summary>
-        private void GenerateTheGrid()
+        private async Task GenerateTheGrid()
         {
             SetShowSpinner(true);
-            StateHasChanged();
+            await Task.Delay(100);
 
             try
             {
@@ -224,6 +224,7 @@ namespace HexBlazor.Pages
                 _svgRef.SetGeometry(_grid.SvgHexagons, _grid.SvgMegagons);
                 _saveDisabled = false;
                 SetShowSpinner(false);
+                await Task.Delay(1);
             }
             catch (Exception ex)
             {
