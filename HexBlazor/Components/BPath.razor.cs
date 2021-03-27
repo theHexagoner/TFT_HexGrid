@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using System.Threading.Tasks;
 
 namespace HexBlazor.Components
 {
@@ -12,20 +11,6 @@ namespace HexBlazor.Components
 
         [Parameter]
         public string D { get; set; }
-
-        //[CascadingParameter]
-        //public BSvg Container { get; set; }
-
-        //protected override void OnInitialized()
-        //{
-        //    Container.AddBPath(this);
-        //}
-
-        //public async Task SetD(string d)
-        //{
-        //    D = d;
-        //    StateHasChanged();
-        //}
 
     }
 }

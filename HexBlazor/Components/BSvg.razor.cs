@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using HexGridInterfaces.Structs;
 using HexGridInterfaces.SvgHelpers;
 using System.Linq;
@@ -22,7 +21,13 @@ namespace HexBlazor.Components
         public string BackgroundFill { get; set; }
 
         [Parameter]
-        public SvgViewBox ViewBox { get; set; }
+        public string ViewBox { get; set; }
+
+        [Parameter]
+        public double RectOriginX { get; set; }
+
+        [Parameter]
+        public double RectOriginY { get; set; }
 
         [Parameter]
         public string Translation { get; set; }
@@ -39,7 +44,6 @@ namespace HexBlazor.Components
 
         #region Hexagons
 
-        [Parameter]
         public IDictionary<int, ISvgHexagon> Hexagons { get; set; } = new Dictionary<int, ISvgHexagon>();
 
         [Parameter]
@@ -51,10 +55,9 @@ namespace HexBlazor.Components
         [Parameter]
         public string HexFill { get; set; }
 
-        public async Task UpdateHexIsSelected(int id, bool isSelected)
+        public void UpdateHexIsSelected(int id, bool isSelected)
         {
             Hexagons[id].IsSelected = isSelected;
-            await Task.Delay(1);
             StateHasChanged();
         }
 
@@ -62,7 +65,6 @@ namespace HexBlazor.Components
 
         #region Megagons
 
-        [Parameter]
         public IDictionary<int, SvgMegagon> Megagons { get; set; } = new Dictionary<int, SvgMegagon>();
 
         [Parameter]

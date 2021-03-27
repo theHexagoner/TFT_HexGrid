@@ -101,7 +101,7 @@ namespace HexBlazor.Pages
 
         #region Spinner
 
-        private async Task SetShowSpinner(bool showIt)
+        private void SetShowSpinner(bool showIt)
         {
             if (showIt)
             {
@@ -113,7 +113,6 @@ namespace HexBlazor.Pages
                 _spinnerClass = "mb-2 d-none";
                 _svgClass = "";
             }
-            await Task.Delay(1);
         }
 
         private string _spinnerClass = "mb-2 d-none";
@@ -205,9 +204,9 @@ namespace HexBlazor.Pages
         /// <summary>
         /// instantiate the grid and it's content, then pass its geometry into the SVG
         /// </summary>
-        private async Task GenerateTheGrid()
+        private void GenerateTheGrid()
         {
-            await SetShowSpinner(true);
+            SetShowSpinner(true);
             StateHasChanged();
 
             try
@@ -224,12 +223,12 @@ namespace HexBlazor.Pages
 
                 _svgRef.SetGeometry(_grid.SvgHexagons, _grid.SvgMegagons);
                 _saveDisabled = false;
-                await SetShowSpinner(false);
+                SetShowSpinner(false);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                await SetShowSpinner(false);
+                SetShowSpinner(false);
             }
         }
 
@@ -240,8 +239,6 @@ namespace HexBlazor.Pages
         /// <returns>Task result</returns>
         private async Task SvgOnClick(MouseEventArgs eventArgs)
         {
-            await Task.Delay(1);
-
             if (_grid != null && _map != null && _isShowingMap == false)
             {
                 // get the actual size of the DIV
@@ -279,7 +276,7 @@ namespace HexBlazor.Pages
                     _grid.GetHex(ID.Value).IsSelected = true;
 
                     // update the current view
-                    await _svgRef.UpdateHexIsSelected(ID.Value, true);
+                    _svgRef.UpdateHexIsSelected(ID.Value, true);
 
                     // if the map does not contain the hexagon, add it to the map
                     _map.AddHexagon(ID.Value);
@@ -292,7 +289,7 @@ namespace HexBlazor.Pages
                     _grid.GetHex(ID.Value).IsSelected = false;
 
                     // actually update the current view
-                    await _svgRef.UpdateHexIsSelected(ID.Value, false);
+                    _svgRef.UpdateHexIsSelected(ID.Value, false);
 
                     // if the map contains the hex, remove it from the map
                     _map.RemoveHexagon(ID.Value);

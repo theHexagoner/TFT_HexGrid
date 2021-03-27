@@ -113,8 +113,7 @@
     </div>
     <div class="@_svgClass">
         <div id="svgDiv" @ref="_divRef" @onclick="SvgOnClick" @oncontextmenu="SvgOnClick" @oncontextmenu:preventDefault="true" class="mb-2">
-            <BSvg @ref="_svgRef" ViewBox="_viewBox"
-                  BackgroundFill="@_bgFill"
+            <BSvg @ref="_svgRef" ViewBox="@_viewBox.ToString()" RectOriginX="@_viewBox.OriginX" RectOriginY="@_viewBox.OriginY" BackgroundFill="@_bgFill"
                   HexStroke="@_hexStroke" HexStrokeWidth="@_hexStrokeWidth" HexFill="@_hexFill"
                   MegaStroke="@_megaStroke" MegaStrokeWidth="@_megaStrokeWidth"
                   ShowStars=@_showStars />
