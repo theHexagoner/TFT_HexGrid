@@ -64,9 +64,9 @@ namespace HexGridLib.Maps
 
         private Dictionary<int, IEdge> EdgeDict { get; }
 
-        private HexDictionary<int, IHexagon> MapHexagons { get; set; }
+        private HexDictionary<int, IHexagon> MapHexagons { get; }
 
-        private IDictionary<int, IHexagon> GridHexagons { get; set; }
+        private IDictionary<int, IHexagon> GridHexagons { get; }
 
         private void AddingHexagon(object sender, DictionaryChangingEventArgs<int, IHexagon> e)
         {

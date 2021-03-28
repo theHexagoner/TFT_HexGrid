@@ -4,133 +4,23 @@ using System.Linq;
 using HexGridInterfaces.Grids;
 using HexGridInterfaces.Structs;
 
+// notes:   Hexagonal grids can be thought of as two-dimensional representation of a three-dimensional (cubic) coordinate system.
+//          Each hexagon on our grid can then be thought of as a cube that exists in a three dimensional matrix.
+//          Under the covers, the hexagon at the origin of our grid is really the cube that is located at coordinates 0, 0, 0.
+//
+//          In theory, the grid could extend to int.MaxValue in each direction along the three dimensions.
+//          In practice, the visible area of the grid will be limited to some practical size defined by screen or print resolution and size.
+//          
+//          There are a variety of layouts and two-dimensional coordinate systems that can be used to define the practical limits of
+//          a hexagonal grid. Since video screens and printed materials are generally rectangular, this API uses the familiar concepts 
+//          of rows and columns of hexagons within a rectangular layout to define the extents of the grid. There are eight ways to do
+//          this; see the OffsetScheme struct.
+
 namespace HexGridLib.Grids
 {
-
-
-    //public enum HexagonStyle
-    //{
-    //    Flat = 0,
-    //    Pointy = 1
-    //}
-
-    //public enum MegagonSkew
-    //{
-    //    Left = 0,
-    //    Right = 1
-    //}
-
-    //public enum OffsetPush
-    //{
-    //    Even = 0,
-    //    Odd = 1
-    //}
-
-    //public struct OffsetSchema
-    //{
-    //    public readonly HexagonStyle Style;
-    //    public readonly OffsetPush Offset;
-    //    public readonly MegagonSkew Skew;
-
-    //    public OffsetSchema(HexagonStyle style, OffsetPush offset, MegagonSkew skew)
-    //    {
-    //        Style = style;
-    //        Offset = offset;
-    //        Skew = skew;
-    //    }
-
-    //    public OffsetSchema(bool isPointy, bool isOdd, bool isRight)
-    //    {
-    //        Style = isPointy ? HexagonStyle.Pointy : HexagonStyle.Flat;
-    //        Offset = isOdd ? OffsetPush.Odd : OffsetPush.Even;
-    //        Skew = isRight ? MegagonSkew.Right : MegagonSkew.Left;
-    //    }
-
-    //    #region Conversions
-
-    //    private static readonly int EVEN = 1;
-    //    private static readonly int ODD = -1;
-
-    //    #region Offset to Cubic Coords
-
-    //    internal CubicCoordinate GetCubicCoords(OffsetCoordinate hex)
-    //    {
-    //        return Style switch
-    //        {
-    //            HexagonStyle.Flat => OffsetToCubeQ(Offset == OffsetPush.Even ? EVEN : ODD, hex),
-    //            HexagonStyle.Pointy => OffsetToCubeR(Offset == OffsetPush.Even ? EVEN : ODD, hex),
-    //            _ => throw new ArgumentException(string.Format("Invalid Style {0} specified for OffsetSchema", Style))
-    //        };
-    //    }
-
-    //    private static CubicCoordinate OffsetToCubeQ(int push, OffsetCoordinate h)
-    //    {
-    //        int x = h.Col;
-    //        int y = h.Row - (h.Col + push * (h.Col & 1)) / 2;
-    //        int z = -x - y;
-    //        return new Cube(x, y, z);
-    //    }
-
-    //    private static CubicCoordinate OffsetToCubeR(int push, OffsetCoordinate h)
-    //    {
-    //        int x = h.Col - (h.Row + push * (h.Row & 1)) / 2;
-    //        int y = h.Row;
-    //        int z = -x - y;
-    //        return new Cube(x, y, z);
-    //    }
-
-    //    #endregion
-
-    //    #region Cubic to Offset Coords
-
-    //    /// <summary>
-    //    /// convert a cube to offset (row, column) coordinates
-    //    /// </summary>
-    //    /// <param name="hex">the hex for which you want the offset coordinates</param>
-    //    /// <returns>Offset</returns>
-    //    internal Offset GetOffsetCoords(Cube hex)
-    //    {
-    //        return Style switch
-    //        {
-    //            HexagonStyle.Flat => GetOffsetQ(Offset == OffsetPush.Even ? EVEN : ODD, hex),
-    //            HexagonStyle.Pointy => GetOffsetR(Offset == OffsetPush.Even ? EVEN : ODD, hex),
-    //            _ => throw new ArgumentException(string.Format("Invalid Style {0} specified for OffsetSchema", Style))
-    //        };
-    //    }
-
-    //    private static Offset GetOffsetQ(int push, Cube hex)
-    //    {
-    //        int col = hex.X;
-    //        int row = hex.Y + ((hex.X + push * (hex.X & 1)) / 2);
-    //        return new Offset(row, col);
-    //    }
-
-    //    private static Offset GetOffsetR(int push, Cube hex)
-    //    {
-    //        int col = hex.X + (hex.Y + push * (hex.Y & 1)) / 2;
-    //        int row = hex.Y;
-    //        return new Offset(col, row);
-    //    }
-
-    //    #endregion
-
-    //    #endregion
-
-    //}
-
     public class Grid : IGrid
     {
-        // notes:   Hexagonal grids can be thought of as two-dimensional representation of a three-dimensional (cubic) coordinate system.
-        //          Each hexagon on our grid can then be thought of as a cube that exists in a three dimensional matrix.
-        //          Under the covers, the hexagon at the origin of our grid is really the cube that is located at coordinates 0, 0, 0.
-        //
-        //          In theory, the grid could extend to int.MaxValue in each direction along the three dimensions.
-        //          In practice, the visible area of the grid will be limited to some practical size defined by screen or print resolution and size.
-        //          
-        //          There are a variety of layouts and two-dimensional coordinate systems that can be used to define the practical limits of
-        //          a hexagonal grid. Since video screens and printed materials are generally rectangular, this API uses the familiar concepts 
-        //          of rows and columns of hexagons within a rectangular layout to define the extents of the grid. There are four ways to do
-        //          this; see the OffsetScheme enum.
+        #region Construction
 
         /// <summary>
         /// there is no default constructor
@@ -145,45 +35,51 @@ namespace HexGridLib.Grids
         /// <param name="radius">distance from the center of a hexagon, in px, to any of its corner points</param>
         /// <param name="origin">sets the cartesian coordinates for the center of cube a location 0,0,0</param>
         /// <param name="schema">determines orientation and offsets of hexes and megahexes</param>
-        public Grid(int rows, int cols, GridPoint radius, GridPoint origin, OffsetSchema schema)
+        internal Grid(int rows, int cols, GridPoint radius, GridPoint origin, OffsetSchema schema)
         {
             RowCount = rows;
             ColCount = cols;
             OffsetSchema = schema;
-
             Layout = new HexLayout(OffsetSchema.HexStyle, radius, origin);
-            Hexagons = new Dictionary<int, IHexagon>();
             Edges = new Dictionary<int, IEdge>();
+            Hexagons = GetHexagons();
 
-            var halfRows = (int)Math.Floor(rows / 2d);
-            var splitRows = halfRows - rows;
-            var halfCols = (int)Math.Floor(cols / 2d);
-            var splitCols = halfCols - cols;
+            // set the megagon location of each hexagon
+            MegagonLocationSetter.SetMegaLocations(OffsetSchema, Hexagons.Values.ToArray());
+
+            // trim hexagons outside the requested offset limits for the grid
+            TrimHexagons();
+        }
+
+        private Dictionary<int, IHexagon> GetHexagons()
+        {
+            var hexagons = new Dictionary<int, IHexagon>();
 
             // iterate over requested colums and rows and create hexes, adding them to hash table
             // create some "overscan" to facilitate getting partial megagons
             Overscan = new List<int>();
 
-            for (int r = splitRows - 1; r < halfRows + 2; r++)
+            for (int r = SplitRows - 1; r < HalfRows + 2; r++)
             {
-                for (int c = splitCols - 1; c < halfCols + 2; c++)
+                for (int c = SplitCols - 1; c < HalfCols + 2; c++)
                 {
                     var offsetCoord = new OffsetCoordinate(r, c);
                     var cubicCoord = OffsetSchema.GetCubicCoords(offsetCoord);
 
                     var hex = new Hexagon(this, cubicCoord, offsetCoord);
                     var hash = hex.ID;
-                    Hexagons.Add(hash, hex);
+                    hexagons.Add(hash, hex);
 
-                    if (GetIsOutOfBounds(RowCount, ColCount, hex.OffsetLocation))
+                    if (GetIsOutOfBounds(hex.OffsetLocation))
                         Overscan.Add(hex.ID);
                 }
             }
 
-            // set the megagon location of each hexagon
-            MegagonLocationSetter.SetMegaLocations(OffsetSchema, Hexagons.Values.ToArray());
+            return hexagons;
+        }
 
-            // TRIM hexagons outside the requested offset limits for the grid
+        private void TrimHexagons()
+        {
             Overscan.ForEach(id =>
             {
                 foreach (IEdge edge in Hexagons[id].Edges)
@@ -197,10 +93,22 @@ namespace HexGridLib.Grids
                     }
                 }
 
-                if(Hexagons.ContainsKey(id))
+                if (Hexagons.ContainsKey(id))
                     Hexagons.Remove(id);
             });
+
+            Overscan.Clear();
         }
+
+        private bool GetIsOutOfBounds(OffsetCoordinate offsetLocation)
+        {
+            return offsetLocation.Row < SplitRows + 1 ||
+                    offsetLocation.Row > HalfRows ||
+                    offsetLocation.Col < SplitCols + 1 ||
+                    offsetLocation.Col > HalfCols;
+        }
+
+        #endregion
 
         #region Layout
 
@@ -221,6 +129,11 @@ namespace HexGridLib.Grids
         /// </summary>
         private int ColCount { get; }
 
+        private int HalfRows => (int)Math.Floor(RowCount / 2d);
+        private int SplitRows => HalfRows - RowCount;
+        private int HalfCols => (int)Math.Floor(ColCount / 2d);
+        private int SplitCols => HalfCols - ColCount;
+
         private List<int> Overscan { get; set; }
 
         #endregion
@@ -229,19 +142,6 @@ namespace HexGridLib.Grids
 
         public IDictionary<int, IHexagon> Hexagons { get; }
         public IDictionary<int, IEdge> Edges { get; }
-
-        private static bool GetIsOutOfBounds(int rows, int cols, OffsetCoordinate offsetLocation)
-        {
-            var halfRows = (int)Math.Floor(rows / 2d);
-            var splitRows = halfRows - rows;
-            var halfCols = (int)Math.Floor(cols / 2d);
-            var splitCols = halfCols - cols;
-
-            return offsetLocation.Row < splitRows + 1 ||
-                    offsetLocation.Row > halfRows ||
-                    offsetLocation.Col < splitCols + 1 ||
-                    offsetLocation.Col > halfCols;
-        }
 
         internal int GetUniqueId(CubicCoordinate cube)
         {

@@ -4,13 +4,9 @@ using HexGridInterfaces.Structs;
 
 namespace HexGridLib.Grids
 {
-
-
     internal sealed class MegagonLocationSetter
     {
-        private MegagonLocationSetter()
-        {
-        }
+        private MegagonLocationSetter() {}
 
         #region Set Location of Hex in Megagon
 

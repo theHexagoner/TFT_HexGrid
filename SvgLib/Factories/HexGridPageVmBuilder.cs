@@ -64,7 +64,7 @@ namespace SvgLib.Factories
             // build the SvgMegagons
             foreach (IEdge edge in edges)
             {
-                if (edge.GetIsMegaLine())
+                if (edge.IsMegaLine)
                 {
                     // add a new SvgMegagon
                     svgMegagons.Add(edge.ID, new SvgMegagon(edge.ID, edge.PathD));

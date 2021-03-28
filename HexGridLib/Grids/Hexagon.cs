@@ -16,7 +16,7 @@ namespace HexGridLib.Grids
 
             ID = grid.GetUniqueId(cubicCoords);
             Points = grid.GetHexCornerPoints(cubicCoords);
-            Edges = GetEdgesFromPoints(Points);
+            SetEdgesFromPoints();
 
             foreach (Edge e in Edges)
             {
@@ -35,7 +35,7 @@ namespace HexGridLib.Grids
             MegaLocation = MegaLocation.N;
         }
 
-        public int ID { get; private set; }
+        public int ID { get; }
 
         public int Row
         {
@@ -56,21 +56,38 @@ namespace HexGridLib.Grids
         /// <summary>
         /// the points that define the six corners of the hexagon
         /// </summary>
-        public GridPoint[] Points { get; private set; }
+        public GridPoint[] Points { get; }
 
         /// <summary>
         /// cubic coordinates of the hexagon within the grid
         /// X, Y and Z dimensions to represent 2d grid as 3d matrix
         /// used to calculate most things like distance to other hexes, line of sight, etc.
         /// </summary>        
-        public CubicCoordinate CubicLocation { get; private set; }
+        public CubicCoordinate CubicLocation { get; }
 
         /// <summary>
         /// offset (row and column) coordinates of the hexagon within the grid
         /// </summary>
-        public OffsetCoordinate OffsetLocation { get; private set; }
+        public OffsetCoordinate OffsetLocation { get; }
 
         public IEdge[] Edges { get; private set; }
+
+        /// <summary>
+        /// the Edges property is derived from the Points array
+        /// </summary>
+        private void SetEdgesFromPoints()
+        {
+            IEdge[] edges = new Edge[6];
+
+            for (int i = 0; i < 5; i++)
+            {
+                edges[i] = new Edge(Points[i], Points[i + 1]);
+            }
+
+            edges[5] = new Edge(Points[5], Points[0]);
+
+            Edges = edges;
+        }
 
         /// <summary>
         /// location of hex within its associated megagon
@@ -86,24 +103,6 @@ namespace HexGridLib.Grids
             MegaLocation = locationInMegagon;
         }
 
-        /// <summary>
-        /// iterate over a set of points and return an array of GridEdge objects
-        /// </summary>
-        /// <param name="points">Array of GridPoint objects, generally this would be the points belonging to a hexagon</param>
-        /// <returns>Array of GridEdge objects</returns>
-        private static IEdge[] GetEdgesFromPoints(GridPoint[] points)
-        {
-            IEdge[] edges = new Edge[6];
-
-            for (int i = 0; i < 5; i++)
-            {
-                edges[i] = new Edge(points[i], points[i + 1]);
-            }
-
-            edges[5] = new Edge(points[5], points[0]);
-
-            return edges;
-        }
 
     }
 

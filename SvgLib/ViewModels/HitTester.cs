@@ -45,7 +45,7 @@ namespace SvgLib.ViewModels
             return null;
         }
 
-        internal int GetUniqueID(CubicCoordinate cube)
+        private int GetUniqueID(CubicCoordinate cube)
         {
             return cube.GetUniqueID(_schema.HexStyle, _schema.OffsetPush, _schema.MegahexSkew, _rowCount, _colCount);
         }

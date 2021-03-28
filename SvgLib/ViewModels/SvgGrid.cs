@@ -30,9 +30,9 @@ namespace SvgLib.Grids
             }
         }
 
-        public IEnumerable<KeyValuePair<int, SvgMegagon>> SvgMegagons { get; private set; }
+        public IEnumerable<KeyValuePair<int, SvgMegagon>> SvgMegagons { get; }
 
-        public SvgViewBox SvgViewBox { get; private set; }
+        public SvgViewBox SvgViewBox { get; }
 
         public bool TryGetHex(int? ID, out ISvgHexagon hex)
         {

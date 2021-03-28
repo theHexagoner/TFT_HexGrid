@@ -8,7 +8,7 @@ namespace SvgLib.ViewModels
 {
     public class SvgMap : ISvgMap
     {
-        private IMap _map;
+        private readonly IMap _map;
 
         private SvgMap() { }
 
@@ -31,7 +31,7 @@ namespace SvgLib.ViewModels
             _megaDict = new Dictionary<int, SvgMegagon>();
             foreach (IEdge edge in _map.Edges.Values)
             {
-                if (edge.GetIsMegaLine())
+                if (edge.IsMegaLine)
                 {
                     _megaDict.Add(edge.ID, new SvgMegagon(edge.ID, edge.PathD));
                 }
@@ -73,7 +73,7 @@ namespace SvgLib.ViewModels
 
             foreach (IEdge edge in hex.Edges)
             {
-                if (edge.GetIsMegaLine() && _megaDict.ContainsKey(edge.ID) == false)
+                if (edge.IsMegaLine && _megaDict.ContainsKey(edge.ID) == false)
                     _megaDict.Add(edge.ID, new SvgMegagon(edge.ID, edge.PathD));
             }
         }
@@ -90,7 +90,7 @@ namespace SvgLib.ViewModels
 
             foreach (IEdge edge in hex.Edges)
             {
-                if (edge.GetIsMegaLine() == false && _megaDict.ContainsKey(edge.ID))
+                if (edge.IsMegaLine == false && _megaDict.ContainsKey(edge.ID))
                     _megaDict.Remove(edge.ID);
             }
         }

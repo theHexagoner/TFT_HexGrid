@@ -15,6 +15,7 @@ namespace HexGridInterfaces.Grids
 
         GridPoint PointB { get; }
 
-        bool GetIsMegaLine();
+        bool IsMegaLine { get; }
+
     }
 }
