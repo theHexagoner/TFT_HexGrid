@@ -16,35 +16,35 @@ namespace HexGridLib.Grids
 
         public static void SetMegaLocations(OffsetSchema schema, IHexagon[] hexagons)
         {
-            if (schema.Style == HexagonStyle.Flat && schema.Offset == OffsetPush.Even && schema.Skew == MegagonSkew.Right)
+            if (schema.HexStyle == HexagonStyle.Flat && schema.OffsetPush == OffsetPush.Even && schema.MegahexSkew == MegagonSkew.Right)
             {
                 FindFlatEvenRightCenters(hexagons);
             }
-            else if (schema.Style == HexagonStyle.Flat && schema.Offset == OffsetPush.Even && schema.Skew == MegagonSkew.Left)
+            else if (schema.HexStyle == HexagonStyle.Flat && schema.OffsetPush == OffsetPush.Even && schema.MegahexSkew == MegagonSkew.Left)
             {
                 FindFlatEvenLeftCenters(hexagons);
             }
-            else if (schema.Style == HexagonStyle.Flat && schema.Offset == OffsetPush.Odd && schema.Skew == MegagonSkew.Right)
+            else if (schema.HexStyle == HexagonStyle.Flat && schema.OffsetPush == OffsetPush.Odd && schema.MegahexSkew == MegagonSkew.Right)
             {
                 FindFlatOddRightCenters(hexagons);
             }
-            else if (schema.Style == HexagonStyle.Flat && schema.Offset == OffsetPush.Odd && schema.Skew == MegagonSkew.Left)
+            else if (schema.HexStyle == HexagonStyle.Flat && schema.OffsetPush == OffsetPush.Odd && schema.MegahexSkew == MegagonSkew.Left)
             {
                 FindFlatOddLeftCenters(hexagons);
             }
-            else if (schema.Style == HexagonStyle.Pointy && schema.Offset == OffsetPush.Even && schema.Skew == MegagonSkew.Right)
+            else if (schema.HexStyle == HexagonStyle.Pointy && schema.OffsetPush == OffsetPush.Even && schema.MegahexSkew == MegagonSkew.Right)
             {
                 FindPointyEvenRightCenters(hexagons);
             }
-            else if (schema.Style == HexagonStyle.Pointy && schema.Offset == OffsetPush.Even && schema.Skew == MegagonSkew.Left)
+            else if (schema.HexStyle == HexagonStyle.Pointy && schema.OffsetPush == OffsetPush.Even && schema.MegahexSkew == MegagonSkew.Left)
             {
                 FindPointyEvenLeftCenters(hexagons);
             }
-            else if (schema.Style == HexagonStyle.Pointy && schema.Offset == OffsetPush.Odd && schema.Skew == MegagonSkew.Right)
+            else if (schema.HexStyle == HexagonStyle.Pointy && schema.OffsetPush == OffsetPush.Odd && schema.MegahexSkew == MegagonSkew.Right)
             {
                 FindPointyOddRightCenters(hexagons);
             }
-            else if (schema.Style == HexagonStyle.Pointy && schema.Offset == OffsetPush.Odd && schema.Skew == MegagonSkew.Left)
+            else if (schema.HexStyle == HexagonStyle.Pointy && schema.OffsetPush == OffsetPush.Odd && schema.MegahexSkew == MegagonSkew.Left)
             {
                 FindPointyOddLeftCenters(hexagons);
             }

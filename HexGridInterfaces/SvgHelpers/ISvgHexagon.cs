@@ -8,7 +8,10 @@
         int Row { get; }
         int Col { get; }
 
-        bool IsSelected { get; set; }
+        bool IsSelected { get; }
+
+        void Select();
+        void Deselect();
 
     }
 }

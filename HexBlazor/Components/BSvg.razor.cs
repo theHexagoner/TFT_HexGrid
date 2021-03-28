@@ -57,13 +57,13 @@ namespace HexBlazor.Components
 
         public void SelectHex(int id)
         {
-            Hexagons[id].IsSelected = true;
+            Hexagons[id].Select();
             StateHasChanged();
         }
 
         public void DeselectHex(int id)
         {
-            Hexagons[id].IsSelected = false;
+            Hexagons[id].Deselect();
             StateHasChanged();
         }
 

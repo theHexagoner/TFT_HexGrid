@@ -1,7 +1,5 @@
-﻿
-using HexGridInterfaces.Grids;
+﻿using HexGridInterfaces.Grids;
 using HexGridInterfaces.Structs;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,7 +20,7 @@ namespace SvgLib.ViewModels
             _rowCount = rowCount;
             _colCount = colCount;
             _schema = schema;
-            _layout = new HexLayout(_schema.Style, radius, origin);
+            _layout = new HexLayout(_schema.HexStyle, radius, origin);
             _hexagonIDs = hexagonIDs.Cast<int?>();
         }
 
@@ -36,7 +34,7 @@ namespace SvgLib.ViewModels
             // turn the point into a CubeF
             // round the CubeF to get the Cubic coordinates
             var cube = _layout.PointToCubeF(point).Round();
-            int hash = GetHashcodeForCube(cube);
+            int hash = GetUniqueID(cube);
 
             // get the Hexagon from the hash of the cubic coordinates
             var hex = _hexagonIDs.FirstOrDefault(h => h == hash);
@@ -47,9 +45,9 @@ namespace SvgLib.ViewModels
             return null;
         }
 
-        internal int GetHashcodeForCube(CubicCoordinate cube)
+        internal int GetUniqueID(CubicCoordinate cube)
         {
-            return HashCode.Combine(_schema.Style, _schema.Offset, _schema.Skew, _rowCount, _colCount, cube.GetHashCode());
+            return cube.GetUniqueID(_schema.HexStyle, _schema.OffsetPush, _schema.MegahexSkew, _rowCount, _colCount);
         }
 
     }

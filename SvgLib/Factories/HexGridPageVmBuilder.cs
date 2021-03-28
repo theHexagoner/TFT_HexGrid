@@ -44,8 +44,6 @@ namespace SvgLib.Factories
             return new HexGridPageVM(svgGrid, svgMap, hitTester);
         }
 
-
-
         private static IDictionary<int, ISvgHexagon> GetSvgHexagons(IHexagon[] hexagons)
         {
             Dictionary<int, ISvgHexagon> svgHexagons = new();

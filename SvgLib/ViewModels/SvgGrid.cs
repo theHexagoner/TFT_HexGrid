@@ -50,12 +50,12 @@ namespace SvgLib.Grids
 
         public void SelectHex(int ID)
         {
-            _hexDict.Single(kvp => kvp.Key == ID).Value.IsSelected = true;
+            _hexDict.Single(kvp => kvp.Key == ID).Value.Select();
         }
 
         public void DeselectHex(int ID)
         {
-            _hexDict.Single(kvp => kvp.Key == ID).Value.IsSelected = false;
+            _hexDict.Single(kvp => kvp.Key == ID).Value.Deselect();
         }
 
     }

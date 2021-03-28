@@ -2,26 +2,6 @@
 
 namespace HexGridInterfaces.Structs
 {
-    public struct HexGridParams
-    {
-        public readonly int RowCount;
-        public readonly int ColCount;
-        public readonly GridPoint Radius;
-        public readonly GridPoint Origin;
-        public readonly OffsetSchema Schema;
-        public readonly SvgViewBox ViewBox;
-
-        public HexGridParams(int rowCount, int colCount, GridPoint radius, GridPoint origin, OffsetSchema schema, SvgViewBox viewBox)
-        {
-            RowCount = rowCount;
-            ColCount = colCount;
-            Radius = radius;
-            Origin = origin;
-            Schema = schema;
-            ViewBox = viewBox;
-        }
-    }
-
     public enum HexagonStyle
     {
         Flat = 0,
@@ -42,22 +22,22 @@ namespace HexGridInterfaces.Structs
 
     public struct OffsetSchema
     {
-        public readonly HexagonStyle Style;
-        public readonly OffsetPush Offset;
-        public readonly MegagonSkew Skew;
+        public readonly HexagonStyle HexStyle;
+        public readonly OffsetPush OffsetPush;
+        public readonly MegagonSkew MegahexSkew;
 
         public OffsetSchema(HexagonStyle style, OffsetPush offset, MegagonSkew skew)
         {
-            Style = style;
-            Offset = offset;
-            Skew = skew;
+            HexStyle = style;
+            OffsetPush = offset;
+            MegahexSkew = skew;
         }
 
         public OffsetSchema(bool isPointy, bool isOdd, bool isRight)
         {
-            Style = isPointy ? HexagonStyle.Pointy : HexagonStyle.Flat;
-            Offset = isOdd ? OffsetPush.Odd : OffsetPush.Even;
-            Skew = isRight ? MegagonSkew.Right : MegagonSkew.Left;
+            HexStyle = isPointy ? HexagonStyle.Pointy : HexagonStyle.Flat;
+            OffsetPush = isOdd ? OffsetPush.Odd : OffsetPush.Even;
+            MegahexSkew = isRight ? MegagonSkew.Right : MegagonSkew.Left;
         }
 
         #region Conversions
@@ -69,11 +49,11 @@ namespace HexGridInterfaces.Structs
 
         public CubicCoordinate GetCubicCoords(OffsetCoordinate hex)
         {
-            return Style switch
+            return HexStyle switch
             {
-                HexagonStyle.Flat => OffsetToCubeQ(Offset == OffsetPush.Even ? EVEN : ODD, hex),
-                HexagonStyle.Pointy => OffsetToCubeR(Offset == OffsetPush.Even ? EVEN : ODD, hex),
-                _ => throw new ArgumentException(string.Format("Invalid Style {0} specified for OffsetSchema", Style))
+                HexagonStyle.Flat => OffsetToCubeQ(OffsetPush == OffsetPush.Even ? EVEN : ODD, hex),
+                HexagonStyle.Pointy => OffsetToCubeR(OffsetPush == OffsetPush.Even ? EVEN : ODD, hex),
+                _ => throw new ArgumentException(string.Format("Invalid Style {0} specified for OffsetSchema", HexStyle))
             };
         }
 
@@ -104,11 +84,11 @@ namespace HexGridInterfaces.Structs
         /// <returns>Offset</returns>
         internal OffsetCoordinate GetOffsetCoords(CubicCoordinate hex)
         {
-            return Style switch
+            return HexStyle switch
             {
-                HexagonStyle.Flat => GetOffsetQ(Offset == OffsetPush.Even ? EVEN : ODD, hex),
-                HexagonStyle.Pointy => GetOffsetR(Offset == OffsetPush.Even ? EVEN : ODD, hex),
-                _ => throw new ArgumentException(string.Format("Invalid Style {0} specified for OffsetSchema", Style))
+                HexagonStyle.Flat => GetOffsetQ(OffsetPush == OffsetPush.Even ? EVEN : ODD, hex),
+                HexagonStyle.Pointy => GetOffsetR(OffsetPush == OffsetPush.Even ? EVEN : ODD, hex),
+                _ => throw new ArgumentException(string.Format("Invalid Style {0} specified for OffsetSchema", HexStyle))
             };
         }
 

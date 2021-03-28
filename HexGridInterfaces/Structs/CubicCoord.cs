@@ -21,6 +21,11 @@ namespace HexGridInterfaces.Structs
             Z = z;
         }
 
+        public int GetUniqueID(HexagonStyle style, OffsetPush push, MegagonSkew skew, int rowCount, int colCount)
+        {
+            return HashCode.Combine(style, push, skew, rowCount, colCount, GetHashCode());
+        }
+
         /// <summary>
         /// all the cubes that touch this one
         /// </summary>
@@ -44,35 +49,6 @@ namespace HexGridInterfaces.Structs
 
             return adjacents;
         }
-
-        /// <summary>
-        /// returns the distance from this cube to a target
-        /// </summary>
-        /// <param name="target">the distant cube to check</param>
-        /// <returns>Int32</returns>
-        public int GetDistanceTo(CubicCoordinate target)
-        {
-            return GetDistance(this, target);
-        }
-
-        /// <summary>
-        /// returns distance between two cubes
-        /// </summary>
-        /// <param name="source">starting cube</param>
-        /// <param name="target">ending cube</param>
-        /// <returns>Int32</returns>
-        public static int GetDistance(CubicCoordinate source, CubicCoordinate target)
-        {
-            // for each dimension get the absolute value of the difference between this cube and the target
-            // the maximum of these values is the distance to the target cube
-            return Math.Max(Math.Abs(source.X - target.X), Math.Max(Math.Abs(source.Y - target.Y), Math.Abs(source.Z - target.Z)));
-        }
-
-        // other useful algorithms:
-        // cubes within distance?
-        // cubes at an exact distance (ring)?
-        // path to distant cube?
-        // all cubes on a line between this and distant cube?
 
         #region Cube Arithmetic
 

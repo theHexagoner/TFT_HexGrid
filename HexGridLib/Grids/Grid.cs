@@ -147,11 +147,11 @@ namespace HexGridLib.Grids
         /// <param name="schema">determines orientation and offsets of hexes and megahexes</param>
         public Grid(int rows, int cols, GridPoint radius, GridPoint origin, OffsetSchema schema)
         {
-            Rows = rows;
-            Cols = cols;
+            RowCount = rows;
+            ColCount = cols;
             OffsetSchema = schema;
 
-            Layout = new HexLayout(OffsetSchema.Style, radius, origin);
+            Layout = new HexLayout(OffsetSchema.HexStyle, radius, origin);
             Hexagons = new Dictionary<int, IHexagon>();
             Edges = new Dictionary<int, IEdge>();
 
@@ -175,7 +175,7 @@ namespace HexGridLib.Grids
                     var hash = hex.ID;
                     Hexagons.Add(hash, hex);
 
-                    if (GetIsOutOfBounds(Rows, Cols, hex.OffsetLocation))
+                    if (GetIsOutOfBounds(RowCount, ColCount, hex.OffsetLocation))
                         Overscan.Add(hex.ID);
                 }
             }
@@ -214,12 +214,12 @@ namespace HexGridLib.Grids
         /// <summary>
         /// size of one dimension of the matrix of hexagons
         /// </summary>
-        private int Rows { get; }
+        private int RowCount { get; }
 
         /// <summary>
         /// size of the other dimension of the matrix of hexagons
         /// </summary>
-        private int Cols { get; }
+        private int ColCount { get; }
 
         private List<int> Overscan { get; set; }
 
@@ -243,9 +243,9 @@ namespace HexGridLib.Grids
                     offsetLocation.Col > halfCols;
         }
 
-        internal int GetHashcodeForCube(CubicCoordinate cube)
+        internal int GetUniqueId(CubicCoordinate cube)
         {
-            return HashCode.Combine(OffsetSchema.Style, OffsetSchema.Offset, OffsetSchema.Skew, Rows, Cols, cube.GetHashCode());
+            return cube.GetUniqueID(OffsetSchema.HexStyle, OffsetSchema.OffsetPush, OffsetSchema.MegahexSkew, RowCount, ColCount);
         }
 
         internal GridPoint[] GetHexCornerPoints(CubicCoordinate hex, double factor = 1)
@@ -265,9 +265,4 @@ namespace HexGridLib.Grids
         #endregion
 
     }
-
-
-
-
-
 }

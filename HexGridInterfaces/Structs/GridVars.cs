@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace HexGridInterfaces.Structs
 {
     public struct GridVars

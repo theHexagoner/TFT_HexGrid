@@ -14,7 +14,7 @@ namespace HexGridLib.Grids
             OffsetLocation = offsetCoords;
             CubicLocation = cubicCoords;
 
-            ID = grid.GetHashcodeForCube(cubicCoords);
+            ID = grid.GetUniqueId(cubicCoords);
             Points = grid.GetHexCornerPoints(cubicCoords);
             Edges = GetEdgesFromPoints(Points);
 
