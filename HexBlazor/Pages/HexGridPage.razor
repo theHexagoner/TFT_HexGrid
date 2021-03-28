@@ -14,25 +14,25 @@
     </div>
     <div class="mr-5 mb-3" style="width:75px">
         <label for="size" class="mb-0">Size &Prime;</label>
-        <input type="number" min="1" class="form-control form-control-sm" id="size" @bind="_size">
+        <input type="number" min="0.1" step="0.05" class="form-control form-control-sm" id="size" @bind="_size">
     </div>
 
     <div class="mr-3 mb-3" style="width:80px">
-        <label for="style" class="mb-0">Style</label>
+        <label for="styleSelector" class="mb-0">Style</label>
         <div class="custom-control custom-switch">
             <input type="checkbox" class="custom-control-input" id="style" checked="@(_isStylePointy == false)" @onchange="@(() => ToggleStyle())">
             <label class="custom-control-label" for="style">@_styleText</label>
         </div>
     </div>
     <div class="mr-3 mb-3" style="width:80px">
-        <label for="offset" class="mb-0">Offset</label>
+        <label for="offsetSelector" class="mb-0">Offset</label>
         <div class="custom-control custom-switch">
             <input type="checkbox" class="custom-control-input" id="offset" checked="@(_isOffsetOdd == false)" @onchange="@(() => ToggleOffset())">
             <label class="custom-control-label" for="offset">@_offsetText</label>
         </div>
     </div>
     <div class="mr-3 mb-3" style="width:80px">
-        <label for="skew" class="mb-0">Skew</label>
+        <label for="skewSelector" class="mb-0">Skew</label>
         <div class="custom-control custom-switch">
             <input type="checkbox" class="custom-control-input" id="skew" checked="@(_isSkewRight == false)" @onchange="@(() => ToggleSkew())">
             <label class="custom-control-label" for="skew">@_skewText</label>
