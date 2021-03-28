@@ -25,24 +25,26 @@ namespace SvgLib.Factories
             _hitTesterFactory = hitTesterFactory;
         }
 
-        public IHexGridPageVM Build(int rowCount, int colCount, GridPoint radius, GridPoint origin, OffsetSchema schema, SvgViewBox viewBox)
+        public IHexGridPageVM Build(GridVars vars)
         {
             // create a grid with the builder passed in by DI?
-            IGrid grid = _gridFactory.Build(rowCount, colCount, radius, origin, schema);
+            IGrid grid = _gridFactory.Build(vars.RowCount, vars.ColCount, vars.Radius, vars.Origin, vars.Schema);
             IMap map = grid.InitMap();
 
             IDictionary<int, ISvgHexagon> svgHexagons = GetSvgHexagons(grid.Hexagons.Values.ToArray());
             IDictionary<int, SvgMegagon> svgMegagons = GetSvgMegagons(grid.Edges.Values.ToArray());
 
-            ISvgGrid svgGrid = _svgGridBuilder.Build(svgHexagons, svgMegagons, viewBox);
-            ISvgMap svgMap = _svgMapBuilder.Build(map, viewBox);
+            ISvgGrid svgGrid = _svgGridBuilder.Build(svgHexagons, svgMegagons, vars.ViewBox);
+            ISvgMap svgMap = _svgMapBuilder.Build(map, vars.ViewBox);
 
             IEnumerable<int> hexagonIDs = grid.Hexagons.Keys;
 
-            IHitTester hitTester = _hitTesterFactory.Build(rowCount, colCount, radius, origin, schema, hexagonIDs);
+            IHitTester hitTester = _hitTesterFactory.Build(vars.RowCount, vars.ColCount, vars.Radius, vars.Origin, vars.Schema, hexagonIDs);
 
             return new HexGridPageVM(svgGrid, svgMap, hitTester);
         }
+
+
 
         private static IDictionary<int, ISvgHexagon> GetSvgHexagons(IHexagon[] hexagons)
         {
@@ -73,7 +75,6 @@ namespace SvgLib.Factories
 
             return svgMegagons;
         }
-
 
     }
 }

@@ -1,7 +1,7 @@
 ﻿using HexBlazor.Components;
+using HexGridInterfaces.Grids;
 using HexGridInterfaces.Structs;
 using HexGridInterfaces.SvgHelpers;
-using HexGridInterfaces.ViewModels;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -14,19 +14,27 @@ namespace HexBlazor.Pages
 {
     public partial class HexGridPage : ComponentBase
     {
-        IHexGridPageVM viewModel;
-
         #region private fields
 
         private const int DPI = 96;
+        private const bool SAVE_IS_ENABLED = true;
+        private const bool SAVE_IS_DISABLED = false;
+
+        private const int EVENT_ARGS_BUTTON_LEFT = 0;
+        private const int EVENT_ARGS_BUTTON_RIGHT = 2;
+
+        private const bool MAP_MODE = true;
+        private const bool GRID_MODE = false;
 
         private ElementReference _divRef;
         private BSvg _svgRef;
+        
         private ISvgGrid _grid;
         private ISvgMap _map;
+        private IHitTester _hitTester;
 
-        private bool _saveDisabled = true;
-        private bool _isShowingMap = false;
+        private bool _canSave = SAVE_IS_DISABLED;
+        private bool _mode = GRID_MODE;
 
         #region the SVG
 
@@ -74,49 +82,6 @@ namespace HexBlazor.Pages
         private bool _showStars = false;
 
         #endregion
-
-        #endregion
-
-        #region Offset Scheme
-
-        private void ToggleStyle()
-        {
-            _isStylePointy = !_isStylePointy;
-            _styleText = _isStylePointy ? "Pointy" : " Flat ";
-        }
-
-        private void ToggleOffset()
-        {
-            _isOffsetOdd = !_isOffsetOdd;
-            _offsetText = _isOffsetOdd ? "Odd" : "Even";
-        }
-
-        private void ToggleSkew()
-        {
-            _isSkewRight = !_isSkewRight;
-            _skewText = _isSkewRight ? "Right" : "Left";
-        }
-
-        #endregion
-
-        #region Spinner
-
-        private void SetShowSpinner(bool showIt)
-        {
-            if (showIt)
-            {
-                _spinnerClass = "mb-2 spinner-border";
-                _svgClass = "d-none";
-            }
-            else
-            {
-                _spinnerClass = "mb-2 d-none";
-                _svgClass = "";
-            }
-        }
-
-        private string _spinnerClass = "mb-2 d-none";
-        private string _svgClass = "";
 
         #endregion
 
@@ -201,6 +166,30 @@ namespace HexBlazor.Pages
 
         #endregion
 
+        #region Generate the Grid
+
+        #region Offset Scheme
+
+        private void ToggleStyle()
+        {
+            _isStylePointy = !_isStylePointy;
+            _styleText = _isStylePointy ? "Pointy" : " Flat ";
+        }
+
+        private void ToggleOffset()
+        {
+            _isOffsetOdd = !_isOffsetOdd;
+            _offsetText = _isOffsetOdd ? "Odd" : "Even";
+        }
+
+        private void ToggleSkew()
+        {
+            _isSkewRight = !_isSkewRight;
+            _skewText = _isSkewRight ? "Right" : "Left";
+        }
+
+        #endregion
+
         /// <summary>
         /// instantiate the grid and it's content, then pass its geometry into the SVG
         /// </summary>
@@ -211,18 +200,16 @@ namespace HexBlazor.Pages
 
             try
             {
-                var origin = new GridPoint(0.5d, .5d);
-                var schema = new OffsetSchema(_isStylePointy, _isOffsetOdd, _isSkewRight);
-                var pxSize = (_size / Math.Sqrt(3)) * DPI;
-                var radius = new GridPoint(pxSize,pxSize);
-
-                viewModel = vmBuilder.Build(_rowCount, _colCount, radius, origin, schema, _viewBox);
+                var viewModel = vmBuilder.Build(GetGridVars());
 
                 _grid = viewModel.Grid;
                 _map = viewModel.Map;
+                _hitTester = viewModel.HitTester;
 
                 _svgRef.SetGeometry(_grid.SvgHexagons, _grid.SvgMegagons);
-                _saveDisabled = false;
+                _canSave = SAVE_IS_ENABLED;
+                _mode = GRID_MODE;
+                
                 SetShowSpinner(false);
                 await Task.Delay(1);
             }
@@ -233,6 +220,48 @@ namespace HexBlazor.Pages
             }
         }
 
+        private GridVars GetGridVars()
+        {
+            var rowCount = _rowCount > 0 ? _rowCount : 1;
+            var colCount = _colCount > 0 ? _colCount : 1;
+            var size = _size > 0 ? _size : 0.5d;
+
+            var pxSize = (size / Math.Sqrt(3)) * DPI;
+            var radius = new GridPoint(pxSize, pxSize);
+            
+            var origin = new GridPoint(0.5d, .5d); // make raster pretty?
+
+            var schema = new OffsetSchema(_isStylePointy, _isOffsetOdd, _isSkewRight);
+
+            return new GridVars(rowCount, colCount, radius, origin, schema, _viewBox);
+        }
+
+        #region Spinner
+
+        private void SetShowSpinner(bool showIt)
+        {
+            if (showIt)
+            {
+                _spinnerClass = "mb-2 spinner-border";
+                _svgClass = "d-none";
+                _canSave = SAVE_IS_DISABLED;
+            }
+            else
+            {
+                _spinnerClass = "mb-2 d-none";
+                _svgClass = "";
+            }
+        }
+
+        private string _spinnerClass = "mb-2 d-none";
+        private string _svgClass = "";
+
+        #endregion
+
+        #endregion
+
+        #region Select and Deselect Hexes
+
         /// <summary>
         /// respond to mouse clicks to select/deselect hexagons
         /// </summary>
@@ -240,79 +269,92 @@ namespace HexBlazor.Pages
         /// <returns>Task result</returns>
         private async Task SvgOnClick(MouseEventArgs eventArgs)
         {
-            if (_grid != null && _map != null && _isShowingMap == false)
+            if (_grid != null && _map != null && _mode == GRID_MODE)
             {
-                // get the actual size of the DIV
-                string data = await jsRuntime.InvokeAsync<string>("getDivDimensions", new object[] { _divRef });
-                JObject dimensions = (JObject)JsonConvert.DeserializeObject(data);
-
-                var divWidth = dimensions.Value<double>("width");
-                var divHeight = dimensions.Value<double>("height");
-                var oLeft = dimensions.Value<double>("offsetLeft");
-                var oTop = dimensions.Value<double>("offsetTop");
-
-                // calculate the factor by which to multiply the TRANSLATE_ vars
-                // Width and Height should be same factor?
-
-                var scaleW = _viewBox.Width / divWidth;
-                var scaleH = _viewBox.Height / divHeight;
-
-                // get the actual coordinates of the mouse click relative to the div:
-                double mouseX = eventArgs.ClientX - oLeft;
-                double mouseY = eventArgs.ClientY - oTop;
-
-                // translate these for the 0,0 origin being located at center
-                // translation factor must be scaled relative to actual size of div as displayed on screen
-                var translatedX = (mouseX * scaleW) + _viewBox.OriginX;
-                var translatedY = (mouseY * scaleH) + _viewBox.OriginY;
-
                 // get the grid hex the user clicked on, if any:
-                var ID = viewModel.HitTester.HitTest(new GridPoint(translatedX, translatedY));
-                var exists = _grid.TryGetHex(ID, out _);
+                var ID = _hitTester.HitTest(await GetTranslatedHitPoint(eventArgs));
+                var didClickHex = _grid.TryGetHex(ID, out _);
 
                 // left-click to add the hex to the map if not already present
-                if (exists && eventArgs.Button == 0)
-                {
-                    // update the look of the grid hexagon in case we need to redraw it from scratch later
-                    _grid.GetHex(ID.Value).IsSelected = true;
-
-                    // update the current view
-                    _svgRef.UpdateHexIsSelected(ID.Value, true);
-
-                    // if the map does not contain the hexagon, add it to the map
-                    _map.AddHexagon(ID.Value);
-                }
+                if (didClickHex && eventArgs.Button == EVENT_ARGS_BUTTON_LEFT) 
+                    SelectHex(ID.Value);
 
                 // right-click to remove the hex from the map if it is present
-                if (exists && eventArgs.Button == 2)
-                {
-                    // update the look of the grid hexagon in case we need to redraw it from scratch later
-                    _grid.GetHex(ID.Value).IsSelected = false;
-
-                    // actually update the current view
-                    _svgRef.UpdateHexIsSelected(ID.Value, false);
-
-                    // if the map contains the hex, remove it from the map
-                    _map.RemoveHexagon(ID.Value);
-                }
+                if (didClickHex && eventArgs.Button == EVENT_ARGS_BUTTON_RIGHT)
+                    DeselectHex(ID.Value);
             }
         }
+
+        private async Task<GridPoint> GetTranslatedHitPoint(MouseEventArgs eventArgs)
+        {
+            // get the actual size of the DIV
+            string data = await jsRuntime.InvokeAsync<string>("getDivDimensions", new object[] { _divRef });
+            JObject dimensions = (JObject)JsonConvert.DeserializeObject(data);
+
+            var divWidth = dimensions.Value<double>("width");
+            var divHeight = dimensions.Value<double>("height");
+            var oLeft = dimensions.Value<double>("offsetLeft");
+            var oTop = dimensions.Value<double>("offsetTop");
+
+            // calculate the factor by which to multiply the TRANSLATE_ vars
+            // Width and Height should be same factor?
+            var scaleW = _viewBox.Width / divWidth;
+            var scaleH = _viewBox.Height / divHeight;
+
+            // get the actual coordinates of the mouse click relative to the div:
+            double mouseX = eventArgs.ClientX - oLeft;
+            double mouseY = eventArgs.ClientY - oTop;
+
+            // translate these for the 0,0 origin being located at center
+            // translation factor must be scaled relative to actual size of div as displayed on screen
+            var translatedX = (mouseX * scaleW) + _viewBox.OriginX;
+            var translatedY = (mouseY * scaleH) + _viewBox.OriginY;
+
+            return new GridPoint(translatedX, translatedY);
+
+        }
+
+        private void SelectHex(int ID)
+        {
+            // update the look of the grid hexagon in case we need to redraw it from scratch later
+            _grid.SelectHex(ID);
+
+            // update the current view
+            _svgRef.SelectHex(ID);
+
+            // if the map does not contain the hexagon, add it to the map
+            _map.AddHexagon(ID);
+        }
+
+        private void DeselectHex(int ID)
+        {
+            // update the look of the grid hexagon in case we need to redraw it from scratch later
+            _grid.DeselectHex(ID);
+
+            // actually update the current view
+            _svgRef.DeselectHex(ID);
+
+            // if the map contains the hex, remove it from the map
+            _map.RemoveHexagon(ID);
+        }
+
+        #endregion
 
         /// <summary>
         /// swap between showing the grid or the map
         /// </summary>
         private void Swap()
         {
-            if (!_isShowingMap)
-            {
-                _svgRef.SetGeometry(_map.SvgHexagons, _map.SvgMegagons);
-            }
-            else
+            if (_mode == MAP_MODE)
             {
                 _svgRef.SetGeometry(_grid.SvgHexagons, _grid.SvgMegagons);
             }
+            else
+            {
+                _svgRef.SetGeometry(_map.SvgHexagons, _map.SvgMegagons);
+            }
 
-            _isShowingMap = !_isShowingMap;
+            _mode = !_mode;
         }
 
         /// <summary>
@@ -321,7 +363,7 @@ namespace HexBlazor.Pages
         /// <returns>Task result</returns>
         private async Task SaveMe()
         {
-            if (!_saveDisabled)
+            if (_canSave)
             {
                 var filename = string.Format("{0}r_{1}c_{2}_hexgrid.svg", _rowCount, _colCount, _size);
                 var paramz = new object[] { _svgRef.Svg, filename };

@@ -1,4 +1,5 @@
 ﻿using HexGridInterfaces.Grids;
+using HexGridInterfaces.Structs;
 using HexGridInterfaces.SvgHelpers;
 
 namespace HexGridInterfaces.ViewModels

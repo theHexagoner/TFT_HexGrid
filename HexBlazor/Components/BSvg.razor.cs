@@ -55,9 +55,15 @@ namespace HexBlazor.Components
         [Parameter]
         public string HexFill { get; set; }
 
-        public void UpdateHexIsSelected(int id, bool isSelected)
+        public void SelectHex(int id)
         {
-            Hexagons[id].IsSelected = isSelected;
+            Hexagons[id].IsSelected = true;
+            StateHasChanged();
+        }
+
+        public void DeselectHex(int id)
+        {
+            Hexagons[id].IsSelected = false;
             StateHasChanged();
         }
 

@@ -48,9 +48,15 @@ namespace SvgLib.Grids
             return result;
         }
 
-        public ISvgHexagon GetHex(int ID)
+        public void SelectHex(int ID)
         {
-            return _hexDict.Single(kvp => kvp.Key == ID).Value;
+            _hexDict.Single(kvp => kvp.Key == ID).Value.IsSelected = true;
         }
+
+        public void DeselectHex(int ID)
+        {
+            _hexDict.Single(kvp => kvp.Key == ID).Value.IsSelected = false;
+        }
+
     }
 }

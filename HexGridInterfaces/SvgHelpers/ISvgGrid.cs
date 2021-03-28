@@ -18,12 +18,16 @@ namespace HexGridInterfaces.SvgHelpers
         bool TryGetHex(int? ID, out ISvgHexagon hex);
 
         /// <summary>
-        /// Return the SvgHexagon identified by ID from th SvgHexagons collection
+        /// set IsSelected property for hexagon
         /// </summary>
-        /// <param name="ID">Unique key to retrieve SvgHexagon</param>
-        /// <returns>ISvgHexagon instance</returns>
-        /// <remarks>Throws error if ID does not exist, consider check for existing with TryGetHex before calling this method</remarks>
-        ISvgHexagon GetHex(int ID);
+        /// <param name="ID">identifier of hexagon</param>
+        void SelectHex(int ID);
+
+        /// <summary>
+        /// set IsSelected property for hexagon
+        /// </summary>
+        /// <param name="ID">identifier of hexagon</param>
+        void DeselectHex(int ID);
 
     }
 }

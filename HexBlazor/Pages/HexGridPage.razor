@@ -43,7 +43,7 @@
         <button class="btn btn-outline-primary btn-sm" @onclick="GenerateTheGrid">Generate The Grid</button>
     </div>
     <div class="mr-3 mb-3">
-        <button class="btn btn-outline-primary btn-sm" @onclick="SaveMe" disabled="@_saveDisabled">Save To File</button>
+        <button class="btn btn-outline-primary btn-sm" @onclick="SaveMe" disabled="@(_canSave == SAVE_IS_DISABLED)">Save To File</button>
     </div>
 </div>
 
@@ -100,11 +100,11 @@
     <div class="row ml-0 mb-1">
         <div class="mr-3 ml-0 row">
             <label for="widthInches" class="col-form-label col-form-label-sm ml-0 mr-1">Width</label>
-            <input type="number" min="1" class="form-control form-control-sm ml-1 mr-0" id="widthInches" @bind="_widthInches" style="width:55px">
+            <input type="number" min="1" step="0.125" class="form-control form-control-sm ml-1 mr-0" id="widthInches" @bind="_widthInches" style="width:55px">
         </div>
         <div class="mr-3 ml-0 row">
             <label for="heightInches" class="col-form-label col-form-label-sm ml-0 mr-1">Height</label>
-            <input type="number" min="1" class="form-control form-control-sm ml-1 mr-0" id="heightInches" @bind="_heightInches" style="width:55px">
+            <input type="number" min="1" step="0.125" class="form-control form-control-sm ml-1 mr-0" id="heightInches" @bind="_heightInches" style="width:55px">
         </div>
         <div class="mr-3 ml-0">
             <button class="btn btn-outline-primary btn-sm" @onclick="SetViewBox">Set Dimensions</button>
@@ -118,7 +118,7 @@
                   MegaStroke="@_megaStroke" MegaStrokeWidth="@_megaStrokeWidth"
                   ShowStars=@_showStars />
         </div>
-        <button class="btn btn-outline-primary btn-sm" @onclick="Swap" disabled="@_saveDisabled">Swap View</button>
+        <button class="btn btn-outline-primary btn-sm" @onclick="Swap" disabled="@(_canSave == SAVE_IS_DISABLED)">Swap View</button>
     </div>
 </div>
 
