@@ -7,7 +7,7 @@
   "linkerEnabled": true,
   "resources": {
     "assembly": {
-      "Microsoft.AspNetCore.Components.dll": "sha256-lgssfgQvYfQx07d676XX8uqlFLlbvmOCah79daEm3SY=",
+      "Microsoft.AspNetCore.Components.dll": "sha256-KwStCr1IBDM02MrX\/mx9juWjHyF9XewyjuYE6fmX+6Q=",
       "Microsoft.AspNetCore.Components.Web.dll": "sha256-5j1OYWxfLEo\/pYX3bf69tWGIl3QUNVKEEJtxscd2iu0=",
       "Microsoft.AspNetCore.Components.WebAssembly.dll": "sha256-lGcPdftz9NKbcd+6W1VVW5WoQA\/zC9jUGWsv\/w94fG4=",
       "Microsoft.Extensions.Configuration.dll": "sha256-bZZ69\/58+BnN9G33FpTd2iXAdfgLbBnDUiiKxfaZ7IU=",
@@ -23,10 +23,10 @@
       "Microsoft.JSInterop.WebAssembly.dll": "sha256-UwgpwjCHmUhISv5eMMiYhjnJhBAudE0gLHyB4B\/kLpQ=",
       "Newtonsoft.Json.dll": "sha256-N4LS9Q4MWtwMcEiKVAm17eMYYidLKee5B788vtw\/fdY=",
       "System.IO.Pipelines.dll": "sha256-qZYTUS+ga7CydtH54fYPbehFCvx3B49I74G8dxreTog=",
-      "HexGridInterfaces.dll": "sha256-Fr1q9pd7sn3MarPtpgDIj2BniYfBwshFUeJFteSBu3Y=",
-      "HexGridLib.dll": "sha256-GAnDZRJ5gKjGUWZgCz1LkHzmFyeIL8mYRSSs6bOC1cs=",
-      "SvgLib.dll": "sha256-yVn2sjvxrYrNmTEXCk5dIJl\/Sl8yLWR3nB45bS0QwI8=",
-      "HexBlazor.dll": "sha256-l8nO4i3NNnn76CDMXXVMwEQwuH8b4mff1BCIoaHYhPE=",
+      "HexGridInterfaces.dll": "sha256-Dy5l2ln59RWucz7U94x03nSpTWBhNVVujOnfTi6NcEk=",
+      "HexGridLib.dll": "sha256-lX3rpJPa6kUah1GSS8Nj5Z6lkWJxWA+ta9y1tn0dr0o=",
+      "SvgLib.dll": "sha256-AcgMSu5AW6GbE2MFwTtEliSQTMKNc2V9kXH7CM2GPz8=",
+      "HexBlazor.dll": "sha256-BwksdfAMOlTkfMhBLCHRI5tr0kqoDPFh9sAl7YuR59o=",
       "System.Collections.Concurrent.dll": "sha256-nvyiV8yGGo\/hsqFXcGorBqSb+6tnZ0hYdfr8ZOE73mE=",
       "System.Collections.Immutable.dll": "sha256-tbnwbLEUEersbMLOBI6+4VACjzimd7uWfvWZp6A5jQY=",
       "System.Collections.NonGeneric.dll": "sha256-3AQhQ\/+ZujY8ijt\/mxQPJxjFXtX9oMkbdb3ZdSXmvjI=",
