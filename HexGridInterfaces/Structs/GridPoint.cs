@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Text.Json.Serialization;
 
 namespace HexGridInterfaces.Structs
 {
@@ -8,9 +9,11 @@ namespace HexGridInterfaces.Structs
     /// </summary>
     public struct GridPoint
     {
-        public readonly double X;
-        public readonly double Y;
 
+        [JsonInclude] public readonly double X;
+        [JsonInclude] public readonly double Y;
+
+        [JsonConstructor]
         public GridPoint(double x, double y)
         {
             X = x;
@@ -24,20 +27,20 @@ namespace HexGridInterfaces.Structs
             return new GridPoint(x, y);
         }
 
-        public static double GetDistance(double x1, double y1, double x2, double y2)
-        {
-            return Math.Sqrt(Math.Pow((x2 - x1), 2) + Math.Pow((y2 - y1), 2));
-        }
+        //public static double GetDistance(double x1, double y1, double x2, double y2)
+        //{
+        //    return Math.Sqrt(Math.Pow((x2 - x1), 2) + Math.Pow((y2 - y1), 2));
+        //}
 
         public static double GetDistance(GridPoint gridpointA, GridPoint gridpointB)
         {
             return Math.Sqrt(Math.Pow((gridpointB.X - gridpointA.X), 2) + Math.Pow((gridpointB.Y - gridpointA.Y), 2));
         }
 
-        public double GetDistanceTo(GridPoint target)
-        {
-            return Math.Sqrt(Math.Pow((target.X - X), 2) + Math.Pow((target.Y - Y), 2));
-        }
+        //public double GetDistanceTo(GridPoint target)
+        //{
+        //    return Math.Sqrt(Math.Pow((target.X - X), 2) + Math.Pow((target.Y - Y), 2));
+        //}
 
 
 

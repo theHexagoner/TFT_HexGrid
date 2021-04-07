@@ -15,7 +15,7 @@ namespace HexGridLib.Grids
         internal Edge(GridPoint gpa, GridPoint gpb)
         {
             // get the midpoint of gpa and gpb 
-            GridPoint midPoint = new((gpa.X + gpb.X) / 2, (gpa.Y + gpb.Y) / 2);
+            GridPoint midPoint = new GridPoint((gpa.X + gpb.X) / 2, (gpa.Y + gpb.Y) / 2);
             ID = HashCode.Combine(midPoint.X, midPoint.Y);
             Hexagons = new Dictionary<int, IHexagon>() { };
             PointA = gpa;

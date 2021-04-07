@@ -40,8 +40,9 @@ namespace SvgLib.Polygons
             IsSelected = isSelected;
 
             // figure out where and how big to draw the star:
-            GridPoint midPoint = new((points[3].X + points[0].X) / 2, (points[3].Y + points[0].Y) / 2);
-            double outerRadius = points[0].GetDistanceTo(points[1]) / 64;
+            GridPoint midPoint = new GridPoint((points[3].X + points[0].X) / 2, (points[3].Y + points[0].Y) / 2);
+            //double outerRadius = points[0].GetDistanceTo(points[1]) / 64;
+            double outerRadius = GridPoint.GetDistance(points[0], points[1]) / 64;
 
             CenterD = SvgPathDFactory.Instance.GetPathD(SvgPathDFactory.Type.Star, midPoint, outerRadius);
         }

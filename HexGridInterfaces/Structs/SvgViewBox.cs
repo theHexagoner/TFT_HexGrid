@@ -1,19 +1,22 @@
 ﻿
+using System.Text.Json.Serialization;
+
 namespace HexGridInterfaces.Structs
 {
     public struct SvgViewBox
     {
-        public readonly double OriginX;
-        public readonly double OriginY;
-        public readonly double Width;
-        public readonly double Height;
+        [JsonInclude] public readonly double OriginX;
+        [JsonInclude] public readonly double OriginY;
+        [JsonInclude] public readonly double Width;
+        [JsonInclude] public readonly double Height;
 
-        public SvgViewBox(double x, double y, double w, double h)
+        [JsonConstructor]
+        public SvgViewBox(double originX, double originY, double width, double height)
         {
-            OriginX = x;
-            OriginY = y;
-            Width = w;
-            Height = h;
+            OriginX = originX;
+            OriginY = originY;
+            Width = width;
+            Height = height;
         }
 
         public override string ToString()

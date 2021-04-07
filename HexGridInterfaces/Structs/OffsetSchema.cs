@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 namespace HexGridInterfaces.Structs
 {
@@ -22,15 +23,16 @@ namespace HexGridInterfaces.Structs
 
     public struct OffsetSchema
     {
-        public readonly HexagonStyle HexStyle;
-        public readonly OffsetPush OffsetPush;
-        public readonly MegagonSkew MegahexSkew;
+        [JsonInclude] public readonly HexagonStyle HexStyle;
+        [JsonInclude] public readonly OffsetPush OffsetPush;
+        [JsonInclude] public readonly MegagonSkew MegahexSkew;
 
-        public OffsetSchema(HexagonStyle style, OffsetPush offset, MegagonSkew skew)
+        [JsonConstructor]
+        public OffsetSchema(HexagonStyle hexStyle, OffsetPush offsetPush, MegagonSkew megahexSkew)
         {
-            HexStyle = style;
-            OffsetPush = offset;
-            MegahexSkew = skew;
+            HexStyle = hexStyle;
+            OffsetPush = offsetPush;
+            MegahexSkew = megahexSkew;
         }
 
         public OffsetSchema(bool isPointy, bool isOdd, bool isRight)

@@ -1,15 +1,18 @@
 ﻿
+using System.Text.Json.Serialization;
+
 namespace HexGridInterfaces.Structs
 {
     public struct GridVars
     {
-        public readonly int RowCount;
-        public readonly int ColCount;
-        public readonly GridPoint Radius;
-        public readonly GridPoint Origin;
-        public readonly OffsetSchema Schema;
-        public readonly SvgViewBox ViewBox;
+        [JsonInclude] public readonly int RowCount;
+        [JsonInclude] public readonly int ColCount;
+        [JsonInclude] public readonly GridPoint Radius;
+        [JsonInclude] public readonly GridPoint Origin;
+        [JsonInclude] public readonly OffsetSchema Schema;
+        [JsonInclude] public readonly SvgViewBox ViewBox;
 
+        [JsonConstructor]
         public GridVars(int rowCount, int colCount, GridPoint radius, GridPoint origin, OffsetSchema schema, SvgViewBox viewBox)
         {
             RowCount = rowCount;

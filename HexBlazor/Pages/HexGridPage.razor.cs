@@ -2,12 +2,17 @@
 using HexGridInterfaces.Grids;
 using HexGridInterfaces.Structs;
 using HexGridInterfaces.SvgHelpers;
+using HexGridInterfaces.ViewModels;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using SvgLib.ViewModels;
 using System;
-using System.Threading.Tasks;
+using System.Net.Http;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace HexBlazor.Pages
 {
@@ -199,7 +204,8 @@ namespace HexBlazor.Pages
 
             try
             {
-                var viewModel = vmBuilder.Build(GetGridVars());
+                // var viewModel = vmBuilder.Build(GetGridVars());
+                var viewModel = await GetVmFromAF();
 
                 _grid = viewModel.Grid;
                 _map = viewModel.Map;
@@ -233,6 +239,26 @@ namespace HexBlazor.Pages
             var schema = new OffsetSchema(_isStylePointy, _isOffsetOdd, _isSkewRight);
 
             return new GridVars(rowCount, colCount, radius, origin, schema, _viewBox);
+        }
+
+        private async Task<ViewModel> GetVmFromAF()
+        {
+
+            var url = _client.BaseAddress + "api/GetViewModel";
+
+            var @params = JsonSerializer.Serialize(GetGridVars());
+            var requestBody = new StringContent(@params, Encoding.UTF8, "application/json");
+            var request = new HttpRequestMessage(HttpMethod.Post, url) { Content = requestBody };
+
+            //var bytes = JsonSerializer.SerializeToUtf8Bytes(GetGridVars());
+            //var bytesBody = new ByteArrayContent(bytes);
+            //var request = new HttpRequestMessage(HttpMethod.Post, url) { Content = bytesBody };
+
+            var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            var stream = await response.Content.ReadAsStringAsync();
+
+            var result = JsonSerializer.Deserialize<ViewModel>(stream);
+            return result;
         }
 
         #region Spinner
@@ -376,5 +402,26 @@ namespace HexBlazor.Pages
                 }
             }
         }
+
+
+
+        private struct ViewModel
+        {
+            public ISvgGrid Grid { get; }
+
+            public ISvgMap Map { get; }
+
+            public IHitTester HitTester { get; }
+
+            [JsonConstructor]
+            internal ViewModel(ISvgGrid grid, ISvgMap map, IHitTester hitTester)
+            {
+                Grid = grid;
+                Map = map;
+                HitTester = hitTester;
+            }
+
+        }
     }
+
 }

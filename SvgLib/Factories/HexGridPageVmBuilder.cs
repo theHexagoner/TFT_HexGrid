@@ -46,7 +46,7 @@ namespace SvgLib.Factories
 
         private static IDictionary<int, ISvgHexagon> GetSvgHexagons(IHexagon[] hexagons)
         {
-            Dictionary<int, ISvgHexagon> svgHexagons = new();
+            Dictionary<int, ISvgHexagon> svgHexagons = new Dictionary<int, ISvgHexagon>();
 
             // get the SVG data for each hexagon
             foreach (IHexagon h in hexagons)
@@ -59,7 +59,7 @@ namespace SvgLib.Factories
 
         private static IDictionary<int, SvgMegagon> GetSvgMegagons(IEdge[] edges)
         {
-            Dictionary<int, SvgMegagon> svgMegagons = new();
+            Dictionary<int, SvgMegagon> svgMegagons = new Dictionary<int, SvgMegagon>();
 
             // build the SvgMegagons
             foreach (IEdge edge in edges)

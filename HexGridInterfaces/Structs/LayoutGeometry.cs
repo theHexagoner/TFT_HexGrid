@@ -37,7 +37,7 @@ namespace HexGridInterfaces.Structs
         /// <returns>CubeF</returns>
         public CubeF PointToCubeF(GridPoint p)
         {
-            GridPoint pt = new((p.X - Origin.X) / Size.X, (p.Y - Origin.Y) / Size.Y);
+            GridPoint pt = new GridPoint((p.X - Origin.X) / Size.X, (p.Y - Origin.Y) / Size.Y);
 
             double x = _M.B0 * pt.X + _M.B1 * pt.Y;
             double y = _M.B2 * pt.X + _M.B3 * pt.Y;
