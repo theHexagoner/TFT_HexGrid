@@ -5,10 +5,9 @@ using HexGridInterfaces.SvgHelpers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace HexBlazor.Pages
 {
@@ -289,12 +288,12 @@ namespace HexBlazor.Pages
         {
             // get the actual size of the DIV
             string data = await jsRuntime.InvokeAsync<string>("getDivDimensions", new object[] { _divRef });
-            JObject dimensions = (JObject)JsonConvert.DeserializeObject(data);
+            BoundingClientRect clientRect = JsonSerializer.Deserialize<BoundingClientRect>(data);
 
-            var divWidth = dimensions.Value<double>("width");
-            var divHeight = dimensions.Value<double>("height");
-            var oLeft = dimensions.Value<double>("offsetLeft");
-            var oTop = dimensions.Value<double>("offsetTop");
+            var divWidth = clientRect.Width;
+            var divHeight = clientRect.Height;
+            var oLeft = clientRect.OffsetLeft;
+            var oTop = clientRect.OffsetTop;
 
             // calculate the factor by which to multiply the TRANSLATE_ vars
             // Width and Height should be same factor?
