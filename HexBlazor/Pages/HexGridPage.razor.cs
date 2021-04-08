@@ -6,8 +6,10 @@ using HexGridInterfaces.ViewModels;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using SvgLib.Grids;
 using SvgLib.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -241,9 +243,8 @@ namespace HexBlazor.Pages
             return new GridVars(rowCount, colCount, radius, origin, schema, _viewBox);
         }
 
-        private async Task<ViewModel> GetVmFromAF()
+        private async Task<IHexGridPageVM> GetVmFromAF()
         {
-
             var url = _client.BaseAddress + "api/GetViewModel";
 
             var @params = JsonSerializer.Serialize(GetGridVars());
@@ -255,9 +256,9 @@ namespace HexBlazor.Pages
             //var request = new HttpRequestMessage(HttpMethod.Post, url) { Content = bytesBody };
 
             var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            var stream = await response.Content.ReadAsStringAsync();
+            var stream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<HexGridPageVM>(stream);
 
-            var result = JsonSerializer.Deserialize<ViewModel>(stream);
             return result;
         }
 
@@ -403,25 +404,6 @@ namespace HexBlazor.Pages
             }
         }
 
-
-
-        private struct ViewModel
-        {
-            public ISvgGrid Grid { get; }
-
-            public ISvgMap Map { get; }
-
-            public IHitTester HitTester { get; }
-
-            [JsonConstructor]
-            internal ViewModel(ISvgGrid grid, ISvgMap map, IHitTester hitTester)
-            {
-                Grid = grid;
-                Map = map;
-                HitTester = hitTester;
-            }
-
-        }
     }
 
 }

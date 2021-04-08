@@ -17,6 +17,7 @@ namespace SvgLib.Factories
         private readonly ISvgMapBuilder _svgMapBuilder;
         private readonly IHitTesterFactory _hitTesterFactory;
 
+        // for DI
         public HexGridPageVmBuilder(IGridFactory gridFactory, ISvgGridBuilder svgGridBuilder, ISvgMapBuilder svgMapBuilder, IHitTesterFactory hitTesterFactory) 
         {
             _gridFactory = gridFactory;

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using HexGridInterfaces.Structs;
 using HexGridInterfaces.Factories;
+using HexGridInterfaces.ViewModels;
 
 namespace HexBlazorAF
 {
@@ -23,18 +24,17 @@ namespace HexBlazorAF
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req)
         {
             // parse the request body and get params for the grid
-            var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-
-
-            GridVars p = JsonSerializer.Deserialize<GridVars>(requestBody);
+            //var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            //GridVars p = JsonSerializer.Deserialize<GridVars>(requestBody);
+            GridVars p = await JsonSerializer.DeserializeAsync<GridVars>(req.Body);
 
             // generate the VM from the supplied params
-            var svgGrid = _builder.Build(p);
+            var vm = _builder.Build(p);
 
             // serialize the VM as JSON and return:
-            // var jsonized = JsonSerializer.Serialize(svgGrid);
+            var bytes = JsonSerializer.SerializeToUtf8Bytes(vm);
 
-            return new OkObjectResult(svgGrid);
+            return new OkObjectResult(bytes);
         }
     }
 }
