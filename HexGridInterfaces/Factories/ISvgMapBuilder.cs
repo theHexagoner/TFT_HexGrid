@@ -5,9 +5,9 @@ using HexGridInterfaces.SvgHelpers;
 
 namespace HexGridInterfaces.Factories
 {
-    public interface ISvgMapBuilder
-    {
-        ISvgMap Build(IMap map, SvgViewBox viewBox);
+    //public interface ISvgMapBuilder
+    //{
+    //    ISvgMap Build(IMap map, SvgViewBox viewBox);
 
-    }
+    //}
 }

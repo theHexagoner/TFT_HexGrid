@@ -14,9 +14,9 @@ namespace HexGridAF
         {
             builder.Services.AddSingleton<IHexGridPageVmBuilder, HexGridPageVmBuilder>();
             builder.Services.AddSingleton<IGridFactory, GridFactory>();
-            builder.Services.AddSingleton<ISvgGridBuilder, SvgGridBuilder>();
-            builder.Services.AddSingleton<ISvgMapBuilder, SvgMapBuilder>();
-            builder.Services.AddSingleton<IHitTesterFactory, HitTesterFactory>();
+            //builder.Services.AddSingleton<ISvgGridBuilder, SvgGridBuilder>();
+            //builder.Services.AddSingleton<ISvgMapBuilder, SvgMapBuilder>();
+            //builder.Services.AddSingleton<IHitTesterFactory, HitTesterFactory>();
 
         }
     }

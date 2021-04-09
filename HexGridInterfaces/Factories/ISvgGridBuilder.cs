@@ -4,10 +4,10 @@ using System.Collections.Generic;
 
 namespace HexGridInterfaces.Factories
 {
-    public interface ISvgGridBuilder
-    {
+    //public interface ISvgGridBuilder
+    //{
 
-        ISvgGrid Build(IEnumerable<KeyValuePair<int, ISvgHexagon>> svgHexagons, IEnumerable<KeyValuePair<int, SvgMegagon>> svgMegagons, SvgViewBox viewBox);
+    //    ISvgGrid Build(IEnumerable<KeyValuePair<int, SvgHexagon>> svgHexagons, IEnumerable<KeyValuePair<int, SvgMegagon>> svgMegagons, SvgViewBox viewBox);
 
-    }
+    //}
 }

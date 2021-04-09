@@ -1,19 +1,14 @@
 ﻿using HexBlazor.Components;
-using HexGridInterfaces.Grids;
 using HexGridInterfaces.Structs;
-using HexGridInterfaces.SvgHelpers;
 using HexGridInterfaces.ViewModels;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
-using SvgLib.Grids;
 using SvgLib.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace HexBlazor.Pages
@@ -26,21 +21,21 @@ namespace HexBlazor.Pages
         private const bool SAVE_IS_ENABLED = true;
         private const bool SAVE_IS_DISABLED = false;
 
-        private const int EVENT_ARGS_BUTTON_LEFT = 0;
-        private const int EVENT_ARGS_BUTTON_RIGHT = 2;
+        //private const int EVENT_ARGS_BUTTON_LEFT = 0;
+        //private const int EVENT_ARGS_BUTTON_RIGHT = 2;
 
-        private const bool MAP_MODE = true;
-        private const bool GRID_MODE = false;
+        //private const bool MAP_MODE = true;
+        //private const bool GRID_MODE = false;
 
         private ElementReference _divRef;
         private BSvg _svgRef;
         
-        private ISvgGrid _grid;
-        private ISvgMap _map;
-        private IHitTester _hitTester;
+        private SvgGrid _grid;
+        //private ISvgMap _map;
+        //private IHitTester _hitTester;
 
         private bool _canSave = SAVE_IS_DISABLED;
-        private bool _mode = GRID_MODE;
+        //private bool _mode = GRID_MODE;
 
         #region the SVG
 
@@ -210,12 +205,12 @@ namespace HexBlazor.Pages
                 var viewModel = await GetVmFromAF();
 
                 _grid = viewModel.Grid;
-                _map = viewModel.Map;
-                _hitTester = viewModel.HitTester;
+                //_map = viewModel.Map;
+                //_hitTester = viewModel.HitTester;
 
                 _svgRef.SetGeometry(_grid.SvgHexagons, _grid.SvgMegagons);
                 _canSave = SAVE_IS_ENABLED;
-                _mode = GRID_MODE;
+                //_mode = GRID_MODE;
                 
                 SetShowSpinner(false);
                 await Task.Delay(1);
@@ -251,13 +246,9 @@ namespace HexBlazor.Pages
             var requestBody = new StringContent(@params, Encoding.UTF8, "application/json");
             var request = new HttpRequestMessage(HttpMethod.Post, url) { Content = requestBody };
 
-            //var bytes = JsonSerializer.SerializeToUtf8Bytes(GetGridVars());
-            //var bytesBody = new ByteArrayContent(bytes);
-            //var request = new HttpRequestMessage(HttpMethod.Post, url) { Content = bytesBody };
-
             var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            var stream = await response.Content.ReadAsStreamAsync();
-            var result = await JsonSerializer.DeserializeAsync<HexGridPageVM>(stream);
+            var json = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<HexGridPageVM>(json);
 
             return result;
         }
@@ -293,22 +284,23 @@ namespace HexBlazor.Pages
         /// </summary>
         /// <param name="eventArgs">mouse event arguments for the click</param>
         /// <returns>Task result</returns>
-        private async Task SvgOnClick(MouseEventArgs eventArgs)
+        private static async Task SvgOnClick(MouseEventArgs eventArgs)
         {
-            if (_grid != null && _map != null && _mode == GRID_MODE)
-            {
-                // get the grid hex the user clicked on, if any:
-                var ID = _hitTester.HitTest(await GetTranslatedHitPoint(eventArgs));
-                var didClickHex = _grid.TryGetHex(ID, out _);
+            await Task.Delay(1);
+            //if (_grid != null && _map != null && _mode == GRID_MODE)
+            //{
+            //    // get the grid hex the user clicked on, if any:
+            //    var ID = _hitTester.HitTest(await GetTranslatedHitPoint(eventArgs));
+            //    var didClickHex = _grid.TryGetHex(ID, out _);
 
-                // left-click to add the hex to the map if not already present
-                if (didClickHex && eventArgs.Button == EVENT_ARGS_BUTTON_LEFT) 
-                    SelectHex(ID.Value);
+            //    // left-click to add the hex to the map if not already present
+            //    if (didClickHex && eventArgs.Button == EVENT_ARGS_BUTTON_LEFT) 
+            //        SelectHex(ID.Value);
 
-                // right-click to remove the hex from the map if it is present
-                if (didClickHex && eventArgs.Button == EVENT_ARGS_BUTTON_RIGHT)
-                    DeselectHex(ID.Value);
-            }
+            //    // right-click to remove the hex from the map if it is present
+            //    if (didClickHex && eventArgs.Button == EVENT_ARGS_BUTTON_RIGHT)
+            //        DeselectHex(ID.Value);
+            //}
         }
 
         private async Task<GridPoint> GetTranslatedHitPoint(MouseEventArgs eventArgs)
@@ -343,25 +335,25 @@ namespace HexBlazor.Pages
         private void SelectHex(int ID)
         {
             // update the look of the grid hexagon in case we need to redraw it from scratch later
-            _grid.SelectHex(ID);
+            // _grid.SelectHex(ID);
 
             // update the current view
             _svgRef.SelectHex(ID);
 
             // if the map does not contain the hexagon, add it to the map
-            _map.AddHexagon(ID);
+            // _map.AddHexagon(ID);
         }
 
         private void DeselectHex(int ID)
         {
             // update the look of the grid hexagon in case we need to redraw it from scratch later
-            _grid.DeselectHex(ID);
+            // _grid.DeselectHex(ID);
 
             // actually update the current view
             _svgRef.DeselectHex(ID);
 
             // if the map contains the hex, remove it from the map
-            _map.RemoveHexagon(ID);
+            // _map.RemoveHexagon(ID);
         }
 
         #endregion
@@ -371,16 +363,16 @@ namespace HexBlazor.Pages
         /// </summary>
         private void Swap()
         {
-            if (_mode == MAP_MODE)
-            {
-                _svgRef.SetGeometry(_grid.SvgHexagons, _grid.SvgMegagons);
-            }
-            else
-            {
-                _svgRef.SetGeometry(_map.SvgHexagons, _map.SvgMegagons);
-            }
+            //if (_mode == MAP_MODE)
+            //{
+            //    _svgRef.SetGeometry(_grid.SvgHexagons, _grid.SvgMegagons);
+            //}
+            //else
+            //{
+            //    _svgRef.SetGeometry(_map.SvgHexagons, _map.SvgMegagons);
+            //}
 
-            _mode = !_mode;
+            //_mode = !_mode;
         }
 
         /// <summary>

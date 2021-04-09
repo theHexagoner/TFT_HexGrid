@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 using HexGridInterfaces.Structs;
-using HexGridInterfaces.SvgHelpers;
 using System.Linq;
 
 namespace HexBlazor.Components
@@ -35,7 +34,7 @@ namespace HexBlazor.Components
         [Parameter]
         public bool ShowStars { get; set; }
 
-        public void SetGeometry(IEnumerable<KeyValuePair<int, ISvgHexagon>> hexagons, IEnumerable<KeyValuePair<int, SvgMegagon>> megagons)
+        public void SetGeometry(IEnumerable<KeyValuePair<int, SvgHexagon>> hexagons, IEnumerable<KeyValuePair<int, SvgMegagon>> megagons)
         {
             Hexagons = hexagons.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             Megagons = megagons.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
@@ -44,7 +43,7 @@ namespace HexBlazor.Components
 
         #region Hexagons
 
-        public IDictionary<int, ISvgHexagon> Hexagons { get; set; } = new Dictionary<int, ISvgHexagon>();
+        public IDictionary<int, SvgHexagon> Hexagons { get; set; } = new Dictionary<int, SvgHexagon>();
 
         [Parameter]
         public string HexStroke { get; set; }
@@ -57,14 +56,14 @@ namespace HexBlazor.Components
 
         public void SelectHex(int id)
         {
-            Hexagons[id].Select();
-            StateHasChanged();
+            //Hexagons[id].Select();
+            //StateHasChanged();
         }
 
         public void DeselectHex(int id)
         {
-            Hexagons[id].Deselect();
-            StateHasChanged();
+            //Hexagons[id].Deselect();
+            //StateHasChanged();
         }
 
         #endregion

@@ -10,8 +10,8 @@ namespace HexBlazor.Components
         [Parameter]
         public string Points { get; set; }
 
-        [Parameter]
-        public bool IsSelected { get; set; }
+        //[Parameter]
+        //public bool IsSelected { get; set; }
 
         [Parameter]
         public string StarD { get; set; }
@@ -32,12 +32,12 @@ namespace HexBlazor.Components
 
         private string GetFill()
         {
-            return IsSelected ? HexFill : "none"; 
+            return HexFill; //IsSelected ? HexFill : "none"; 
         }
 
         private string GetStarFill()
         {
-            return IsSelected ? StarFill : "none"; 
+            return StarFill; // IsSelected ? StarFill : "none"; 
         }
 
     }
